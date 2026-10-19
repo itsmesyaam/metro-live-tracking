@@ -1,8 +1,9 @@
 /**
  * Kochi Metro Map Canvas Overlay Renderer
  * Ultra-high-performance 60fps single-canvas overlay for Leaflet / Google Maps.
- * Eliminates DOM marker layout thrashing on mid-range Android devices.
- * Renders articulated 3-coach capsule trains, fading motion trails, and dwell micro-states.
+ * Eliminates DOM marker layout thrashing and supports smooth 60fps rendering on mid-range devices.
+ * Renders articulated 3-coach capsule trains, aerodynamic nose visors, headlights,
+ * fading motion trails, and platform dwell halos.
  */
 
 import { MOTION_CONFIG } from './motion-config.js';
@@ -39,6 +40,8 @@ export class MapCanvasRenderer {
 
   resizeCanvas() {
     const rect = this.container.getBoundingClientRect();
+    if (rect.width === 0 || rect.height === 0) return;
+
     this.width = rect.width;
     this.height = rect.height;
 
@@ -50,7 +53,8 @@ export class MapCanvasRenderer {
   }
 
   bindMapEvents() {
-    this.map.on('resize move zoom', () => {
+    // Only resize canvas buffers on viewport resize or zoom end (avoids clearing buffer during panning)
+    this.map.on('resize zoomend', () => {
       this.resizeCanvas();
     });
 
@@ -76,20 +80,22 @@ export class MapCanvasRenderer {
     const W = this.width;
     const H = this.height;
 
+    if (!W || !H) return;
+
     ctx.clearRect(0, 0, W, H);
 
-    // Render motion trails first (beneath train bodies)
+    // 1. Render motion trails (drawn beneath train bodies)
     this.renderTrails(ctx);
 
-    // Render station approach pulses
+    // 2. Render station approach ripple pulses
     this.renderStationPulses(ctx);
 
-    // Render 3-coach capsule train markers
+    // 3. Render 3-coach capsule train markers
     for (const train of this.trains) {
       this.renderTrainCapsule(ctx, train);
     }
 
-    // Process batched camera follow
+    // 4. Process batched camera follow if enabled
     this.processCameraFollow();
   }
 
@@ -100,7 +106,7 @@ export class MapCanvasRenderer {
     for (const train of this.trains) {
       if (train.state === 'DWELLING' || !train.trail || train.trail.length < 2) continue;
 
-      const pts = train.trail.map(pt => this.map.latLngToContainerPoint([pt.lat, pt.lng]));
+      const pts = train.trail.map((pt) => this.map.latLngToContainerPoint([pt.lat, pt.lng]));
       const isSouth = train.direction === 'south';
       const baseColor = isSouth ? this.config.colors.southbound : this.config.colors.northbound;
 
@@ -112,7 +118,7 @@ export class MapCanvasRenderer {
       for (let i = 0; i < pts.length - 1; i++) {
         const p1 = pts[i];
         const p2 = pts[i + 1];
-        const alpha = (i / pts.length) * this.config.trailInitialOpacity;
+        const alpha = (i / pts.length) * this.config.trailInitialOpacity * train.opacity;
 
         ctx.strokeStyle = baseColor;
         ctx.globalAlpha = alpha;
@@ -172,7 +178,7 @@ export class MapCanvasRenderer {
 
     // Apply low-pass smoothed heading angle (compass bearing)
     // Leaflet 0 deg = North (up), Canvas 0 deg = East (right) -> subtract 90 deg
-    ctx.rotate((train.headingAngle - 90) * (Math.PI / 180));
+    ctx.rotate(((train.headingAngle - 90) * Math.PI) / 180);
 
     // Breathing opacity during platform dwell
     if (isDwelling) {
@@ -253,7 +259,7 @@ export class MapCanvasRenderer {
     // Subtle front headlight beam
     if (!isDwelling) {
       const beamGrad = ctx.createLinearGradient(fx + coachW, 0, fx + coachW + 18, 0);
-      beamGrad.addColorStop(0, 'rgba(254, 240, 138, 0.6)');
+      beamGrad.addColorStop(0, this.config.colors.headlightBeam);
       beamGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
       ctx.fillStyle = beamGrad;
       ctx.beginPath();
@@ -299,7 +305,7 @@ export class MapCanvasRenderer {
     const now = performance.now();
     if (now - this.lastPanTime < this.cameraPanCooldownMs) return;
 
-    const targetTrain = this.trains.find(t => t.id === this.followedTrainId);
+    const targetTrain = this.trains.find((t) => t.id === this.followedTrainId);
     if (!targetTrain) return;
 
     this.lastPanTime = now;
@@ -312,7 +318,7 @@ export class MapCanvasRenderer {
       this.map.panTo([targetTrain.lat, targetTrain.lng], {
         animate: true,
         duration: 0.35,
-        easeLinearity: 0.25
+        easeLinearity: 0.25,
       });
     }
   }

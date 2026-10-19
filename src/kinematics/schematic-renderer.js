@@ -1,6 +1,6 @@
 /**
  * Kochi Metro Dual-Track Linear Schematic Renderer
- * Driven synchronously by the exact same kinematics engine as the Map.
+ * Driven synchronously by the exact same single-source-of-truth kinematics engine as the Map.
  * Top Track: Southbound (towards Thrippunithura)
  * Bottom Track: Northbound (towards Aluva)
  */
@@ -65,7 +65,7 @@ export class SchematicRenderer {
       `;
     }).join('');
 
-    axis.querySelectorAll('.schematic-station-pin').forEach(btn => {
+    axis.querySelectorAll('.schematic-station-pin').forEach((btn) => {
       btn.addEventListener('click', () => {
         const id = parseInt(btn.getAttribute('data-station-id'), 10);
         if (this.onStationSelected) {
@@ -80,8 +80,8 @@ export class SchematicRenderer {
     const northContainer = this.container.querySelector('#schematicTrainsNorth');
     if (!southContainer || !northContainer) return;
 
-    const southTrains = fleetSnapshot.filter(t => t.direction === 'south');
-    const northTrains = fleetSnapshot.filter(t => t.direction === 'north');
+    const southTrains = fleetSnapshot.filter((t) => t.direction === 'south');
+    const northTrains = fleetSnapshot.filter((t) => t.direction === 'north');
 
     const renderPill = (t) => {
       const leftPct = Math.max(0, Math.min(100, t.fractionOfTrack * 100));
@@ -107,7 +107,7 @@ export class SchematicRenderer {
     northContainer.innerHTML = northTrains.map(renderPill).join('');
 
     // Bind train clicks
-    this.container.querySelectorAll('.schematic-train-marker').forEach(btn => {
+    this.container.querySelectorAll('.schematic-train-marker').forEach((btn) => {
       btn.addEventListener('click', () => {
         const trainId = btn.getAttribute('data-train-id');
         if (this.onTrainSelected) {

@@ -11,7 +11,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <!-- Google Fonts: Plus Jakarta Sans, Anek Malayalam, Noto Sans Malayalam, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script>
@@ -130,7 +130,7 @@
   <header class="sticky top-0 z-30 bg-[var(--card-bg)]/90 backdrop-blur-md border-b border-[var(--card-border)] px-4 sm:px-8 py-3 transition-colors">
     <div class="max-w-3xl mx-auto flex items-center justify-between gap-3">
       
-      <!-- Brand & Honest Status -->
+      <!-- Brand & Unified Fleet Status (One Source of Truth) -->
       <div class="flex items-center gap-2.5">
         <div class="w-9 h-9 rounded-xl bg-teal-600 dark:bg-teal-500 text-white flex items-center justify-center shadow-sm">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -146,16 +146,20 @@
         <div>
           <div class="flex items-center gap-2">
             <span class="text-base sm:text-lg font-extrabold tracking-tight text-[var(--text-primary)]">Kochi Metro</span>
-            <!-- Honest State: Simulated label -->
-            <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-              Simulated
+            <!-- Live Active Fleet Count Badge linked directly to Train Store -->
+            <span id="headerTrainCountBadge" class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-500/20">
+              10 Trains Active
             </span>
           </div>
         </div>
       </div>
 
-      <!-- Controls: Language, Theme, Extras Sheet -->
+      <!-- Controls: Dev Radar [D], Language, Theme, Extras Sheet -->
       <div class="flex items-center gap-1.5">
+        <button id="btnToggleDebug" type="button" aria-label="Toggle Developer Telemetry Radar (D key)" class="touch-target px-2.5 py-1 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-xs font-mono font-bold text-teal-600 dark:text-teal-400 hover:border-teal-500 transition" title="Toggle Kinematics Debug Radar (Press 'D')">
+          <span>Dev [D]</span>
+        </button>
+
         <button id="btnLangToggle" type="button" aria-label="Toggle language between English and Malayalam" class="touch-target px-3 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
           <span id="langLabel">മലയാളം</span>
         </button>
@@ -355,19 +359,32 @@
         <div class="relative w-full h-[500px] sm:h-[560px]" id="mapViewportContainer">
           <div id="mapViewport" class="w-full h-full"></div>
           
-          <!-- Direction Legend Overlay -->
+          <!-- Direction Legend Overlay with Unified Telemetry Counts -->
           <div class="absolute bottom-3 left-3 z-[460] bg-[var(--card-bg)]/90 backdrop-blur-md border border-[var(--card-border)] rounded-xl p-2.5 shadow-md text-xs space-y-1.5 pointer-events-auto">
-            <div class="flex items-center gap-2">
-              <span class="w-3.5 h-2 rounded-sm bg-teal-600 inline-block"></span>
-              <span class="text-[var(--text-secondary)] font-semibold">Southbound (→ Thrippunithura)</span>
+            <div class="flex items-center justify-between gap-3 text-[11px] font-mono border-b border-[var(--card-border)] pb-1 mb-1">
+              <span class="text-slate-400 font-bold">RADAR TELEMETRY</span>
+              <span id="mapFooterFleetCount" class="font-bold text-teal-600 dark:text-teal-400">10 Active</span>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="w-3.5 h-2 rounded-sm bg-emerald-500 inline-block"></span>
-              <span class="text-[var(--text-secondary)] font-semibold">Northbound (→ Aluva)</span>
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <span class="w-3.5 h-2 rounded-sm bg-teal-600 inline-block"></span>
+                <span class="text-[var(--text-secondary)] font-semibold">Southbound (→ Thrippunithura)</span>
+              </div>
+              <span id="legendCountSouth" class="font-mono text-[11px] font-bold text-slate-500">5</span>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="w-3.5 h-2 rounded-sm bg-amber-400 ring-1 ring-amber-500 inline-block"></span>
-              <span class="text-[var(--text-secondary)] font-semibold">At platform (doors open)</span>
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <span class="w-3.5 h-2 rounded-sm bg-emerald-500 inline-block"></span>
+                <span class="text-[var(--text-secondary)] font-semibold">Northbound (→ Aluva)</span>
+              </div>
+              <span id="legendCountNorth" class="font-mono text-[11px] font-bold text-slate-500">5</span>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <span class="w-3.5 h-2 rounded-sm bg-amber-400 ring-1 ring-amber-500 inline-block"></span>
+                <span class="text-[var(--text-secondary)] font-semibold">At platform (doors open)</span>
+              </div>
+              <span id="legendCountDwell" class="font-mono text-[11px] font-bold text-amber-600">2</span>
             </div>
           </div>
         </div>
@@ -428,7 +445,7 @@
         </div>
       </div>
 
-      <!-- 2. Simulation Speed & Headway Controller -->
+      <!-- 2. Simulation Speed Controller -->
       <div>
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] block mb-2">
           Kinematic Speed Multiplier
@@ -499,6 +516,7 @@
     import { JourneyProgressLine } from './src/components/JourneyProgressLine.js';
     import { NotificationStack } from './src/components/NotificationStack.js';
     import { SwapMorph } from './src/components/SwapMorph.js';
+    import { DebugOverlay } from './src/components/DebugOverlay.js';
 
     // Kinematics and Motion Modules
     import { STATIONS, TrackGeometry } from './src/kinematics/track-geometry.js';
@@ -521,20 +539,20 @@
     const trackGeometry = new TrackGeometry(STATIONS);
     const motionEngine = new TrainMotionEngine({ geometry: trackGeometry });
 
-    // Register active metro fleet across the 28.1 km corridor
+    // Register 10 active metro fleet services across the 28.1 km corridor
     // Southbound Trains (Towards Thrippunithura)
-    motionEngine.registerTrain({ id: 'KM-101', name: 'Pampa', direction: 'south', initialStationIndex: 2 });
-    motionEngine.registerTrain({ id: 'KM-102', name: 'Periyar', direction: 'south', initialStationIndex: 7 });
-    motionEngine.registerTrain({ id: 'KM-103', name: 'Kabani', direction: 'south', initialStationIndex: 12 });
-    motionEngine.registerTrain({ id: 'KM-104', name: 'Nila', direction: 'south', initialStationIndex: 17 });
-    motionEngine.registerTrain({ id: 'KM-105', name: 'Chalakudy', direction: 'south', initialStationIndex: 21 });
+    motionEngine.registerTrain({ id: 'KM-101', name: 'Pampa', direction: 'south', initialStationIndex: 2, departureOffsetSeconds: 0 });
+    motionEngine.registerTrain({ id: 'KM-102', name: 'Periyar', direction: 'south', initialStationIndex: 7, departureOffsetSeconds: 560 });
+    motionEngine.registerTrain({ id: 'KM-103', name: 'Kabani', direction: 'south', initialStationIndex: 12, departureOffsetSeconds: 1120 });
+    motionEngine.registerTrain({ id: 'KM-104', name: 'Nila', direction: 'south', initialStationIndex: 17, departureOffsetSeconds: 1680 });
+    motionEngine.registerTrain({ id: 'KM-105', name: 'Chalakudy', direction: 'south', initialStationIndex: 21, departureOffsetSeconds: 2240 });
 
     // Northbound Trains (Towards Aluva)
-    motionEngine.registerTrain({ id: 'KM-201', name: 'Chaliyar', direction: 'north', initialStationIndex: 23 });
-    motionEngine.registerTrain({ id: 'KM-202', name: 'Kallada', direction: 'north', initialStationIndex: 18 });
-    motionEngine.registerTrain({ id: 'KM-203', name: 'Karamana', direction: 'north', initialStationIndex: 13 });
-    motionEngine.registerTrain({ id: 'KM-204', name: 'Meenachil', direction: 'north', initialStationIndex: 8 });
-    motionEngine.registerTrain({ id: 'KM-205', name: 'Neyyar', direction: 'north', initialStationIndex: 3 });
+    motionEngine.registerTrain({ id: 'KM-201', name: 'Chaliyar', direction: 'north', initialStationIndex: 23, departureOffsetSeconds: 100 });
+    motionEngine.registerTrain({ id: 'KM-202', name: 'Kallada', direction: 'north', initialStationIndex: 18, departureOffsetSeconds: 660 });
+    motionEngine.registerTrain({ id: 'KM-203', name: 'Karamana', direction: 'north', initialStationIndex: 13, departureOffsetSeconds: 1220 });
+    motionEngine.registerTrain({ id: 'KM-204', name: 'Meenachil', direction: 'north', initialStationIndex: 8, departureOffsetSeconds: 1780 });
+    motionEngine.registerTrain({ id: 'KM-205', name: 'Neyyar', direction: 'north', initialStationIndex: 3, departureOffsetSeconds: 2340 });
 
     // Components
     let rollingCountdown = null;
@@ -545,6 +563,7 @@
     let journeyLineInstance = null;
     let notificationStackInstance = null;
     let swapMorphInstance = null;
+    let debugOverlayInstance = null;
 
     let leafletMap = null;
     let mapCanvasRenderer = null;
@@ -615,6 +634,9 @@
           updateTripScreen(true);
         }
       });
+
+      // Developer Debug Overlay (Press 'D' to toggle)
+      debugOverlayInstance = new DebugOverlay(motionEngine, { defaultVisible: false });
     }
 
     function calculateCommute() {
@@ -632,20 +654,34 @@
       const durationMins = Math.max(2, Math.round(Math.abs(toSt.minFromAluva - fromSt.minFromAluva || (dist * 1.6))));
       const stopsCount = Math.abs(state.toIdx - state.fromIdx);
 
-      // Match physical train positioning for departure countdown
+      // Match physical train positioning for departure countdown from the single store
       const snapshot = motionEngine.getFleetSnapshot();
-      const relevantTrains = snapshot.filter(t => t.direction === (isSouthbound ? 'south' : 'north'));
+      const targetDir = isSouthbound ? 'south' : 'north';
+      const relevantTrains = snapshot.filter(t => t.direction === targetDir);
       let closestRemainingSec = 240;
 
+      const fromMeters = trackGeometry.stationDistanceMeters[state.fromIdx];
+
       if (relevantTrains.length > 0) {
-        const fromMeters = trackGeometry.stationDistanceMeters[state.fromIdx];
+        let minDiff = Infinity;
         relevantTrains.forEach(t => {
-          const diff = isSouthbound ? (fromMeters - t.currentDistanceMeters) : (t.currentDistanceMeters - fromMeters);
-          if (diff > 0 && diff < 3000) {
-            const sec = Math.round(diff / Math.max(10, (t.velocityKmh / 3.6)));
-            if (sec < closestRemainingSec) closestRemainingSec = sec;
+          // Calculate distance along track to origin station
+          const diff = isSouthbound
+            ? (fromMeters - t.currentDistanceMeters)
+            : (t.currentDistanceMeters - fromMeters);
+
+          if (diff >= 0 && diff < minDiff) {
+            minDiff = diff;
+            const avgSpeedMs = 15; // ~54 km/h
+            const sec = Math.max(20, Math.round(diff / avgSpeedMs));
+            closestRemainingSec = sec;
           }
         });
+
+        if (minDiff === Infinity) {
+          // All trains have passed; wrap around next scheduled service headway
+          closestRemainingSec = 360;
+        }
       }
 
       const remainingMinutes = Math.max(1, Math.round(closestRemainingSec / 60));
@@ -996,6 +1032,11 @@
       document.getElementById('navTabMap').addEventListener('click', () => switchTab('map'));
       document.getElementById('navTabStations').addEventListener('click', () => switchTab('stations'));
 
+      // Dev Debug Radar Toggle Button
+      document.getElementById('btnToggleDebug').addEventListener('click', () => {
+        if (debugOverlayInstance) debugOverlayInstance.toggle();
+      });
+
       document.getElementById('btnLangToggle').addEventListener('click', () => {
         state.lang = state.lang === 'en' ? 'ml' : 'en';
         document.getElementById('langLabel').textContent = state.lang === 'en' ? 'മലയാളം' : 'English';
@@ -1066,13 +1107,39 @@
 
       revealElement(document.getElementById('tabScreenTrip'), { staggerChildren: true });
 
-      // Start Kinematic Physics Engine
+      // Start Kinematic Physics Engine & 2s Authoritative Tick
       motionEngine.start();
 
-      // Hook up Viaduct frame rendering
+      // Hook up UI synchronization across header and map legend from the single train store
+      const headerCountBadge = document.getElementById('headerTrainCountBadge');
+      const mapFooterCount = document.getElementById('mapFooterFleetCount');
+      const legendSouth = document.getElementById('legendCountSouth');
+      const legendNorth = document.getElementById('legendCountNorth');
+      const legendDwell = document.getElementById('legendCountDwell');
+
       motionEngine.subscribe((snapshot, dt) => {
+        // Synchronize counts
+        const southCount = snapshot.filter(t => t.direction === 'south').length;
+        const northCount = snapshot.filter(t => t.direction === 'north').length;
+        const dwellCount = snapshot.filter(t => t.state === 'DWELLING').length;
+        const total = snapshot.length;
+
+        if (headerCountBadge) headerCountBadge.textContent = `${total} Trains Active`;
+        if (mapFooterCount) mapFooterCount.textContent = `${total} Active`;
+        if (legendSouth) legendSouth.textContent = String(southCount);
+        if (legendNorth) legendNorth.textContent = String(northCount);
+        if (legendDwell) legendDwell.textContent = String(dwellCount);
+
+        // Render Viaduct frame
         renderViaductFrame(dt);
       });
+
+      // Update Commute Countdown smoothly every second
+      setInterval(() => {
+        if (state.activeTab === 'trip') {
+          updateTripScreen();
+        }
+      }, 1000);
 
       // Trigger 2-minute arrival notification heads-up
       let alertShown = false;

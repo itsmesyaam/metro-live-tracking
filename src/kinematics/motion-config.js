@@ -1,52 +1,65 @@
 /**
  * Kochi Metro Kinematics & Motion Configuration
- * All physical, rendering, and timing constants grouped in a single tunable store.
+ * Single comprehensive configuration object containing all physical, timing,
+ * error correction, and rendering constants for the Kochi Metro Blue Line (Aluva -> Thrippunithura).
  */
 
 export const MOTION_CONFIG = {
-  // Physical acceleration & deceleration in m/s^2 (aligned with Alstom Metropolis EMU specs)
-  acceleration: 1.0,           // m/s^2 (~3.6 km/h per second)
-  deceleration: 1.0,           // m/s^2 (service braking)
-  maxCruisingSpeedKmh: 80,     // km/h (KMRL maximum design operational speed)
-  maxCruisingSpeedMs: 80 / 3.6, // ~22.22 m/s
+  // Corridor & Network Specs
+  totalLineLengthMeters: 28130, // 28.13 km Aluva to Thrippunithura Terminal
+  totalStations: 25,
+  timeZone: 'Asia/Kolkata',     // Strict IST (UTC+05:30) timezone for KMRL timetables
 
-  // Station Platform Dwell
-  dwellDurationSeconds: 24,    // 24 seconds dwell for passenger boarding/alighting
+  // Authoritative Data Tick Architecture
+  tickIntervalMs: 2000,         // Authoritative data snapshot published every 2000 ms
+  sourceMode: 'LIVE',           // 'LIVE' (KMRL Timetable IST) | 'SIMULATED'
+
+  // Physical Kinematics (Alstom Metropolis 3-coach EMU)
+  acceleration: 1.0,            // m/s^2 (~3.6 km/h per second acceleration)
+  deceleration: 1.0,            // m/s^2 (service braking deceleration)
+  maxCruisingSpeedKmh: 80,      // km/h (KMRL maximum design operating speed)
+  maxCruisingSpeedMs: 80 / 3.6, // ~22.22 m/s
+  dwellDurationSeconds: 24,     // 24 seconds platform dwell for commuter boarding/alighting
 
   // Delta Time & Loop Guards
-  maxDeltaTimeSeconds: 0.1,    // 100ms clamp (prevents leap-forward after tab suspend)
-  simulationSpeedMultiplier: 1.0, // 1x normal speed (up to 10x for fast-forward demo)
+  maxDeltaTimeSeconds: 0.1,     // 100 ms clamp (prevents leap-forward after tab suspend)
+  simulationSpeedMultiplier: 1.0, // 1x normal speed (adjustable in Extras)
 
-  // Position Blending & Dead Reckoning
-  blendDurationSeconds: 1.2,   // 1.2s smooth decay of schedule telemetric corrections
-  teleportThresholdMeters: 500,// If error > 500m, fade & snap instead of sliding
+  // Multi-Tiered Error Blending
+  microErrorThresholdMeters: 50,  // < 50m: imperceptible speed trim over 2.0s update window
+  macroErrorThresholdMeters: 500, // 50m - 500m: smooth cubic ease over 800 ms
+  teleportThresholdMeters: 500,   // > 500m: 250 ms fade-out, snap to true position, 250 ms fade-in
+  macroEaseDurationMs: 800,       // 800 ms cubic ease duration
+  fadeSnapDurationMs: 250,        // 250 ms fade duration
+  neverMoveBackward: true,        // Strict rail physics: trains never move in reverse when ahead
 
   // Heading & Angle Smoothing
-  headingSmoothingAlpha: 0.15, // Low-pass filter weight per step (0.0 to 1.0)
+  headingSmoothingAlpha: 0.12,   // Low-pass filter weight per frame (avoids curve jitter)
 
-  // Visuals & Trails
-  trailLengthMeters: 200,      // Length of fading polyline trail trailing the train
-  trailMaxPoints: 40,          // Maximum polyline vertices stored per train trail
-  trailInitialOpacity: 0.35,   // Initial alpha of trail at train rear
+  // Motion Trails & Visuals
+  trailLengthMeters: 200,        // 200m fading polyline trail trailing each active train
+  trailMaxPoints: 45,            // Maximum polyline vertices stored per train trail
+  trailInitialOpacity: 0.40,     // Initial alpha of trail at train rear
 
-  // Train Marker Dimensions (Pixels on Canvas)
-  markerLength: 48,            // 3-coach articulated length
-  markerWidth: 14,             // Coach body width
-  markerSelectedScale: 1.25,   // Scale multiplier when train is selected
+  // Train Marker Dimensions (Pixels on HTML5 Canvas)
+  markerLength: 48,              // 3-coach articulated length
+  markerWidth: 14,               // Coach body width
+  markerSelectedScale: 1.25,     // Scale multiplier when train is selected
 
-  // Colors
+  // Color Palette
   colors: {
-    southbound: '#00897b',      // KMRL signature teal (Towards Thrippunithura)
-    southboundAccent: '#06b6d4',// Lighter nose/visor
-    northbound: '#10b981',      // Emerald (Towards Aluva)
-    northboundAccent: '#34d399',// Lighter nose/visor
-    dwellingGlow: '#f59e0b',    // Soft amber halo when doors are open at platform
-    selectedRing: '#f43f5e',    // Rose focus ring
+    southbound: '#00897b',        // KMRL signature teal (Towards Thrippunithura)
+    southboundAccent: '#06b6d4',  // Lighter cyan aerodynamic nose visor
+    northbound: '#10b981',        // Emerald green (Towards Aluva)
+    northboundAccent: '#34d399',  // Lighter mint aerodynamic nose visor
+    dwellingGlow: '#f59e0b',      // Amber halo when doors are open at platform
+    selectedRing: '#f43f5e',      // Rose focus ring
+    headlightBeam: 'rgba(254, 240, 138, 0.65)', // Warm headlight glow
   },
 
   // Performance Safeguards
   performance: {
-    dropTrailFrameBudgetMs: 22, // If frame takes > 22ms, drop trails to protect 60fps
-    frustumPaddingPixels: 80,   // Canvas margin for off-screen culling
+    dropTrailFrameBudgetMs: 20,   // If frame exceeds 20ms, drop trails to protect 60fps
+    frustumPaddingPixels: 80,     // Canvas margin for off-screen culling
   }
 };
