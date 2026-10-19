@@ -1,0 +1,28 @@
+{
+  "name": "kochi-metro-live-tracking",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Real-time 60 FPS Kochi Metro Fleet Tracker, Viaduct Cam & Google Maps Radar with CARE-ONE Design System",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [
+    "kochi-metro",
+    "kmrl",
+    "live-tracking",
+    "google-maps",
+    "viaduct-cam",
+    "kerala",
+    "transit",
+    "generative-ui",
+    "care-one"
+  ],
+  "author": "syam s",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

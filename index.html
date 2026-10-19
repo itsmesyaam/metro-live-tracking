@@ -1,0 +1,2366 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-doctorcare">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kochi Metro Live Tracking &amp; Viaduct Radar | CARE-ONE Design Edition</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <!-- Leaflet Maps CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+  <!-- Google Fonts: Plus Jakarta Sans, Instrument Serif, Noto Sans Malayalam, Anek Malayalam, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', '"Inter"', 'system-ui', 'sans-serif'],
+            serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+            malayalam: ['"Anek Malayalam"', '"Noto Sans Malayalam"', 'sans-serif'],
+          },
+          colors: {
+            dc: {
+              ink: 'var(--ink)',
+              ink2: 'var(--ink2)',
+              ink3: 'var(--ink3)',
+              surface: 'var(--surface)',
+              card: 'var(--card-bg)',
+              primary: 'var(--primary)',
+              primaryHover: 'var(--primary-hover)',
+              leaf: 'var(--leaf)',
+              zari: 'var(--zari)',
+              border: 'var(--border-color)',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* ==========================================================================
+       CARE-ONE DESIGN SYSTEM TOKENS (DOCTORCARE & PATIENT THEMES)
+       ========================================================================== */
+    :root {
+      --ink: #0b1533;
+      --ink2: #344054;
+      --ink3: #667085;
+      --surface: #f4f6fb;
+      --card-bg: #ffffff;
+      --card-subtle: #f8fafc;
+      --primary: #1f5eff;
+      --primary-hover: #1748d1;
+      --leaf: #1f6b4f;
+      --leaf-hover: #154d39;
+      --leaf-tint: #e8f5ef;
+      --zari: #c9a43b;
+      --zari-tint: #fbf5e6;
+      --laterite: #b23f2c;
+      --border-color: rgba(11, 21, 51, 0.08);
+      --border-strong: rgba(11, 21, 51, 0.16);
+
+      --shadow-card: 0 16px 34px -20px rgba(11, 21, 51, 0.14), 0 4px 12px -4px rgba(11, 21, 51, 0.05);
+      --shadow-hover: 0 28px 50px -24px rgba(11, 21, 51, 0.22), 0 8px 16px -6px rgba(11, 21, 51, 0.08);
+      --shadow-ticket: 0 24px 44px -20px rgba(31, 94, 255, 0.28);
+    }
+
+    /* Kerala Kasavu Heritage Theme */
+    html.theme-heritage {
+      --ink: #142e23;
+      --ink2: #3a5348;
+      --ink3: #617b70;
+      --surface: #f3f5ee;
+      --card-bg: #ffffff;
+      --card-subtle: #fbfcf8;
+      --primary: #1f6b4f;
+      --primary-hover: #154d39;
+      --leaf: #1f6b4f;
+      --leaf-hover: #154d39;
+      --leaf-tint: #e4efe9;
+      --zari: #c9a43b;
+      --zari-tint: #faf3de;
+      --laterite: #b23f2c;
+      --border-color: rgba(20, 46, 35, 0.1);
+      --border-strong: rgba(20, 46, 35, 0.2);
+
+      --shadow-card: 0 16px 34px -20px rgba(20, 46, 35, 0.16);
+      --shadow-hover: 0 28px 50px -24px rgba(20, 46, 35, 0.26);
+      --shadow-ticket: 0 24px 44px -20px rgba(31, 107, 79, 0.32);
+    }
+
+    /* Midnight Metro Radar Theme */
+    html.theme-midnight {
+      --ink: #f8fafc;
+      --ink2: #94a3b8;
+      --ink3: #64748b;
+      --surface: #070d19;
+      --card-bg: #0f172a;
+      --card-subtle: #091122;
+      --primary: #00d2ff;
+      --primary-hover: #38bdf8;
+      --leaf: #10b981;
+      --leaf-hover: #059669;
+      --leaf-tint: rgba(16, 185, 129, 0.15);
+      --zari: #facc15;
+      --zari-tint: rgba(250, 204, 21, 0.12);
+      --laterite: #f87171;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.16);
+
+      --shadow-card: 0 18px 40px -20px rgba(0, 0, 0, 0.65);
+      --shadow-hover: 0 28px 56px -24px rgba(0, 210, 255, 0.25);
+      --shadow-ticket: 0 24px 48px -20px rgba(0, 210, 255, 0.3);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background-color: var(--surface);
+      color: var(--ink);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.35s ease, color 0.35s ease;
+    }
+
+    .font-serif-italic {
+      font-family: 'Instrument Serif', Georgia, serif;
+      font-style: italic;
+    }
+
+    .font-malayalam {
+      font-family: 'Anek Malayalam', 'Noto Sans Malayalam', sans-serif;
+    }
+
+    /* DoctorCare Elevated Card */
+    .card-dc {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 26px;
+      box-shadow: var(--shadow-card);
+      transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.35s ease, border-color 0.35s ease;
+    }
+    .card-dc:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* Rotating Go Arrow on Action Cards */
+    .card-dc .go-arrow {
+      transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+    .card-dc:hover .go-arrow {
+      transform: rotate(-45deg);
+    }
+
+    /* Pill Button */
+    .btn-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      height: 42px;
+      padding: 0 20px;
+      border-radius: 9999px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.2, 0.7, 0.2, 1);
+      box-shadow: 0 4px 12px -2px rgba(11, 21, 51, 0.08);
+    }
+    .btn-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px -4px rgba(11, 21, 51, 0.16);
+    }
+    .btn-pill:active {
+      transform: translateY(0);
+    }
+
+    /* DoctorCare Live Pulse Ring */
+    .live-pulse {
+      position: relative;
+      width: 9px;
+      height: 9px;
+      border-radius: 9999px;
+      background: #16a34a;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .live-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 9999px;
+      background: #16a34a;
+      animation: carePulse 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+      pointer-events: none;
+    }
+    @keyframes carePulse {
+      0% { transform: scale(0.8); opacity: 0.85; }
+      100% { transform: scale(2.8); opacity: 0; }
+    }
+
+    /* CARE-ONE Kerala Zari Ribbon */
+    .zari-line {
+      height: 4px;
+      background: linear-gradient(90deg, var(--zari) 0%, #eab308 50%, var(--zari) 100%);
+      opacity: 0.9;
+    }
+
+    /* CARE-ONE Ticket Card with Perforation Stub */
+    .ticket-card {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #102a45 0%, #173859 60%, #1f4f78 100%);
+      color: #ffffff;
+      box-shadow: var(--shadow-ticket);
+    }
+    html.theme-heritage .ticket-card {
+      background: linear-gradient(135deg, #143527 0%, #1b4936 60%, #246349 100%);
+    }
+    html.theme-midnight .ticket-card {
+      background: linear-gradient(135deg, #0b1329 0%, #112042 60%, #1a3163 100%);
+    }
+    .ticket-stub {
+      position: relative;
+      border-left: 2px dashed rgba(255, 255, 255, 0.25);
+    }
+    .ticket-notch-top, .ticket-notch-bottom {
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background-color: var(--surface);
+      border-radius: 50%;
+      left: -11px;
+      z-index: 20;
+      transition: background-color 0.35s ease;
+    }
+    .ticket-notch-top { top: -11px; }
+    .ticket-notch-bottom { bottom: -11px; }
+
+    /* Custom Leaflet Styling */
+    .leaflet-container {
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+      background-color: #f1f5f9 !important;
+    }
+    html.theme-midnight .leaflet-container {
+      background-color: #0b1120 !important;
+    }
+    .station-tooltip-dc {
+      background: rgba(11, 21, 51, 0.92) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      color: #f8fafc !important;
+      font-size: 12px !important;
+      font-weight: 700 !important;
+      padding: 3px 8px !important;
+      border-radius: 8px !important;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25) !important;
+    }
+    .station-tooltip-dc::before { display: none !important; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.35); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.6); }
+  </style>
+</head>
+<body class="selection:bg-blue-600 selection:text-white">
+
+  <!-- TOP DECORATIVE KERALA KASAVU RIBBON -->
+  <div class="zari-line"></div>
+
+  <!-- NAVIGATION HEADER -->
+  <header class="sticky top-0 z-40 bg-[var(--card-bg)]/90 backdrop-blur-md border-b border-[var(--border-color)] px-4 sm:px-8 py-3.5 transition-colors">
+    <div class="max-w-[1720px] mx-auto flex flex-wrap items-center justify-between gap-4">
+      
+      <!-- Brand & Hospital/Metro Care Identity -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[var(--primary)] via-teal-500 to-sky-400 p-0.5 shadow-md flex items-center justify-center">
+          <div class="w-full h-full bg-[var(--card-bg)] rounded-[14px] flex items-center justify-center">
+            <i data-lucide="train" class="w-6 h-6 text-[var(--primary)]"></i>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-widest text-[var(--primary)] font-mono">KMRL LIVE RADAR</span>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30">
+              <span class="live-pulse"></span>
+              60 FPS TELEMETRY
+            </span>
+          </div>
+          <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-[var(--ink)] flex items-center gap-2">
+            Kochi Metro <span class="font-serif-italic font-normal text-2xl text-[var(--primary)]">Live Fleet Tracker</span>
+            <span class="text-xs font-normal text-[var(--ink3)] font-malayalam hidden md:inline">| കൊച്ചി മെട്രോ ലൈവ് ട്രാക്കർ</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Live Clock & Speed Scrubber (CARE-ONE Style) -->
+      <div class="flex items-center gap-2 bg-[var(--surface)] border border-[var(--border-color)] rounded-2xl p-1.5 shadow-inner">
+        <div class="flex items-center gap-2 px-3 py-1 border-r border-[var(--border-color)]">
+          <i data-lucide="clock" class="w-4 h-4 text-[var(--primary)]"></i>
+          <span id="liveClockDisplay" class="font-mono text-sm sm:text-base font-extrabold text-[var(--ink)] tracking-wider">15:20:00</span>
+          <span id="clockModeLabel" class="text-[11px] font-bold uppercase px-1.5 py-0.5 rounded bg-[var(--primary)]/10 text-[var(--primary)] font-mono">IST</span>
+        </div>
+
+        <div class="flex items-center gap-1 text-xs">
+          <button id="btnRealTime" type="button" class="px-2.5 py-1 rounded-xl font-bold bg-[var(--primary)] text-white shadow-sm transition" title="Sync with Indian Standard Time">
+            Live IST
+          </button>
+          <button id="btnSpeed1x" type="button" class="px-2 py-1 rounded-xl font-mono font-semibold text-[var(--ink2)] hover:bg-[var(--card-bg)] transition">
+            1x
+          </button>
+          <button id="btnSpeed10x" type="button" class="px-2 py-1 rounded-xl font-mono font-semibold text-[var(--ink2)] hover:bg-[var(--card-bg)] transition" title="10x Speed">
+            10x
+          </button>
+          <button id="btnSpeed30x" type="button" class="px-2 py-1 rounded-xl font-mono font-semibold text-[var(--ink2)] hover:bg-[var(--card-bg)] transition" title="30x Fast Forward">
+            30x
+          </button>
+          <button id="btnPauseSim" type="button" class="p-1.5 rounded-xl text-[var(--ink2)] hover:bg-[var(--card-bg)] transition" title="Pause/Play">
+            <i data-lucide="pause" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Theme Switcher & Time Presets -->
+      <div class="flex items-center gap-2.5">
+        <!-- Time Presets Select -->
+        <select id="timePresetSelect" aria-label="Select Time Preset" class="bg-[var(--card-bg)] text-[var(--ink)] border border-[var(--border-color)] text-xs font-semibold rounded-xl px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+          <option value="live">🕒 Current Live Time</option>
+          <option value="08:30">🌅 Morning Peak (8:30 AM)</option>
+          <option value="11:30">☀️ Midday Service (11:30 AM)</option>
+          <option value="17:15">🌆 Evening Peak (5:15 PM)</option>
+          <option value="21:30">🌙 Late Evening (9:30 PM)</option>
+          <option value="06:05">🚆 First Wave (6:05 AM)</option>
+        </select>
+
+        <!-- Theme Mode Toggle Buttons (DoctorCare / Heritage / Midnight) -->
+        <div class="flex items-center bg-[var(--surface)] p-1 rounded-2xl border border-[var(--border-color)] text-xs font-bold">
+          <button id="btnThemeDoctorCare" type="button" class="px-3 py-1.5 rounded-xl bg-[var(--card-bg)] text-[var(--primary)] shadow-sm transition" title="DoctorCare Modern Executive Theme">
+            Modern
+          </button>
+          <button id="btnThemeHeritage" type="button" class="px-3 py-1.5 rounded-xl text-[var(--ink3)] hover:text-[var(--ink)] transition" title="Kerala Kasavu & Backwater Heritage Theme">
+            Heritage
+          </button>
+          <button id="btnThemeMidnight" type="button" class="px-3 py-1.5 rounded-xl text-[var(--ink3)] hover:text-[var(--ink)] transition" title="Midnight Metro Radar Theme">
+            Midnight
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- SUBHEADER STATUS BAR -->
+  <div class="bg-[var(--card-bg)] border-b border-[var(--border-color)] px-4 sm:px-8 py-2 text-xs text-[var(--ink2)]">
+    <div class="max-w-[1720px] mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-4">
+        <span class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span>
+          <span>Southbound (→ Thrippunithura): <strong id="statSouthboundCount" class="font-mono text-[var(--ink)]">0</strong></span>
+        </span>
+        <span class="text-[var(--border-strong)]">|</span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+          <span>Northbound (→ Aluva): <strong id="statNorthboundCount" class="font-mono text-[var(--ink)]">0</strong></span>
+        </span>
+        <span class="text-[var(--border-strong)]">|</span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+          <span>At Platforms (Doors Open): <strong id="statDwellingCount" class="font-mono text-[var(--ink)]">0</strong></span>
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3 font-medium">
+        <span>Line: <strong class="text-[var(--primary)]">Blue Line Phase 1 + 1B</strong></span>
+        <span>Corridor Length: <strong class="font-mono">28.125 km</strong></span>
+        <span>Stations: <strong class="font-mono">25 Stations</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APPLICATION GRID -->
+  <main class="max-w-[1720px] mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT COLUMN: LIVE TICKET STUB, ACTIVE FLEET ROSTER & PLANNER (4 COLS) -->
+    <section class="lg:col-span-4 flex flex-col gap-6 order-2 lg:order-1">
+
+      <!-- Navigation Segment Tabs -->
+      <div class="grid grid-cols-3 gap-1.5 p-1.5 bg-[var(--card-bg)] rounded-2xl border border-[var(--border-color)] shadow-sm">
+        <button id="tabBtnTrains" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold bg-[var(--primary)] text-white shadow transition">
+          <i data-lucide="train" class="w-4 h-4"></i>
+          <span>Live Trains (<span id="badgeTotalTrains">0</span>)</span>
+        </button>
+        <button id="tabBtnPlanner" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold text-[var(--ink2)] hover:text-[var(--ink)] hover:bg-[var(--surface)] transition">
+          <i data-lucide="navigation-2" class="w-4 h-4"></i>
+          <span>Fare &amp; Route</span>
+        </button>
+        <button id="tabBtnStationInfo" type="button" class="flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold text-[var(--ink2)] hover:text-[var(--ink)] hover:bg-[var(--surface)] transition">
+          <i data-lucide="map-pin" class="w-4 h-4"></i>
+          <span>Station Board</span>
+        </button>
+      </div>
+
+      <!-- TAB 1: LIVE TRAIN TELEMETRY & FLEET ROSTER -->
+      <div id="panelTrains" class="flex flex-col gap-6">
+
+        <!-- 1. CARE-ONE INSPIRED BOARDING PASS TICKET CARD -->
+        <div class="ticket-card relative flex flex-col sm:flex-row justify-between">
+          <!-- Main Ticket Section -->
+          <div class="p-5 flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="text-[10px] font-mono tracking-widest uppercase px-2 py-0.5 rounded-full bg-white/20 text-white font-bold backdrop-blur-xs">
+                  METROPOLIS RAKE
+                </span>
+                <span id="selTrainStatusPill" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
+                  In Transit
+                </span>
+              </div>
+              <h2 id="selTrainBadge" class="text-2xl font-extrabold text-white font-mono tracking-tight">KM-101</h2>
+              <p id="selTrainName" class="text-sm font-medium text-white/90 mt-0.5">Alstom Metropolis "Pampa"</p>
+              <p id="selTrainDirection" class="text-xs text-white/70 mt-1 font-semibold">Southbound → Towards Thrippunithura</p>
+            </div>
+
+            <!-- Segment Progress Bar -->
+            <div class="mt-4 pt-3 border-t border-white/15">
+              <div class="flex items-center justify-between text-xs text-white/80 mb-1.5">
+                <div>
+                  <span class="text-[9px] uppercase tracking-wider text-white/60 block">Departed</span>
+                  <strong id="selTrainPrevStation" class="text-white font-bold">Aluva</strong>
+                </div>
+                <div class="text-center font-mono">
+                  <span id="selTrainSpeed" class="text-cyan-300 font-extrabold text-sm">48 km/h</span>
+                </div>
+                <div class="text-right">
+                  <span class="text-[9px] uppercase tracking-wider text-white/60 block">Next Station</span>
+                  <strong id="selTrainNextStation" class="text-white font-bold">Pulinchodu</strong>
+                </div>
+              </div>
+
+              <!-- Animated Progress Bar -->
+              <div class="w-full h-2.5 bg-white/20 rounded-full overflow-hidden p-0.5 relative">
+                <div id="selTrainProgressBar" class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 rounded-full transition-all duration-200" style="width: 45%;"></div>
+              </div>
+
+              <div class="flex items-center justify-between text-[11px] text-white/75 mt-1.5">
+                <span id="selTrainSegmentInfo">Stop 1 of 24</span>
+                <span id="selTrainEtaNext" class="font-mono text-cyan-300 font-bold">ETA: 45s</span>
+              </div>
+            </div>
+
+            <!-- Actions Row -->
+            <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/15">
+              <button id="btnCenterSelectedTrain" type="button" class="py-1.5 px-3 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                <i data-lucide="crosshair" class="w-3.5 h-3.5"></i> Locate Train
+              </button>
+              <button id="btnOpenGoogleEmbed" type="button" class="py-1.5 px-3 rounded-xl bg-emerald-400/20 hover:bg-emerald-400/30 text-emerald-200 border border-emerald-400/30 font-bold text-xs flex items-center justify-center gap-1.5 transition">
+                <i data-lucide="map" class="w-3.5 h-3.5"></i> Google Spot
+              </button>
+            </div>
+          </div>
+
+          <!-- Perforated Ticket Stub with Big Tabular Time -->
+          <div class="ticket-stub p-5 flex flex-col items-center justify-center text-center bg-black/10 min-w-[125px]">
+            <div class="ticket-notch-top"></div>
+            <div class="ticket-notch-bottom"></div>
+            <span class="text-[10px] font-mono uppercase tracking-widest text-white/60 block">NEXT STOP</span>
+            <div class="my-2">
+              <span id="ticketEtaBig" class="font-mono text-3xl font-extrabold text-white leading-none">0:45</span>
+              <span class="text-[10px] font-bold text-white/70 block uppercase mt-1">SECONDS</span>
+            </div>
+            <span id="ticketPlatform" class="px-2 py-0.5 rounded bg-white/20 text-white font-mono text-[11px] font-bold mt-1">PF 2</span>
+          </div>
+        </div>
+
+        <!-- Upcoming Stops Timeline -->
+        <div class="card-dc p-4">
+          <div class="flex items-center justify-between mb-2.5">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-[var(--ink3)]">Upcoming Station Calls</h3>
+            <span id="selTrainCoordsText" class="font-mono text-[10px] text-[var(--ink3)]">10.0251°N, 76.3083°E</span>
+          </div>
+          <div id="selTrainUpcomingList" class="max-h-40 overflow-y-auto space-y-1.5 pr-1 text-xs">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Active Metro Fleet Roster List -->
+        <div class="card-dc p-4 flex flex-col gap-3">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <h3 class="text-sm font-extrabold text-[var(--ink)]">Active Kochi Metro Fleet</h3>
+              <p class="text-xs text-[var(--ink3)]">3-coach Alstom Metropolis rakes on line</p>
+            </div>
+
+            <!-- Direction Filters -->
+            <div class="flex items-center bg-[var(--surface)] p-1 rounded-xl border border-[var(--border-color)] text-xs font-bold">
+              <button id="filterAllTrains" type="button" class="px-2.5 py-1 rounded-lg bg-[var(--card-bg)] text-[var(--ink)] shadow-xs">All</button>
+              <button id="filterSouthbound" type="button" class="px-2.5 py-1 rounded-lg text-cyan-600 dark:text-cyan-400 hover:bg-[var(--card-bg)]">→ TPHT</button>
+              <button id="filterNorthbound" type="button" class="px-2.5 py-1 rounded-lg text-emerald-600 dark:text-emerald-400 hover:bg-[var(--card-bg)]">→ ALVA</button>
+            </div>
+          </div>
+
+          <div id="activeTrainsListContainer" class="max-h-[380px] overflow-y-auto space-y-2 pr-1">
+            <!-- Populated with all active rakes -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 2: TRIP PLANNER & FARE CALCULATOR -->
+      <div id="panelPlanner" class="hidden flex-col gap-6">
+        <div class="card-dc p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h2 class="text-base font-extrabold text-[var(--ink)] flex items-center gap-2">
+                <i data-lucide="calculator" class="w-5 h-5 text-[var(--primary)]"></i>
+                Fare &amp; Route Planner
+              </h2>
+              <p class="text-xs text-[var(--ink3)]">Official KMRL passenger tariffs &amp; travel times</p>
+            </div>
+            <button id="btnClearRoute" type="button" class="text-xs font-bold text-[var(--ink3)] hover:text-[var(--ink)] px-2.5 py-1 rounded-lg hover:bg-[var(--surface)] transition">
+              Reset
+            </button>
+          </div>
+
+          <!-- From / To Selector with Swap -->
+          <div class="space-y-3 relative">
+            <div>
+              <label for="fromStationSelect" class="block text-xs font-bold uppercase tracking-wider text-[var(--ink3)] mb-1">Origin Station</label>
+              <select id="fromStationSelect" class="w-full bg-[var(--surface)] border border-[var(--border-color)] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[var(--ink)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                <!-- Populated by JS -->
+              </select>
+            </div>
+
+            <div class="flex items-center justify-center -my-1">
+              <button id="btnSwapStations" type="button" class="btn-pill bg-[var(--card-bg)] border border-[var(--border-color)] text-[var(--ink)] text-xs h-9 px-4 hover:border-[var(--primary)]">
+                <i data-lucide="arrow-up-down" class="w-3.5 h-3.5 text-[var(--primary)]"></i>
+                Swap Direction
+              </button>
+            </div>
+
+            <div>
+              <label for="toStationSelect" class="block text-xs font-bold uppercase tracking-wider text-[var(--ink3)] mb-1">Destination Station</label>
+              <select id="toStationSelect" class="w-full bg-[var(--surface)] border border-[var(--border-color)] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[var(--ink)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                <!-- Populated by JS -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Fare & Metrics Cards -->
+          <div class="grid grid-cols-3 gap-3 mt-5 pt-4 border-t border-[var(--border-color)]">
+            <div class="bg-[var(--surface)] rounded-2xl p-3 border border-[var(--border-color)] text-center">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--ink3)] block">Token Fare</span>
+              <strong id="routeFareDisplay" class="text-xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">₹40</strong>
+              <span id="routeSmartCardFare" class="block text-[10px] text-[var(--ink3)] font-medium">Card: ₹36 (-10%)</span>
+            </div>
+            <div class="bg-[var(--surface)] rounded-2xl p-3 border border-[var(--border-color)] text-center">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--ink3)] block">Travel Time</span>
+              <strong id="routeDurationDisplay" class="text-xl font-extrabold text-[var(--primary)] font-mono">17 Mins</strong>
+              <span id="routeStopsCount" class="block text-[10px] text-[var(--ink3)] font-medium">8 Intermediate</span>
+            </div>
+            <div class="bg-[var(--surface)] rounded-2xl p-3 border border-[var(--border-color)] text-center">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--ink3)] block">Distance</span>
+              <strong id="routeDistanceDisplay" class="text-xl font-extrabold text-[var(--ink)] font-mono">10.8 km</strong>
+              <span id="routeDirectionBadge" class="block text-[10px] text-[var(--primary)] font-medium truncate">→ Southbound</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Upcoming Departure Timetable -->
+        <div class="card-dc p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-extrabold text-[var(--ink)] flex items-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4 text-[var(--primary)]"></i>
+              Next Departures from Origin
+            </h3>
+            <span class="text-xs font-mono text-[var(--ink3)]">Live Timetable</span>
+          </div>
+          <div id="routeSchedulesList" class="space-y-2.5 max-h-[320px] overflow-y-auto pr-1">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: STATION INSPECTOR & MULTILINGUAL BOARD -->
+      <div id="panelStationInfo" class="hidden flex-col gap-6">
+        <div class="card-dc p-5">
+          <div class="flex items-center justify-between gap-2 mb-3">
+            <label for="inspectorStationSelect" class="text-xs font-bold uppercase tracking-wider text-[var(--ink3)]">Station Directory</label>
+            <span id="stationIdBadge" class="px-2 py-0.5 rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-mono text-xs font-bold">ID: 9</span>
+          </div>
+          <select id="inspectorStationSelect" class="w-full bg-[var(--surface)] border border-[var(--border-color)] rounded-xl px-3.5 py-2.5 text-sm font-semibold text-[var(--ink)] mb-4 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+            <!-- Populated by JS -->
+          </select>
+
+          <!-- Multilingual Station Profile -->
+          <div class="bg-[var(--surface)] rounded-2xl p-4 border border-[var(--border-color)]">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <h2 id="stInfoNameEn" class="text-xl font-extrabold text-[var(--ink)]">Edapally</h2>
+                <p id="stInfoNameLocal" class="text-base text-[var(--primary)] font-malayalam font-bold mt-0.5">ഇടപ്പള്ളി / इडप्पल्ली</p>
+              </div>
+              <span id="stInfoChainage" class="font-mono text-xs font-bold text-[var(--ink2)] bg-[var(--card-bg)] px-2.5 py-1 rounded-xl border border-[var(--border-color)]">
+                10.8 km
+              </span>
+            </div>
+
+            <!-- Station Cultural Theme -->
+            <div class="mt-3 p-3 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)]">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--ink3)] block mb-0.5">Kerala Architectural &amp; Cultural Theme</span>
+              <p id="stInfoTheme" class="text-xs text-[var(--ink2)] leading-relaxed font-medium">
+                Theme: Spices, Agriculture &amp; Culinary Heritage of Malabar
+              </p>
+            </div>
+
+            <!-- Multimodal Badges -->
+            <div id="stInfoFacilities" class="flex flex-wrap gap-1.5 mt-3">
+              <!-- Facilities populated by JS -->
+            </div>
+
+            <button id="btnViewStationGoogleEmbed" type="button" class="mt-3.5 w-full btn-pill bg-[var(--card-bg)] border border-[var(--border-color)] text-[var(--ink)] text-xs h-10 hover:border-[var(--primary)]">
+              <i data-lucide="external-link" class="w-3.5 h-3.5 text-[var(--primary)]"></i>
+              Open Station Area on Google Maps
+            </button>
+          </div>
+
+          <!-- Dual Platform Live Board -->
+          <div class="mt-4 space-y-3">
+            <div class="p-3.5 rounded-2xl bg-[var(--surface)] border border-[var(--border-color)]">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-cyan-600 dark:text-cyan-400 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+                  Platform 2 (Southbound → Thrippunithura)
+                </span>
+                <span class="text-[10px] font-mono text-[var(--ink3)] font-bold">DOWN LINE</span>
+              </div>
+              <div id="stNextSouthbound" class="grid grid-cols-3 gap-2 text-center">
+                <!-- Departures -->
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-[var(--surface)] border border-[var(--border-color)]">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  Platform 1 (Northbound → Aluva)
+                </span>
+                <span class="text-[10px] font-mono text-[var(--ink3)] font-bold">UP LINE</span>
+              </div>
+              <div id="stNextNorthbound" class="grid grid-cols-3 gap-2 text-center">
+                <!-- Departures -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KMRL COMMUTER GUIDELINE CARD -->
+      <div class="card-dc p-4 bg-gradient-to-br from-[var(--card-bg)] to-[var(--surface)]">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 shrink-0">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-extrabold text-[var(--ink)]">Kochi1 Smart Card Privileges</h4>
+            <p class="text-[11px] text-[var(--ink3)] mt-0.5">Enjoy seamless contactless transit across Kochi Metro, Water Metro ferries &amp; KSRTC feeder buses with flat 10% fare savings.</p>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: VIADUCT CAM + INTERACTIVE GOOGLE MAP + LINEAR SCHEMATIC (8 COLS) -->
+    <section class="lg:col-span-8 flex flex-col gap-6 order-1 lg:order-2">
+
+      <!-- 1. LIVE VIADUCT CAM CANVAS WITH KERALA BACKWATER PARALLAX & ALSTOM METROPOLIS -->
+      <div class="card-dc overflow-hidden">
+        <div class="px-5 py-3.5 bg-[var(--card-bg)] border-b border-[var(--border-color)] flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20 font-mono">
+              <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+              VIADUCT CAM
+            </span>
+            <h2 class="text-sm sm:text-base font-extrabold text-[var(--ink)]">
+              Moving Viaduct Cam &mdash; <span id="viaductTrainTitle" class="text-[var(--primary)] font-serif-italic text-lg">KM-101 "Pampa"</span>
+            </h2>
+          </div>
+          <div class="flex items-center gap-3 text-xs">
+            <span id="viaductRouteCorridor" class="font-bold text-[var(--ink2)]">Aluva &rarr; Pulinchodu</span>
+            <span id="viaductSpeedBadge" class="px-2.5 py-1 rounded-xl bg-[var(--primary)]/10 text-[var(--primary)] font-mono font-extrabold">48 km/h</span>
+          </div>
+        </div>
+
+        <!-- 60 FPS HTML5 Canvas Viaduct Visualizer -->
+        <div class="relative w-full h-48 sm:h-56 bg-slate-900 overflow-hidden select-none">
+          <canvas id="viaductCanvas" class="w-full h-full block"></canvas>
+
+          <!-- Floating HUD Telemetry Overlay -->
+          <div class="absolute top-3 left-3 flex flex-wrap items-center gap-2 pointer-events-none">
+            <div class="bg-black/60 backdrop-blur-md border border-white/20 rounded-xl px-3 py-1.5 text-xs text-white flex items-center gap-3 shadow-lg">
+              <div>
+                <span class="text-[9px] uppercase tracking-wider text-white/60 block font-semibold">Prior Stop</span>
+                <strong id="camPrevStation" class="text-white font-bold">Aluva (ആലുവ)</strong>
+              </div>
+              <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <div>
+                <span class="text-[9px] uppercase tracking-wider text-white/60 block font-semibold">Next Approach</span>
+                <strong id="camNextStation" class="text-cyan-300 font-bold">Pulinchodu (പുളിഞ്ചോട്)</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="absolute top-3 right-3 pointer-events-none">
+            <div id="camDoorStatusBadge" class="bg-black/60 backdrop-blur-md border border-emerald-400/40 rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-emerald-300 shadow-lg">
+              DOORS CLOSED &bull; TRACTION ACTIVE
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. REAL GOOGLE MAP VIEW OF KOCHI WITH ROTATING 3-COACH METRO TRAINS -->
+      <div id="mapWrapperCard" class="card-dc overflow-hidden flex flex-col relative">
+
+        <!-- Map Control Header -->
+        <div class="px-5 py-3.5 bg-[var(--card-bg)] border-b border-[var(--border-color)] flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-2.5 h-2.5 rounded-full bg-[var(--primary)] animate-pulse"></div>
+            <h2 class="text-sm sm:text-base font-extrabold text-[var(--ink)]">
+              Kochi Interactive Google Map &amp; Corridor Radar
+            </h2>
+          </div>
+
+          <!-- Layer Switchers & Camera Controls -->
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Google Maps Tile Layers -->
+            <div class="flex items-center bg-[var(--surface)] p-1 rounded-xl border border-[var(--border-color)] text-xs font-bold">
+              <button id="btnLayerGoogleStreets" type="button" class="px-3 py-1 rounded-lg bg-[var(--primary)] text-white shadow-xs transition" title="Official Google Maps Road Network">
+                Google Map
+              </button>
+              <button id="btnLayerGoogleHybrid" type="button" class="px-3 py-1 rounded-lg text-[var(--ink2)] hover:text-[var(--ink)] transition" title="Google Satellite Imagery &amp; Street Overlay">
+                Satellite
+              </button>
+              <button id="btnLayerGoogleTerrain" type="button" class="px-3 py-1 rounded-lg text-[var(--ink2)] hover:text-[var(--ink)] transition" title="Google Terrain Elevation Map">
+                Terrain
+              </button>
+              <button id="btnToggleMapTheme" type="button" class="px-3 py-1 rounded-lg text-[var(--ink2)] hover:text-[var(--ink)] transition" title="Toggle Dark Nocturnal Radar Map">
+                <span id="mapThemeText">Dark Map</span>
+              </button>
+            </div>
+
+            <button id="btnFitCorridor" type="button" class="btn-pill bg-[var(--surface)] border border-[var(--border-color)] text-[var(--ink)] text-xs h-8 px-3 hover:border-[var(--primary)]" title="Center Full Aluva to Thrippunithura Corridor">
+              <i data-lucide="maximize-2" class="w-3.5 h-3.5 text-[var(--primary)]"></i>
+              <span>Fit Line</span>
+            </button>
+            <button id="btnToggleFollow" type="button" class="btn-pill bg-[var(--surface)] border border-[var(--border-color)] text-[var(--ink)] text-xs h-8 px-3 hover:border-[var(--primary)]" title="Lock camera to selected train">
+              <i data-lucide="navigation" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span id="followBtnText">Follow: Off</span>
+            </button>
+            <button id="btnToggleLabels" type="button" class="btn-pill bg-[var(--surface)] border border-[var(--border-color)] text-[var(--ink)] text-xs h-8 px-3 hover:border-[var(--primary)]" title="Toggle Station Name Badges">
+              <i data-lucide="tag" class="w-3.5 h-3.5 text-amber-500"></i>
+              <span>Labels</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Leaflet Map Canvas Container -->
+        <div class="relative w-full h-[500px] sm:h-[580px]">
+          <div id="kochiMetroMap" class="w-full h-full z-10"></div>
+
+          <!-- Slide-out Google Maps Embed Drawer -->
+          <div id="googleMapsEmbedModal" class="hidden absolute top-4 left-4 bottom-4 w-[360px] sm:w-[420px] z-30 bg-[var(--card-bg)]/95 backdrop-blur-xl border border-[var(--primary)]/40 rounded-2xl shadow-2xl flex-col overflow-hidden">
+            <div class="px-4 py-3 bg-[var(--surface)] border-b border-[var(--border-color)] flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-[var(--primary)] block">Google Maps Place Inspector</span>
+                <h4 id="gmapEmbedTitle" class="text-xs font-extrabold text-[var(--ink)] truncate">Edapally Metro Station, Kochi</h4>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <a id="gmapExternalLink" href="https://www.google.com/maps?q=10.0251,76.3083" target="_blank" rel="noopener noreferrer" class="px-2 py-1 rounded-lg bg-[var(--primary)]/10 text-[var(--primary)] hover:bg-[var(--primary)]/20 text-xs font-bold">
+                  Open Tab ↗
+                </a>
+                <button id="btnCloseGoogleEmbed" type="button" class="p-1.5 rounded-lg text-[var(--ink3)] hover:text-[var(--ink)] hover:bg-[var(--surface)]">
+                  <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+            <iframe id="gmapIframe" title="Google Maps Kochi Embed" class="w-full flex-1 border-0" src="https://maps.google.com/maps?q=10.0251,76.3083&hl=en&z=16&output=embed" loading="lazy"></iframe>
+          </div>
+
+          <!-- Map Legend Badge Overlay -->
+          <div class="absolute bottom-4 left-4 z-20 bg-[var(--card-bg)]/90 backdrop-blur-md border border-[var(--border-color)] rounded-2xl p-3 shadow-xl text-xs space-y-1.5 pointer-events-auto">
+            <div class="font-extrabold text-[var(--ink)] uppercase tracking-wider text-[10px] mb-1">3-Coach Rake Legend</div>
+            <div class="flex items-center gap-2">
+              <span class="w-4 h-2 rounded-xs bg-cyan-500 ring-2 ring-cyan-500/30 inline-block"></span>
+              <span class="text-[var(--ink2)] font-semibold">Southbound (→ Thrippunithura)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-4 h-2 rounded-xs bg-emerald-500 ring-2 ring-emerald-500/30 inline-block"></span>
+              <span class="text-[var(--ink2)] font-semibold">Northbound (→ Aluva)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-4 h-2 rounded-xs bg-amber-500 ring-2 ring-amber-500/30 inline-block"></span>
+              <span class="text-[var(--ink2)] font-semibold">At Station Platform (Doors Open)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-4 h-2 rounded-xs bg-fuchsia-600 ring-2 ring-white inline-block"></span>
+              <span class="text-[var(--ink2)] font-semibold">Selected Rake Focus</span>
+            </div>
+          </div>
+
+          <!-- Quick Fast-Forward Motion Boost Pill -->
+          <div class="absolute top-4 right-4 z-20 bg-[var(--card-bg)]/90 backdrop-blur-md border border-[var(--border-color)] rounded-2xl px-3.5 py-2 text-xs text-[var(--ink)] shadow-xl flex items-center gap-2.5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+            <strong id="overlayActiveTrainsCount" class="text-[var(--primary)] font-mono">14 Trains Active</strong>
+            <span class="text-[var(--border-strong)]">•</span>
+            <button id="btnQuickBoostMotion" type="button" class="text-amber-600 dark:text-amber-400 hover:underline font-bold">
+              Fast-Forward (10x)
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. DUAL-TRACK CORRIDOR LINEAR SCHEMATIC -->
+      <div class="card-dc p-5">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div>
+            <h3 class="text-base font-extrabold text-[var(--ink)] flex items-center gap-2">
+              <i data-lucide="git-commit-horizontal" class="w-5 h-5 text-[var(--primary)]"></i>
+              Dual-Track Corridor Schematic (Aluva &harr; Thrippunithura)
+            </h3>
+            <p class="text-xs text-[var(--ink3)]">Live positions of all active trainsets across both tracks &bull; Click any station or train</p>
+          </div>
+          <div class="flex items-center gap-4 text-xs font-semibold">
+            <span class="flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400">
+              <span class="w-2.5 h-2.5 rounded-full bg-cyan-500"></span> Down Line (&rarr; TPHT)
+            </span>
+            <span class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Up Line (&larr; ALVA)
+            </span>
+          </div>
+        </div>
+
+        <!-- Scrollable Linear Corridor Track -->
+        <div class="overflow-x-auto pb-2 pt-1">
+          <div id="schematicContainer" class="min-w-[1280px] relative bg-[var(--surface)] rounded-2xl border border-[var(--border-color)] p-5 select-none">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- EDITORIAL FOOTER (CARE-ONE STYLE) -->
+  <footer class="mt-8 border-t border-[var(--border-color)] bg-[var(--card-bg)] py-6 px-4 sm:px-8 text-xs text-[var(--ink3)] transition-colors">
+    <div class="max-w-[1720px] mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <strong class="text-[var(--ink)] font-bold">Kochi Metro Live Tracking App</strong>
+          <span>&bull;</span>
+          <span>Redesigned in the aesthetic of <a href="https://github.com/itsmesyaam/CARE-ONE-" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] hover:underline font-bold">CARE-ONE</a></span>
+        </div>
+        <p class="mt-1 text-[var(--ink3)]">
+          Real-time 60 FPS viaduct kinematics, Google Maps road &amp; satellite overlays, and full 25 Blue Line stations from Aluva to Thrippunithura Terminal (28.125 km).
+        </p>
+      </div>
+
+      <div class="flex items-center gap-4 font-medium">
+        <a href="https://kochimetro.org/" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--primary)] transition">Official KMRL</a>
+        <a href="https://kochimetro.org/train-time-table/" target="_blank" rel="noopener noreferrer" class="hover:text-[var(--primary)] transition">GTFS Schedules</a>
+        <a href="https://github.com/itsmesyaam/metro-live-tracking" target="_blank" rel="noopener noreferrer" class="text-[var(--primary)] font-bold hover:underline">GitHub Repository</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- CORE LOGIC SCRIPT (COMPLETE KMRL DATASET + 60 FPS SIMULATION) -->
+  <script>
+    // ============================================================================
+    // 1. OFFICIAL KOCHI METRO BLUE LINE 25 STATIONS COMPLETE DATASET
+    // ============================================================================
+    const STATIONS = [
+      { id: 1,  code: 'ALVA', name: 'Aluva',                ml: 'ആലുവ',              hi: 'आलुवा',             lat: 10.1099, lng: 76.3495, km: 0.00,  minFromAluva: 0.0,  theme: 'Abundant Bounty of Nature in Kerala — Western Ghats & Periyar River', facilities: ['Wheelchair Access', 'Parking', 'Airport Feeder Bus', 'Indian Railways Link'] },
+      { id: 2,  code: 'PLCD', name: 'Pulinchodu',           ml: 'പുളിഞ്ചോട്',          hi: 'पुलिंचोडु',          lat: 10.0951, lng: 76.3466, km: 1.73,  minFromAluva: 2.1,  theme: 'Flora & Fauna of Western Ghats Forest Ecosystems', facilities: ['Wheelchair Access', 'Parking'] },
+      { id: 3,  code: 'CMPD', name: 'Companypady',          ml: 'കമ്പനിപ്പടി',         hi: 'कंपनीपडी',           lat: 10.0873, lng: 76.3428, km: 2.70,  minFromAluva: 3.8,  theme: 'Medicinal Plants & Traditional Ayurveda of Kerala', facilities: ['Wheelchair Access', 'Parking'] },
+      { id: 4,  code: 'AMBV', name: 'Ambattukavu',          ml: 'അമ്പാട്ടുകാവ്',        hi: 'अंबाट्टुकावु',        lat: 10.0794, lng: 76.3389, km: 3.68,  minFromAluva: 5.5,  theme: 'Periyar River Basin & Bamboo Craft Heritage', facilities: ['Wheelchair Access', 'Parking'] },
+      { id: 5,  code: 'MTTM', name: 'Muttom',               ml: 'മുട്ടം',              hi: 'मुट्टम',             lat: 10.0727, lng: 76.3337, km: 4.62,  minFromAluva: 7.2,  theme: 'KMRL Metro Train Maintenance Depot, Solar Array & Birdlife', facilities: ['Wheelchair Access', 'Parking', 'Depot Operations'] },
+      { id: 6,  code: 'KLMS', name: 'Kalamassery',          ml: 'കളമശ്ശേരി',           hi: 'कलमश्शेरी',          lat: 10.0586, lng: 76.3220, km: 6.67,  minFromAluva: 9.5,  theme: 'Industrial Hub of Cochin & Western Ghats Mammals', facilities: ['Wheelchair Access', 'Parking', 'Feeder Bus'] },
+      { id: 7,  code: 'CUSAT',name: 'Cochin University',    ml: 'കൊച്ചിൻ യൂണിവേഴ്സിറ്റി', hi: 'कोचीन यूनिवर्सिटी',     lat: 10.0467, lng: 76.3182, km: 8.05,  minFromAluva: 11.4, theme: 'Maritime History & Scientific Innovation of Kerala', facilities: ['Wheelchair Access', 'Parking', 'Student Hub'] },
+      { id: 8,  code: 'PDPM', name: 'Pathadipalam',         ml: 'പത്തടിപ്പാലം',        hi: 'पत्तडिप्पालम',        lat: 10.0361, lng: 76.3144, km: 9.30,  minFromAluva: 13.2, theme: 'Freshwater Fishes & Aquatic Biodiversity of Kerala', facilities: ['Wheelchair Access', 'Parking'] },
+      { id: 9,  code: 'EDPL', name: 'Edapally',             ml: 'ഇടപ്പള്ളി',           hi: 'इडप्पल्ली',           lat: 10.0251, lng: 76.3083, km: 10.78, minFromAluva: 15.2, theme: 'Spices, Agriculture & Culinary Heritage of Malabar', facilities: ['Wheelchair Access', 'Parking', 'Lulu Mall Skywalk Link'] },
+      { id: 10, code: 'CGPK', name: 'Changampuzha Park',    ml: 'ചങ്ങമ്പുഴ പാർക്ക്',    hi: 'चंगमपुझा पार्क',      lat: 10.0152, lng: 76.3023, km: 12.08, minFromAluva: 17.1, theme: 'Cultural & Literary Legacy of Kerala Poets & Romantic Arts', facilities: ['Wheelchair Access', 'Cultural Park Hub'] },
+      { id: 11, code: 'PLVM', name: 'Palarivattom',         ml: 'പാലാരിവട്ടം',         hi: 'पालारिवट्टम',        lat: 10.0099, lng: 76.3048, km: 13.09, minFromAluva: 19.0, theme: '99 Flowers of Onam & Tropical Kerala Blossoms', facilities: ['Wheelchair Access', 'Parking'] },
+      { id: 12, code: 'JLNS', name: 'JLN Stadium',          ml: 'ജെ.എൽ.എൻ സ്റ്റേഡിയം',  hi: 'जे.एल.एन स्टेडियम',   lat: 10.0002, lng: 76.2992, km: 14.21, minFromAluva: 21.0, theme: 'Sporting Heritage, Football & Athletics of Kerala', facilities: ['Wheelchair Access', 'Parking', 'Pink Line Interchange'] },
+      { id: 13, code: 'KLOR', name: 'Kaloor',               ml: 'കലൂർ',               hi: 'कलूर',              lat: 9.9950,  lng: 76.2914, km: 15.24, minFromAluva: 22.8, theme: 'Monsoon Skies, Waterfalls & Rain Forests', facilities: ['Wheelchair Access', 'KSRTC Bus Stand Link'] },
+      { id: 14, code: 'TNHL', name: 'Town Hall',            ml: 'ടൗൺ ഹാൾ',            hi: 'टाउन हॉल',           lat: 9.9914,  lng: 76.2884, km: 15.72, minFromAluva: 24.3, theme: 'Dragonflies, Butterflies & Insects of Kerala', facilities: ['Wheelchair Access', 'Ernakulam Town (North) Rail'] },
+      { id: 15, code: 'MGRD', name: 'MG Road',              ml: 'എം.ജി റോഡ്',         hi: 'एम.जी रोड',          lat: 9.9834,  lng: 76.2823, km: 16.92, minFromAluva: 26.2, theme: 'Commercial History & Trade Routes of Cochin', facilities: ['Wheelchair Access', 'Retail Corridor'] },
+      { id: 16, code: 'MHRJ', name: 'Maharajas College',    ml: 'മഹാരാജാസ് കോളേജ്',   hi: 'महाराजा कॉलेज',       lat: 9.9732,  lng: 76.2851, km: 18.10, minFromAluva: 28.2, theme: 'Endemic Reptiles & Amphibians of Western Ghats', facilities: ['Wheelchair Access', 'Subhash Bose Park Link'] },
+      { id: 17, code: 'ERSH', name: 'Ernakulam South',      ml: 'എറണാകുളം സൗത്ത്',    hi: 'एर्नाकुलम साउथ',      lat: 9.9685,  lng: 76.2893, km: 18.96, minFromAluva: 30.0, theme: 'Traditional Kerala Mural Art & Temple Architecture', facilities: ['Wheelchair Access', 'Ernakulam Jn (South) Rail'] },
+      { id: 18, code: 'KDVN', name: 'Kadavanthra',          ml: 'കടവന്ത്ര',            hi: 'कडवंत्रा',            lat: 9.9666,  lng: 76.2983, km: 20.14, minFromAluva: 32.0, theme: 'Handloom, Coir & Artisanal Weaving of Kerala', facilities: ['Wheelchair Access', 'Parking'] },
+      { id: 19, code: 'ELMK', name: 'Elamkulam',            ml: 'എളംകുളം',            hi: 'एलमकुलम',            lat: 9.9671,  lng: 76.3087, km: 21.29, minFromAluva: 33.8, theme: 'Backwater Canals & Pokkali Organic Rice Cultivation', facilities: ['Wheelchair Access', 'Parking'] },
+      { id: 20, code: 'VYTL', name: 'Vyttila',              ml: 'വൈറ്റില',             hi: 'वैट्टिला',            lat: 9.9675,  lng: 76.3204, km: 22.63, minFromAluva: 36.0, theme: 'Vallamkali Snake Boat Races & Multimodal Mobility Hub', facilities: ['Wheelchair Access', 'Water Metro Ferry', 'Mobility Hub Bus'] },
+      { id: 21, code: 'THKD', name: 'Thykoodam',            ml: 'തൈക്കൂടം',            hi: 'तैक्कूड़म',           lat: 9.9601,  lng: 76.3235, km: 23.66, minFromAluva: 38.0, theme: 'Chinese Fishing Nets & Coastal Maritime Life', facilities: ['Wheelchair Access', 'Parking'] },
+      { id: 22, code: 'PETA', name: 'Pettah',               ml: 'പേട്ട',               hi: 'पेट्टा',              lat: 9.9525,  lng: 76.3308, km: 24.84, minFromAluva: 40.0, theme: 'Estuaries & Mangrove Ecosystems of Vembanad Lake', facilities: ['Wheelchair Access', 'Feeder Bus'] },
+      { id: 23, code: 'VDKT', name: 'Vadakkekotta',         ml: 'വടക്കേക്കോട്ട',        hi: 'वडक्केकोट्टा',         lat: 9.9518,  lng: 76.3396, km: 25.88, minFromAluva: 42.0, theme: 'Kalaripayattu Martial Arts & Royal Fort Heritage', facilities: ['Wheelchair Access', 'Parking'] },
+      { id: 24, code: 'SNJN', name: 'SN Junction',          ml: 'എസ്.എൻ ജംഗ്ഷൻ',      hi: 'एस.एन जंक्शन',        lat: 9.9522,  lng: 76.3463, km: 26.98, minFromAluva: 44.0, theme: 'Social Reformers & Renaissance of Modern Kerala', facilities: ['Wheelchair Access', 'Parking'] },
+      { id: 25, code: 'TPHT', name: 'Thrippunithura',       ml: 'തൃപ്പൂണിത്തുറ',        hi: 'तृप्पूणित्तुरा',        lat: 9.9504,  lng: 76.3518, km: 28.13, minFromAluva: 46.0, theme: 'Royal Capital of Cochin, Kathakali & Classical Music', facilities: ['Wheelchair Access', 'Parking', 'Thrippunithura Rail'] }
+    ];
+
+    const TOTAL_TRIP_MINUTES = STATIONS[STATIONS.length - 1].minFromAluva; // 46.0 minutes
+    const DWELL_MINUTES = 0.42; // ~25 seconds station dwell time
+
+    const RAKE_NAMES = [
+      'Pampa', 'Periyar', 'Kabani', 'Nila', 'Bharathapuzha',
+      'Chalakudy', 'Chaliyar', 'Kallada', 'Karamana', 'Meenachil',
+      'Muvattupuzha', 'Neyyar', 'Payaswini', 'Valapattanam', 'Achankovil',
+      'Bhavani', 'Chandragiri', 'Ithikkara', 'Kadalundi', 'Manimala'
+    ];
+
+    // Fare Calculator
+    function calculateFare(fromIdx, toIdx) {
+      if (fromIdx === toIdx) return 10;
+      const dist = Math.abs(STATIONS[toIdx].km - STATIONS[fromIdx].km);
+      if (dist <= 2.0) return 10;
+      if (dist <= 5.0) return 20;
+      if (dist <= 10.0) return 30;
+      if (dist <= 15.0) return 40;
+      if (dist <= 22.0) return 50;
+      return 60;
+    }
+
+    // Schedule Generator
+    function generateDailyScheduleTrips() {
+      const trips = [];
+      let tripCounter = 1;
+
+      function buildDirectionTrips(direction) {
+        let curr = 6 * 60; // 06:00 AM
+        const endT = 22 * 60 + 30; // 10:30 PM
+        const offset = direction === 'south' ? 0 : 3.5;
+        curr += offset;
+
+        while (curr <= endT) {
+          const isMorningPeak = (curr >= 7 * 60 + 30 && curr <= 10 * 60 + 30);
+          const isEveningPeak = (curr >= 16 * 60 + 30 && curr <= 19 * 60 + 30);
+          const headway = (isMorningPeak || isEveningPeak) ? 7.22 : 8.5;
+
+          const rakeIdx = (tripCounter - 1) % RAKE_NAMES.length;
+          const trainCode = (direction === 'south' ? 'KM-1' : 'KM-2') + String(tripCounter).padStart(2, '0');
+
+          trips.push({
+            id: trainCode,
+            rakeName: RAKE_NAMES[rakeIdx],
+            direction: direction,
+            startMin: curr,
+            endMin: curr + TOTAL_TRIP_MINUTES,
+            headwayUsed: headway
+          });
+
+          tripCounter++;
+          curr += headway;
+        }
+      }
+
+      buildDirectionTrips('south');
+      buildDirectionTrips('north');
+      return trips;
+    }
+
+    const ALL_DAILY_TRIPS = generateDailyScheduleTrips();
+
+    // ============================================================================
+    // 2. STATE MANAGEMENT & 60 FPS SIMULATION CLOCK
+    // ============================================================================
+    const state = {
+      isLiveIST: true,
+      simSecondsFromMidnight: 15 * 3600 + 20 * 60,
+      speedMultiplier: 1,
+      isPaused: false,
+      selectedTrainId: null,
+      directionFilter: 'all',
+      fromStationIdx: 0,      // Aluva
+      toStationIdx: 8,        // Edapally
+      inspectedStationIdx: 8, // Edapally
+      activeSidebarTab: 'trains',
+      followSelectedTrain: false,
+      showStationLabels: true,
+      mapLayerMode: 'google_streets',
+      activeTrains: [],
+      viaductScrollOffset: 0
+    };
+
+    function getCurrentISTSeconds() {
+      const now = new Date();
+      const utcMs = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const istDate = new Date(utcMs + (330 * 60000));
+      return istDate.getHours() * 3600 + istDate.getMinutes() * 60 + istDate.getSeconds() + istDate.getMilliseconds() / 1000;
+    }
+
+    (function initClock() {
+      const istSec = getCurrentISTSeconds();
+      if (istSec >= 6 * 3600 && istSec <= 22.8 * 3600) {
+        state.simSecondsFromMidnight = istSec;
+        state.isLiveIST = true;
+      } else {
+        state.simSecondsFromMidnight = 17 * 3600 + 15 * 60;
+        state.isLiveIST = false;
+      }
+    })();
+
+    function formatClockHMS(totalSeconds) {
+      const sec = Math.floor(((totalSeconds % 86400) + 86400) % 86400);
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+
+    function formatMinutesAMPM(totalMinutes) {
+      const sec = Math.round(totalMinutes * 60);
+      const norm = ((sec % 86400) + 86400) % 86400;
+      const h24 = Math.floor(norm / 3600);
+      const m = Math.floor((norm % 3600) / 60);
+      const period = h24 >= 12 ? 'PM' : 'AM';
+      const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+      return `${h12}:${String(m).padStart(2, '0')} ${period}`;
+    }
+
+    function computeBearingDeg(lat1, lng1, lat2, lng2) {
+      const dLat = lat2 - lat1;
+      const dLng = (lng2 - lng1) * Math.cos((lat1 * Math.PI) / 180);
+      return Math.atan2(-dLat, dLng) * (180 / Math.PI);
+    }
+
+    // Compute Exact Kinematics
+    function computeActiveTrainsAtTime(tMin) {
+      const active = [];
+
+      for (const trip of ALL_DAILY_TRIPS) {
+        if (tMin < trip.startMin || tMin > trip.endMin) continue;
+
+        const elapsedMin = tMin - trip.startMin;
+        let prevStationIdx = 0;
+        let nextStationIdx = 1;
+        let segmentProgress = 0;
+        let isDwelling = false;
+        let etaToNextSeconds = 0;
+        let currentLat = STATIONS[0].lat;
+        let currentLng = STATIONS[0].lng;
+        let angleDeg = 0;
+
+        if (trip.direction === 'south') {
+          for (let i = 0; i < STATIONS.length - 1; i++) {
+            const tA = STATIONS[i].minFromAluva;
+            const tB = STATIONS[i + 1].minFromAluva;
+            if (elapsedMin >= tA && elapsedMin <= tB) {
+              prevStationIdx = i;
+              nextStationIdx = i + 1;
+              const segDur = tB - tA;
+              const intoSeg = elapsedMin - tA;
+
+              if (intoSeg <= DWELL_MINUTES && i > 0) {
+                isDwelling = true;
+                segmentProgress = 0;
+              } else {
+                const moveTime = Math.max(0, intoSeg - (i > 0 ? DWELL_MINUTES : 0));
+                const availMove = Math.max(0.2, segDur - (i > 0 ? DWELL_MINUTES : 0));
+                segmentProgress = Math.min(1, moveTime / availMove);
+              }
+              etaToNextSeconds = Math.max(1, Math.round((tB - elapsedMin) * 60));
+              currentLat = STATIONS[i].lat + (STATIONS[i + 1].lat - STATIONS[i].lat) * segmentProgress;
+              currentLng = STATIONS[i].lng + (STATIONS[i + 1].lng - STATIONS[i].lng) * segmentProgress;
+              angleDeg = computeBearingDeg(STATIONS[i].lat, STATIONS[i].lng, STATIONS[i + 1].lat, STATIONS[i + 1].lng);
+              break;
+            }
+          }
+        } else {
+          for (let i = STATIONS.length - 1; i > 0; i--) {
+            const tA = TOTAL_TRIP_MINUTES - STATIONS[i].minFromAluva;
+            const tB = TOTAL_TRIP_MINUTES - STATIONS[i - 1].minFromAluva;
+            if (elapsedMin >= tA && elapsedMin <= tB) {
+              prevStationIdx = i;
+              nextStationIdx = i - 1;
+              const segDur = tB - tA;
+              const intoSeg = elapsedMin - tA;
+
+              if (intoSeg <= DWELL_MINUTES && i < STATIONS.length - 1) {
+                isDwelling = true;
+                segmentProgress = 0;
+              } else {
+                const moveTime = Math.max(0, intoSeg - (i < STATIONS.length - 1 ? DWELL_MINUTES : 0));
+                const availMove = Math.max(0.2, segDur - (i < STATIONS.length - 1 ? DWELL_MINUTES : 0));
+                segmentProgress = Math.min(1, moveTime / availMove);
+              }
+              etaToNextSeconds = Math.max(1, Math.round((tB - elapsedMin) * 60));
+              currentLat = STATIONS[i].lat + (STATIONS[i - 1].lat - STATIONS[i].lat) * segmentProgress;
+              currentLng = STATIONS[i].lng + (STATIONS[i - 1].lng - STATIONS[i].lng) * segmentProgress;
+              angleDeg = computeBearingDeg(STATIONS[i].lat, STATIONS[i].lng, STATIONS[i - 1].lat, STATIONS[i - 1].lng);
+              break;
+            }
+          }
+        }
+
+        let speedKmh = 0;
+        if (!isDwelling) {
+          speedKmh = Math.round(32 + 30 * Math.sin(Math.PI * Math.min(0.95, Math.max(0.08, segmentProgress))));
+        }
+
+        const schematicFloatIdx = prevStationIdx + (nextStationIdx - prevStationIdx) * segmentProgress;
+
+        active.push({
+          ...trip,
+          prevStationIdx,
+          nextStationIdx,
+          prevStation: STATIONS[prevStationIdx],
+          nextStation: STATIONS[nextStationIdx],
+          segmentProgress,
+          isDwelling,
+          etaToNextSeconds,
+          speedKmh,
+          lat: currentLat,
+          lng: currentLng,
+          angleDeg,
+          schematicFloatIdx
+        });
+      }
+
+      return active;
+    }
+
+    // ============================================================================
+    // 3. LIVE VIADUCT CAM — CANVAS WITH KERALA PALMS & ALSTOM METROPOLIS
+    // ============================================================================
+    function drawViaductScene(selectedTrain, dtSec) {
+      const canvas = document.getElementById('viaductCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+
+      if (canvas.width !== Math.floor(rect.width * dpr) || canvas.height !== Math.floor(rect.height * dpr)) {
+        canvas.width = Math.floor(rect.width * dpr);
+        canvas.height = Math.floor(rect.height * dpr);
+      }
+      ctx.save();
+      ctx.scale(dpr, dpr);
+
+      const W = rect.width;
+      const H = rect.height;
+
+      // Update HUD Labels
+      if (selectedTrain) {
+        document.getElementById('viaductTrainTitle').textContent = `${selectedTrain.id} "${selectedTrain.rakeName}"`;
+        document.getElementById('viaductRouteCorridor').textContent = `${selectedTrain.prevStation.name} → ${selectedTrain.nextStation.name}`;
+        document.getElementById('viaductSpeedBadge').textContent = selectedTrain.isDwelling ? '0 km/h (At Platform)' : `${selectedTrain.speedKmh} km/h`;
+        document.getElementById('camPrevStation').textContent = `${selectedTrain.prevStation.name} (${selectedTrain.prevStation.ml})`;
+        document.getElementById('camNextStation').textContent = `${selectedTrain.nextStation.name} (${selectedTrain.nextStation.ml})`;
+
+        const doorBadge = document.getElementById('camDoorStatusBadge');
+        if (selectedTrain.isDwelling) {
+          doorBadge.textContent = `AT ${selectedTrain.prevStation.name.toUpperCase()} • DOORS OPEN`;
+          doorBadge.className = 'bg-amber-950/80 backdrop-blur-md border border-amber-400/60 rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-amber-300 shadow-lg';
+        } else {
+          doorBadge.textContent = `IN TRANSIT • ${selectedTrain.speedKmh} KM/H`;
+          doorBadge.className = 'bg-black/60 backdrop-blur-md border border-emerald-400/40 rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-emerald-300 shadow-lg';
+        }
+      }
+
+      // Kinematic Parallax Scroll
+      const speedPxPerSec = selectedTrain
+        ? (selectedTrain.isDwelling ? 0 : (selectedTrain.speedKmh * 3.4) * (state.speedMultiplier > 1 ? 2 : 1))
+        : 60;
+      if (!state.isPaused) {
+        state.viaductScrollOffset = (state.viaductScrollOffset + speedPxPerSec * dtSec) % 2400;
+      }
+      const scroll = state.viaductScrollOffset;
+      const dirSign = (selectedTrain && selectedTrain.direction === 'north') ? -1 : 1;
+
+      // 1. Sky Gradient (Warm Cochin Twilight / Clear Azure)
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+      skyGrad.addColorStop(0, '#09152b');
+      skyGrad.addColorStop(0.55, '#0e2547');
+      skyGrad.addColorStop(1, '#153966');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, W, H);
+
+      // 2. Parallax Layer: Coconut Palm Silhouettes & Distant Vembanad Horizon
+      ctx.fillStyle = 'rgba(12, 33, 58, 0.65)';
+      const palmStep = 130;
+      const palmOffset = ((scroll * 0.15 * dirSign) % palmStep + palmStep) % palmStep;
+      for (let x = -palmStep; x < W + palmStep; x += palmStep) {
+        const px = x - palmOffset;
+        ctx.beginPath();
+        ctx.arc(px + 45, H - 90, 26, Math.PI, 0);
+        ctx.fill();
+        ctx.fillRect(px + 42, H - 90, 6, 45);
+      }
+
+      // 3. Elevated Metro Station Canopy (Rendered when approaching or dwelling)
+      const segPct = selectedTrain ? selectedTrain.segmentProgress : 0.5;
+      if (selectedTrain && (selectedTrain.isDwelling || segPct < 0.12 || segPct > 0.88)) {
+        const stName = (selectedTrain.isDwelling || segPct < 0.5)
+          ? `${selectedTrain.prevStation.name.toUpperCase()} • ${selectedTrain.prevStation.ml}`
+          : `${selectedTrain.nextStation.name.toUpperCase()} • ${selectedTrain.nextStation.ml}`;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillRect(W * 0.12, H - 130, W * 0.76, 75);
+        ctx.strokeStyle = '#06b6d4';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(W * 0.12, H - 130, W * 0.76, 75);
+
+        ctx.fillStyle = '#1f5eff';
+        ctx.fillRect(W * 0.28, H - 124, W * 0.44, 22);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(stName, W * 0.5, H - 108);
+      }
+
+      // 4. Concrete Viaduct Piers with Vertical Green Gardens
+      const pillarSpacing = 190;
+      const pOffset = ((scroll * dirSign) % pillarSpacing + pillarSpacing) % pillarSpacing;
+      const deckY = H - 58;
+
+      for (let x = -pillarSpacing; x < W + pillarSpacing; x += pillarSpacing) {
+        const px = x - pOffset;
+        // Concrete Column
+        ctx.fillStyle = '#334155';
+        ctx.fillRect(px - 15, deckY + 12, 30, H - deckY);
+        // Pier Cap
+        ctx.fillStyle = '#475569';
+        ctx.beginPath();
+        ctx.moveTo(px - 32, deckY + 4);
+        ctx.lineTo(px + 32, deckY + 4);
+        ctx.lineTo(px + 18, deckY + 16);
+        ctx.lineTo(px - 18, deckY + 16);
+        ctx.closePath();
+        ctx.fill();
+        // KMRL Vertical Garden (Pillar Greenery)
+        ctx.fillStyle = '#10b981';
+        ctx.fillRect(px - 10, deckY + 20, 20, H - deckY - 24);
+        ctx.fillStyle = '#059669';
+        ctx.fillRect(px - 10, deckY + 28, 20, 6);
+        ctx.fillRect(px - 10, deckY + 42, 20, 6);
+      }
+
+      // 5. Viaduct Girder Deck & Parapet
+      ctx.fillStyle = '#64748b';
+      ctx.fillRect(0, deckY - 4, W, 12);
+      ctx.fillStyle = '#00d2ff'; // Vibrant cyan track stripe
+      ctx.fillRect(0, deckY + 2, W, 3);
+
+      // 6. Draw 3-Coach Alstom Metropolis Trainset
+      const coachW = Math.min(160, Math.max(110, (W - 100) / 3));
+      const coachH = 38;
+      const gap = 6;
+      const totalTrainW = coachW * 3 + gap * 2;
+      const startX = (W - totalTrainW) / 2;
+      const trainY = deckY - coachH - 4;
+
+      const bounce = (selectedTrain && !selectedTrain.isDwelling && !state.isPaused)
+        ? Math.sin(Date.now() / 90) * 0.9
+        : 0;
+
+      for (let c = 0; c < 3; c++) {
+        const cx = startX + c * (coachW + gap);
+        const cy = trainY + bounce;
+
+        // Gangway bellows
+        if (c < 2) {
+          ctx.fillStyle = '#1e293b';
+          ctx.fillRect(cx + coachW, cy + 5, gap, coachH - 8);
+        }
+
+        // Bogies & Steel Wheels
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx + 16, deckY - 8, 28, 6);
+        ctx.fillRect(cx + coachW - 44, deckY - 8, 28, 6);
+
+        // Coach Metallic Body
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        const rLeft = (c === 0) ? 14 : 3;
+        const rRight = (c === 2) ? 14 : 3;
+        ctx.roundRect(cx, cy, coachW, coachH, [rLeft, rRight, 2, 2]);
+        ctx.fill();
+
+        // KMRL Livery Bands (Cyan Roof + Lime Accent)
+        ctx.fillStyle = '#06b6d4';
+        ctx.fillRect(cx + 2, cy + 2, coachW - 4, 5);
+        ctx.fillStyle = '#0891b2';
+        ctx.fillRect(cx + 2, cy + coachH - 9, coachW - 4, 7);
+        ctx.fillStyle = '#84cc16';
+        ctx.fillRect(cx + 2, cy + coachH - 12, coachW - 4, 2.5);
+
+        // Doors & Passenger Windows
+        const isDoorsOpen = selectedTrain && selectedTrain.isDwelling;
+        const doorPositions = [0.24, 0.72];
+
+        doorPositions.forEach(dp => {
+          const dx = cx + coachW * dp - 10;
+          if (isDoorsOpen) {
+            ctx.fillStyle = '#fef08a';
+            ctx.fillRect(dx, cy + 9, 20, coachH - 16);
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(dx, cy + 9, 20, coachH - 16);
+          } else {
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(dx, cy + 9, 20, coachH - 16);
+            ctx.fillStyle = '#bae6fd';
+            ctx.fillRect(dx + 2, cy + 11, 7, 12);
+            ctx.fillRect(dx + 11, cy + 11, 7, 12);
+          }
+        });
+
+        // Center Panoramic Windows
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(cx + coachW * 0.40, cy + 11, coachW * 0.22, 13);
+        ctx.fillStyle = 'rgba(186, 230, 253, 0.85)';
+        ctx.fillRect(cx + coachW * 0.41, cy + 12, coachW * 0.20, 11);
+      }
+
+      // 7. Headlight Beam
+      const headingRight = !selectedTrain || selectedTrain.direction === 'south';
+      const beamX = headingRight ? (startX + totalTrainW) : startX;
+      const beamGrad = ctx.createLinearGradient(beamX, 0, beamX + (headingRight ? 110 : -110), 0);
+      beamGrad.addColorStop(0, 'rgba(254, 240, 138, 0.8)');
+      beamGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
+      ctx.fillStyle = beamGrad;
+      ctx.beginPath();
+      ctx.moveTo(beamX, trainY + coachH - 10);
+      ctx.lineTo(beamX + (headingRight ? 110 : -110), trainY + coachH - 28);
+      ctx.lineTo(beamX + (headingRight ? 110 : -110), trainY + coachH + 6);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // ============================================================================
+    // 4. LEAFLET & REAL GOOGLE MAPS CORRIDOR VIEW
+    // ============================================================================
+    let map = null;
+    let tileLayer = null;
+    let baseCorridorLine = null;
+    let highlightedRouteLine = null;
+    const stationMarkers = [];
+    const trainMarkersMap = new Map();
+
+    const MAP_TILES = {
+      google_streets: {
+        url: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+        attr: 'Map data &copy; Google Maps Kochi'
+      },
+      google_hybrid: {
+        url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+        attr: 'Satellite &copy; Google Maps Kochi'
+      },
+      google_terrain: {
+        url: 'https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',
+        attr: 'Terrain &copy; Google Maps Kochi'
+      },
+      dark_radar: {
+        url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+        attr: '&copy; OpenStreetMap &copy; CARTO'
+      }
+    };
+
+    function initLeafletMap() {
+      map = L.map('kochiMetroMap', {
+        center: [10.018, 76.312],
+        zoom: 12,
+        zoomControl: true
+      });
+
+      tileLayer = L.tileLayer(MAP_TILES.google_streets.url, {
+        attribution: MAP_TILES.google_streets.attr,
+        maxZoom: 20
+      }).addTo(map);
+
+      const fullCoords = STATIONS.map(s => [s.lat, s.lng]);
+
+      // Viaduct Track Shadow & Core Line
+      L.polyline(fullCoords, {
+        color: '#0f172a',
+        weight: 9,
+        opacity: 0.7,
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(map);
+
+      baseCorridorLine = L.polyline(fullCoords, {
+        color: '#00b4d8',
+        weight: 5,
+        opacity: 0.95,
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(map);
+
+      // Route Planner Highlight Line
+      highlightedRouteLine = L.polyline([], {
+        color: '#f59e0b',
+        weight: 7,
+        opacity: 0.95,
+        dashArray: '10, 7',
+        lineCap: 'round'
+      }).addTo(map);
+
+      // Add Station Pins
+      STATIONS.forEach((st, idx) => {
+        const isTerminal = (idx === 0 || idx === STATIONS.length - 1);
+        const sz = isTerminal ? 20 : 14;
+        const markerHtml = `
+          <div class="group relative flex items-center justify-center" style="width:${sz}px;height:${sz}px;">
+            <span class="w-full h-full rounded-full ${isTerminal ? 'bg-cyan-500 border-2 border-slate-950 ring-4 ring-cyan-500/40' : 'bg-white border-[3px] border-sky-600 shadow-md'} flex items-center justify-center transition-transform group-hover:scale-125">
+              ${isTerminal ? '<span class="w-2 h-2 rounded-full bg-slate-950"></span>' : ''}
+            </span>
+          </div>
+        `;
+        const icon = L.divIcon({
+          html: markerHtml,
+          className: 'custom-station-pin',
+          iconSize: [sz, sz],
+          iconAnchor: [sz / 2, sz / 2]
+        });
+
+        const m = L.marker([st.lat, st.lng], { icon }).addTo(map);
+
+        m.bindTooltip(`${st.id}. ${st.name}`, {
+          permanent: state.showStationLabels && (isTerminal || idx % 2 === 0),
+          direction: 'right',
+          offset: [9, 0],
+          className: 'station-tooltip-dc'
+        });
+
+        m.on('click', () => {
+          selectStationForInspection(idx, true);
+        });
+
+        stationMarkers.push(m);
+      });
+
+      updateHighlightedRouteOnMap();
+    }
+
+    function setMapLayerMode(mode) {
+      state.mapLayerMode = mode;
+      const spec = MAP_TILES[mode] || MAP_TILES.google_streets;
+      if (tileLayer) {
+        tileLayer.setUrl(spec.url);
+      }
+
+      const bStreets = document.getElementById('btnLayerGoogleStreets');
+      const bHybrid = document.getElementById('btnLayerGoogleHybrid');
+      const bTerrain = document.getElementById('btnLayerGoogleTerrain');
+      const bTheme = document.getElementById('btnToggleMapTheme');
+
+      [bStreets, bHybrid, bTerrain, bTheme].forEach(b => {
+        b.className = 'px-3 py-1 rounded-lg text-[var(--ink2)] hover:text-[var(--ink)] transition';
+      });
+
+      if (mode === 'google_streets') {
+        bStreets.className = 'px-3 py-1 rounded-lg bg-[var(--primary)] text-white shadow-xs transition';
+        document.getElementById('mapThemeText').textContent = 'Dark Map';
+      } else if (mode === 'google_hybrid') {
+        bHybrid.className = 'px-3 py-1 rounded-lg bg-[var(--primary)] text-white shadow-xs transition';
+        document.getElementById('mapThemeText').textContent = 'Dark Map';
+      } else if (mode === 'google_terrain') {
+        bTerrain.className = 'px-3 py-1 rounded-lg bg-[var(--primary)] text-white shadow-xs transition';
+        document.getElementById('mapThemeText').textContent = 'Dark Map';
+      } else {
+        bTheme.className = 'px-3 py-1 rounded-lg bg-[var(--primary)] text-white shadow-xs transition';
+        document.getElementById('mapThemeText').textContent = 'Light Map';
+      }
+    }
+
+    function updateHighlightedRouteOnMap() {
+      if (!highlightedRouteLine) return;
+      const a = Math.min(state.fromStationIdx, state.toStationIdx);
+      const b = Math.max(state.fromStationIdx, state.toStationIdx);
+      if (a === b) {
+        highlightedRouteLine.setLatLngs([]);
+        return;
+      }
+      const segmentCoords = STATIONS.slice(a, b + 1).map(s => [s.lat, s.lng]);
+      highlightedRouteLine.setLatLngs(segmentCoords);
+    }
+
+    function buildTrainMarkerHtml(train, isSelected) {
+      const bodyColor = isSelected
+        ? '#d946ef'
+        : train.isDwelling
+          ? '#f59e0b'
+          : (train.direction === 'south' ? '#06b6d4' : '#10b981');
+
+      const badgeBg = isSelected
+        ? 'bg-fuchsia-600 text-white ring-2 ring-fuchsia-300'
+        : train.isDwelling
+          ? 'bg-amber-500 text-slate-950 font-bold'
+          : (train.direction === 'south' ? 'bg-slate-950/95 text-cyan-300 border-cyan-400' : 'bg-slate-950/95 text-emerald-300 border-emerald-400');
+
+      const dirArrow = train.direction === 'south' ? '▼' : '▲';
+      const speedLabel = train.isDwelling ? 'STOP' : `${train.speedKmh}km/h`;
+
+      return `
+        <div class="relative flex flex-col items-center justify-center pointer-events-auto" style="width:84px;height:52px;">
+          <div class="px-1.5 py-0.5 rounded-md border shadow-md font-mono text-[9px] font-extrabold whitespace-nowrap leading-none mb-1 ${badgeBg}">
+            ${dirArrow} ${train.id} • ${speedLabel}
+          </div>
+          <div class="relative flex items-center justify-center" style="transform: rotate(${train.angleDeg.toFixed(1)}deg);">
+            <svg width="56" height="18" viewBox="0 0 56 18" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_3px_6px_rgba(0,0,0,0.65)]">
+              <polygon points="48,3 56,0 56,18 48,15" fill="rgba(254,240,138,0.7)" />
+              <rect x="2" y="3" width="13" height="12" rx="3" fill="#f8fafc" stroke="#0f172a" stroke-width="1.5"/>
+              <rect x="4" y="5" width="9" height="8" rx="1" fill="${bodyColor}"/>
+              <rect x="17" y="3" width="13" height="12" rx="2" fill="#f8fafc" stroke="#0f172a" stroke-width="1.5"/>
+              <rect x="19" y="5" width="9" height="8" rx="1" fill="${bodyColor}"/>
+              <path d="M32 3 H44 C47.5 3 49.5 5.5 49.5 9 C49.5 12.5 47.5 15 44 15 H32 V3 Z" fill="#f8fafc" stroke="#0f172a" stroke-width="1.5"/>
+              <rect x="34" y="5" width="9" height="8" rx="1" fill="${bodyColor}"/>
+              <path d="M44 5.5 C46 5.5 47.2 7 47.2 9 C47.2 11 46 12.5 44 12.5 Z" fill="#0f172a"/>
+            </svg>
+          </div>
+        </div>
+      `;
+    }
+
+    function syncTrainMarkersOnMap(trains) {
+      if (!map) return;
+      const filteredIds = new Set();
+
+      trains.forEach(train => {
+        if (state.directionFilter !== 'all' && train.direction !== state.directionFilter) return;
+        filteredIds.add(train.id);
+
+        const isSelected = (train.id === state.selectedTrainId);
+        const signature = `${isSelected}_${train.isDwelling}_${train.speedKmh}_${Math.round(train.angleDeg / 3)}`;
+
+        if (trainMarkersMap.has(train.id)) {
+          const entry = trainMarkersMap.get(train.id);
+          entry.marker.setLatLng([train.lat, train.lng]);
+          entry.marker.setZIndexOffset(isSelected ? 1000 : 500);
+          if (entry.signature !== signature) {
+            entry.signature = signature;
+            entry.marker.setIcon(L.divIcon({
+              html: buildTrainMarkerHtml(train, isSelected),
+              className: 'custom-3coach-train-marker',
+              iconSize: [84, 52],
+              iconAnchor: [42, 32]
+            }));
+          }
+        } else {
+          const icon = L.divIcon({
+            html: buildTrainMarkerHtml(train, isSelected),
+            className: 'custom-3coach-train-marker',
+            iconSize: [84, 52],
+            iconAnchor: [42, 32]
+          });
+          const marker = L.marker([train.lat, train.lng], { icon, zIndexOffset: isSelected ? 1000 : 500 }).addTo(map);
+
+          marker.on('click', () => {
+            selectTrain(train.id, true);
+          });
+          trainMarkersMap.set(train.id, { marker, signature });
+        }
+      });
+
+      for (const [id, entry] of trainMarkersMap.entries()) {
+        if (!filteredIds.has(id)) {
+          map.removeLayer(entry.marker);
+          trainMarkersMap.delete(id);
+        }
+      }
+
+      if (state.followSelectedTrain && state.selectedTrainId) {
+        const sel = trains.find(t => t.id === state.selectedTrainId);
+        if (sel) {
+          map.panTo([sel.lat, sel.lng], { animate: false });
+        }
+      }
+    }
+
+    function openGoogleMapsSpotEmbed(lat, lng, titleText) {
+      const modal = document.getElementById('googleMapsEmbedModal');
+      const iframe = document.getElementById('gmapIframe');
+      const titleEl = document.getElementById('gmapEmbedTitle');
+      const extLink = document.getElementById('gmapExternalLink');
+
+      const latStr = lat.toFixed(5);
+      const lngStr = lng.toFixed(5);
+      titleEl.textContent = titleText;
+      iframe.src = `https://maps.google.com/maps?q=${latStr},${lngStr}&hl=en&z=16&output=embed`;
+      extLink.href = `https://www.google.com/maps?q=${latStr},${lngStr}`;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    // ============================================================================
+    // 5. LINEAR DUAL-TRACK SCHEMATIC RENDERING
+    // ============================================================================
+    function renderSchematicDiagram(trains) {
+      const container = document.getElementById('schematicContainer');
+      if (!container) return;
+
+      const minIdx = Math.min(state.fromStationIdx, state.toStationIdx);
+      const maxIdx = Math.max(state.fromStationIdx, state.toStationIdx);
+      const pctOf = (floatIdx) => ((floatIdx / (STATIONS.length - 1)) * 94 + 3).toFixed(2);
+
+      const routeStartPct = pctOf(minIdx);
+      const routeWidthPct = (parseFloat(pctOf(maxIdx)) - parseFloat(routeStartPct)).toFixed(2);
+
+      const stationsHtml = STATIONS.map((st, idx) => {
+        const leftPct = pctOf(idx);
+        const isInSelectedRoute = (idx >= minIdx && idx <= maxIdx && minIdx !== maxIdx);
+        const isInspected = (idx === state.inspectedStationIdx);
+
+        const dotClass = isInspected
+          ? 'w-4 h-4 bg-amber-400 border-2 border-white ring-4 ring-amber-400/30'
+          : isInSelectedRoute
+            ? 'w-3.5 h-3.5 bg-[var(--primary)] border-2 border-white'
+            : 'w-3 h-3 bg-[var(--card-bg)] border-2 border-[var(--ink3)] hover:border-[var(--primary)]';
+
+        return `
+          <button type="button" data-station-idx="${idx}"
+            style="left: ${leftPct}%"
+            class="schematic-station-btn group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center focus:outline-none z-10"
+            title="${st.id}. ${st.name} (${st.ml})">
+            <span class="rounded-full transition-all ${dotClass}"></span>
+            <span class="mt-6 text-[10px] font-semibold tracking-tight whitespace-nowrap -rotate-45 origin-top-left ${isInspected ? 'text-amber-500 font-bold' : isInSelectedRoute ? 'text-[var(--primary)] font-bold' : 'text-[var(--ink3)] group-hover:text-[var(--ink)]'}">
+              ${st.id}. ${st.name}
+            </span>
+          </button>
+        `;
+      }).join('');
+
+      const trainPillsHtml = trains.filter(t => state.directionFilter === 'all' || t.direction === state.directionFilter).map(t => {
+        const leftPct = pctOf(t.schematicFloatIdx);
+        const isSelected = (t.id === state.selectedTrainId);
+        const topPos = t.direction === 'south' ? '12px' : '76px';
+        const arrow = t.direction === 'south' ? '→' : '←';
+
+        let pillColor = t.direction === 'south'
+          ? 'bg-cyan-500 text-slate-950 font-bold'
+          : 'bg-emerald-500 text-slate-950 font-bold';
+        if (t.isDwelling) pillColor = 'bg-amber-500 text-slate-950 font-bold';
+        if (isSelected) pillColor = 'bg-fuchsia-600 text-white font-extrabold ring-2 ring-white scale-110 z-30';
+
+        return `
+          <button type="button" data-train-id="${t.id}"
+            style="left: ${leftPct}%; top: ${topPos};"
+            class="schematic-train-btn absolute -translate-x-1/2 px-2 py-0.5 rounded-full border border-white/20 font-mono text-[10px] shadow-sm hover:scale-110 z-20 ${pillColor}"
+            title="${t.id} (${t.rakeName})">
+            ${t.id} ${arrow}
+          </button>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <div class="relative h-36">
+          <div class="absolute left-1 top-0 text-[10px] font-mono font-bold text-cyan-600 dark:text-cyan-400 uppercase">Down Line (Aluva → Thrippunithura)</div>
+          <div class="absolute left-1 top-[96px] text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400 uppercase">Up Line (Thrippunithura → Aluva)</div>
+          <div class="absolute left-[3%] right-[3%] top-[22px] h-1 bg-cyan-500/20 rounded-full"></div>
+          <div class="absolute left-[3%] right-[3%] top-[86px] h-1 bg-emerald-500/20 rounded-full"></div>
+          <div class="absolute left-[3%] right-[3%] top-1/2 -translate-y-1/2 h-1.5 bg-[var(--border-strong)] rounded-full"></div>
+          ${minIdx !== maxIdx ? `<div style="left:${routeStartPct}%; width:${routeWidthPct}%;" class="absolute top-1/2 -translate-y-1/2 h-2 bg-[var(--primary)] rounded-full opacity-80"></div>` : ''}
+          <div class="absolute inset-0">${stationsHtml}</div>
+          <div class="absolute inset-0">${trainPillsHtml}</div>
+        </div>
+      `;
+
+      container.querySelectorAll('.schematic-station-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.getAttribute('data-station-idx'), 10);
+          selectStationForInspection(idx, true);
+        });
+      });
+
+      container.querySelectorAll('.schematic-train-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-train-id');
+          selectTrain(id, true);
+        });
+      });
+    }
+
+    // ============================================================================
+    // 6. SIDEBAR DOM SYNCHRONIZATION
+    // ============================================================================
+    function renderSelectedTrainTelemetry(trains) {
+      if (!trains.length) {
+        document.getElementById('selTrainBadge').textContent = 'OFF-PEAK';
+        document.getElementById('selTrainName').textContent = 'Night Stabling Window';
+        document.getElementById('selTrainDirection').textContent = 'Commercial runs operate 06:00 AM – 10:30 PM IST';
+        document.getElementById('selTrainStatusPill').textContent = 'In Muttom Yard';
+        document.getElementById('ticketEtaBig').textContent = '--:--';
+        return;
+      }
+
+      let sel = trains.find(t => t.id === state.selectedTrainId);
+      if (!sel) {
+        sel = trains[0];
+        state.selectedTrainId = sel.id;
+      }
+
+      document.getElementById('selTrainBadge').textContent = sel.id;
+      document.getElementById('selTrainName').textContent = `Alstom Metropolis "${sel.rakeName}"`;
+      document.getElementById('selTrainDirection').textContent =
+        sel.direction === 'south'
+          ? 'Southbound → Towards Thrippunithura'
+          : 'Northbound → Towards Aluva';
+
+      const statusPill = document.getElementById('selTrainStatusPill');
+      if (sel.isDwelling) {
+        statusPill.textContent = `At ${sel.prevStation.name}`;
+        statusPill.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30';
+      } else {
+        statusPill.textContent = 'In Transit';
+        statusPill.className = 'text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300 border border-emerald-400/30';
+      }
+
+      document.getElementById('selTrainPrevStation').textContent = sel.prevStation.name;
+      document.getElementById('selTrainNextStation').textContent = sel.nextStation.name;
+      document.getElementById('selTrainSpeed').textContent = sel.isDwelling ? '0 km/h (At Platform)' : `${sel.speedKmh} km/h`;
+
+      const pct = Math.round(sel.segmentProgress * 100);
+      document.getElementById('selTrainProgressBar').style.width = `${pct}%`;
+
+      const segNum = sel.direction === 'south' ? sel.prevStationIdx + 1 : (STATIONS.length - 1 - sel.prevStationIdx + 1);
+      document.getElementById('selTrainSegmentInfo').textContent = `Stop ${segNum} of 24 (${pct}%)`;
+      document.getElementById('selTrainEtaNext').textContent = sel.isDwelling ? 'Boarding Passengers' : `ETA: ${sel.etaToNextSeconds}s`;
+      document.getElementById('ticketEtaBig').textContent = sel.isDwelling ? '0:00' : `0:${String(sel.etaToNextSeconds).padStart(2, '0')}`;
+      document.getElementById('ticketPlatform').textContent = sel.direction === 'south' ? 'PF 2' : 'PF 1';
+      document.getElementById('selTrainCoordsText').textContent = `${sel.lat.toFixed(4)}°N, ${sel.lng.toFixed(4)}°E`;
+
+      // Upcoming arrivals list
+      const upcoming = [];
+      if (sel.direction === 'south') {
+        for (let i = sel.nextStationIdx; i < STATIONS.length; i++) {
+          const arrMin = sel.startMin + STATIONS[i].minFromAluva;
+          upcoming.push({ st: STATIONS[i], arrMin });
+        }
+      } else {
+        for (let i = sel.nextStationIdx; i >= 0; i--) {
+          const arrMin = sel.startMin + (TOTAL_TRIP_MINUTES - STATIONS[i].minFromAluva);
+          upcoming.push({ st: STATIONS[i], arrMin });
+        }
+      }
+
+      const upcomingContainer = document.getElementById('selTrainUpcomingList');
+      upcomingContainer.innerHTML = upcoming.map((u, idx) => `
+        <div class="flex items-center justify-between py-1.5 px-2.5 rounded-xl ${idx === 0 ? 'bg-[var(--primary)]/10 text-[var(--ink)] font-bold border border-[var(--primary)]/30' : 'bg-[var(--surface)] text-[var(--ink2)]'}">
+          <div class="flex items-center gap-2 truncate">
+            <span class="w-1.5 h-1.5 rounded-full ${idx === 0 ? 'bg-[var(--primary)] animate-ping' : 'bg-[var(--ink3)]'}"></span>
+            <span class="truncate">${u.st.id}. ${u.st.name}</span>
+            <span class="text-[11px] text-[var(--ink3)] font-malayalam hidden sm:inline">${u.st.ml}</span>
+          </div>
+          <span class="font-mono text-xs ${idx === 0 ? 'text-[var(--primary)] font-bold' : 'text-[var(--ink3)]'}">${formatMinutesAMPM(u.arrMin)}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderActiveTrainsRoster(trains) {
+      const container = document.getElementById('activeTrainsListContainer');
+      const filtered = trains.filter(t => state.directionFilter === 'all' || t.direction === state.directionFilter);
+
+      if (!filtered.length) {
+        container.innerHTML = `
+          <div class="p-4 rounded-xl bg-[var(--surface)] border border-[var(--border-color)] text-center text-xs text-[var(--ink3)]">
+            No active trainsets match the selected filter.
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(t => {
+        const isSelected = (t.id === state.selectedTrainId);
+        const dirBadge = t.direction === 'south'
+          ? `<span class="px-2 py-0.5 rounded-md bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 font-mono text-[10px] font-bold">→ TPHT</span>`
+          : `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-mono text-[10px] font-bold">→ ALVA</span>`;
+
+        const statusText = t.isDwelling
+          ? `<span class="text-amber-600 dark:text-amber-400 font-bold">At ${t.prevStation.name} (Platform)</span>`
+          : `<span class="text-[var(--ink2)] font-medium">${t.prevStation.name} → <strong class="text-[var(--ink)]">${t.nextStation.name}</strong></span>`;
+
+        return `
+          <button type="button" data-roster-train-id="${t.id}"
+            class="roster-train-item w-full text-left p-3 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+              isSelected
+                ? 'bg-[var(--primary)]/10 border-[var(--primary)] ring-2 ring-[var(--primary)]/30'
+                : 'bg-[var(--surface)] border-[var(--border-color)] hover:border-[var(--primary)] hover:bg-[var(--card-bg)]'
+            }">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-xs font-extrabold text-[var(--ink)]">${t.id}</span>
+                <span class="text-xs text-[var(--ink3)] font-medium">"${t.rakeName}"</span>
+                ${dirBadge}
+              </div>
+              <div class="text-xs mt-1 truncate">
+                ${statusText}
+              </div>
+            </div>
+            <div class="text-right shrink-0">
+              <span class="font-mono text-xs font-bold ${t.isDwelling ? 'text-amber-600 dark:text-amber-400' : 'text-[var(--primary)]'} block">
+                ${t.isDwelling ? 'BOARDING' : t.etaToNextSeconds + 's ETA'}
+              </span>
+              <span class="text-[10px] text-[var(--ink3)] font-mono">${t.speedKmh} km/h</span>
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.roster-train-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-roster-train-id');
+          selectTrain(id, true);
+        });
+      });
+    }
+
+    function updatePlannerAndSchedules() {
+      const fromIdx = state.fromStationIdx;
+      const toIdx = state.toStationIdx;
+      const fromSt = STATIONS[fromIdx];
+      const toSt = STATIONS[toIdx];
+
+      const fare = calculateFare(fromIdx, toIdx);
+      const cardFare = Math.round(fare * 0.9);
+      const dist = Math.abs(toSt.km - fromSt.km).toFixed(1);
+      const stopsCount = Math.abs(toIdx - fromIdx);
+      const durationMins = Math.max(0, Math.round(Math.abs(toSt.minFromAluva - fromSt.minFromAluva)));
+      const direction = toIdx >= fromIdx ? 'south' : 'north';
+
+      document.getElementById('routeFareDisplay').textContent = `₹${fare}`;
+      document.getElementById('routeSmartCardFare').textContent = `Card: ₹${cardFare} (-10%)`;
+      document.getElementById('routeDurationDisplay').textContent = `${durationMins} Mins`;
+      document.getElementById('routeStopsCount').textContent = `${stopsCount} ${stopsCount === 1 ? 'Station' : 'Stations'}`;
+      document.getElementById('routeDistanceDisplay').textContent = `${dist} km`;
+      document.getElementById('routeDirectionBadge').textContent =
+        fromIdx === toIdx ? 'Same Station' : (direction === 'south' ? '→ Thrippunithura' : '→ Aluva');
+
+      const currMin = state.simSecondsFromMidnight / 60;
+      const scheduleContainer = document.getElementById('routeSchedulesList');
+
+      if (fromIdx === toIdx) {
+        scheduleContainer.innerHTML = `
+          <div class="p-4 rounded-xl bg-[var(--surface)] text-xs text-[var(--ink3)] text-center">
+            Select two different stations to calculate schedule departures.
+          </div>
+        `;
+        return;
+      }
+
+      const matchingTrips = ALL_DAILY_TRIPS.filter(trip => trip.direction === direction).map(trip => {
+        const depOffset = direction === 'south'
+          ? fromSt.minFromAluva
+          : (TOTAL_TRIP_MINUTES - fromSt.minFromAluva);
+        const arrOffset = direction === 'south'
+          ? toSt.minFromAluva
+          : (TOTAL_TRIP_MINUTES - toSt.minFromAluva);
+        return {
+          ...trip,
+          depMin: trip.startMin + depOffset,
+          arrMin: trip.startMin + arrOffset
+        };
+      }).filter(t => t.depMin >= currMin - 0.5).slice(0, 6);
+
+      if (!matchingTrips.length) {
+        scheduleContainer.innerHTML = `
+          <div class="p-4 rounded-xl bg-[var(--surface)] text-xs text-[var(--ink3)] text-center">
+            Service ended for today (KMRL service runs 06:00 AM – 10:30 PM).
+          </div>
+        `;
+        return;
+      }
+
+      scheduleContainer.innerHTML = matchingTrips.map((t, i) => {
+        const waitMins = Math.max(0, Math.round(t.depMin - currMin));
+        const waitBadge = waitMins === 0 ? 'Due Now' : `In ${waitMins} min`;
+        return `
+          <div class="flex items-center justify-between p-3 rounded-2xl bg-[var(--surface)] border ${i === 0 ? 'border-[var(--primary)] ring-1 ring-[var(--primary)]/20' : 'border-[var(--border-color)]'}">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-xs font-bold text-[var(--ink)]">${formatMinutesAMPM(t.depMin)} – ${formatMinutesAMPM(t.arrMin)}</span>
+                <span class="px-2 py-0.5 rounded-md bg-[var(--primary)]/10 text-[var(--primary)] font-mono text-[10px] font-bold">${waitBadge}</span>
+              </div>
+              <div class="text-xs text-[var(--ink3)] mt-0.5">
+                Train <strong class="text-[var(--ink)] font-mono">${t.id}</strong> ("${t.rakeName}") • ${durationMins} Mins duration
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="font-mono text-sm font-extrabold text-emerald-600 dark:text-emerald-400">₹${fare}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function updateStationInspectorBoard() {
+      const idx = state.inspectedStationIdx;
+      const st = STATIONS[idx];
+      const currMin = state.simSecondsFromMidnight / 60;
+
+      document.getElementById('stationIdBadge').textContent = `ID: ${st.id} (${st.code})`;
+      document.getElementById('stInfoNameEn').textContent = st.name;
+      document.getElementById('stInfoNameLocal').textContent = `${st.ml} / ${st.hi}`;
+      document.getElementById('stInfoChainage').textContent = `${st.km.toFixed(1)} km`;
+      document.getElementById('stInfoTheme').textContent = `Theme: ${st.theme}`;
+
+      const facContainer = document.getElementById('stInfoFacilities');
+      facContainer.innerHTML = st.facilities.map(f => `
+        <span class="px-2.5 py-1 rounded-xl bg-[var(--card-bg)] border border-[var(--border-color)] text-xs font-semibold text-[var(--ink2)] shadow-xs">
+          ✓ ${f}
+        </span>
+      `).join('');
+
+      // Platform 2 Southbound
+      const sbContainer = document.getElementById('stNextSouthbound');
+      if (idx === STATIONS.length - 1) {
+        sbContainer.innerHTML = `<div class="col-span-3 text-xs text-[var(--ink3)] py-1">Terminal Station (Alighting Only)</div>`;
+      } else {
+        const nextSB = ALL_DAILY_TRIPS
+          .filter(t => t.direction === 'south')
+          .map(t => ({ ...t, arrMin: t.startMin + st.minFromAluva }))
+          .filter(t => t.arrMin >= currMin - 0.2)
+          .slice(0, 3);
+
+        sbContainer.innerHTML = nextSB.length ? nextSB.map((t, i) => {
+          const diff = Math.max(0, Math.round(t.arrMin - currMin));
+          return `
+            <div class="bg-[var(--card-bg)] rounded-xl p-2 border ${i === 0 ? 'border-[var(--primary)]' : 'border-[var(--border-color)]'}">
+              <strong class="block font-mono text-xs text-[var(--ink)]">${formatMinutesAMPM(t.arrMin)}</strong>
+              <span class="text-[10px] font-mono font-bold text-[var(--primary)]">${diff === 0 ? 'Due' : diff + ' min'}</span>
+            </div>
+          `;
+        }).join('') : `<div class="col-span-3 text-xs text-[var(--ink3)] py-1">No more services today</div>`;
+      }
+
+      // Platform 1 Northbound
+      const nbContainer = document.getElementById('stNextNorthbound');
+      if (idx === 0) {
+        nbContainer.innerHTML = `<div class="col-span-3 text-xs text-[var(--ink3)] py-1">Terminal Station (Alighting Only)</div>`;
+      } else {
+        const nextNB = ALL_DAILY_TRIPS
+          .filter(t => t.direction === 'north')
+          .map(t => ({ ...t, arrMin: t.startMin + (TOTAL_TRIP_MINUTES - st.minFromAluva) }))
+          .filter(t => t.arrMin >= currMin - 0.2)
+          .slice(0, 3);
+
+        nbContainer.innerHTML = nextNB.length ? nextNB.map((t, i) => {
+          const diff = Math.max(0, Math.round(t.arrMin - currMin));
+          return `
+            <div class="bg-[var(--card-bg)] rounded-xl p-2 border ${i === 0 ? 'border-emerald-500' : 'border-[var(--border-color)]'}">
+              <strong class="block font-mono text-xs text-[var(--ink)]">${formatMinutesAMPM(t.arrMin)}</strong>
+              <span class="text-[10px] font-mono font-bold text-emerald-600 dark:text-emerald-400">${diff === 0 ? 'Due' : diff + ' min'}</span>
+            </div>
+          `;
+        }).join('') : `<div class="col-span-3 text-xs text-[var(--ink3)] py-1">No more services today</div>`;
+      }
+    }
+
+    // ============================================================================
+    // 7. USER INTERACTIONS & EVENT BINDINGS
+    // ============================================================================
+    function switchSidebarTab(tabName) {
+      state.activeSidebarTab = tabName;
+      const tabs = [
+        { key: 'trains', btn: 'tabBtnTrains', panel: 'panelTrains' },
+        { key: 'planner', btn: 'tabBtnPlanner', panel: 'panelPlanner' },
+        { key: 'station', btn: 'tabBtnStationInfo', panel: 'panelStationInfo' }
+      ];
+
+      tabs.forEach(t => {
+        const b = document.getElementById(t.btn);
+        const p = document.getElementById(t.panel);
+        if (t.key === tabName) {
+          b.className = 'flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold bg-[var(--primary)] text-white shadow transition';
+          p.classList.remove('hidden');
+          p.classList.add('flex');
+        } else {
+          b.className = 'flex items-center justify-center gap-1.5 py-2.5 px-2 rounded-xl text-xs font-bold text-[var(--ink2)] hover:text-[var(--ink)] hover:bg-[var(--surface)] transition';
+          p.classList.add('hidden');
+          p.classList.remove('flex');
+        }
+      });
+    }
+
+    function selectTrain(trainId, panMap = false) {
+      state.selectedTrainId = trainId;
+      switchSidebarTab('trains');
+      const train = state.activeTrains.find(t => t.id === trainId);
+      if (train && panMap && map) {
+        map.flyTo([train.lat, train.lng], Math.max(map.getZoom(), 14), { duration: 0.6 });
+      }
+      updateHeavyPanels();
+    }
+
+    function selectStationForInspection(stationIdx, panMap = false) {
+      state.inspectedStationIdx = stationIdx;
+      document.getElementById('inspectorStationSelect').value = String(stationIdx);
+      switchSidebarTab('station');
+      updateStationInspectorBoard();
+      if (panMap && map) {
+        const st = STATIONS[stationIdx];
+        map.flyTo([st.lat, st.lng], Math.max(map.getZoom(), 15), { duration: 0.6 });
+      }
+      renderSchematicDiagram(state.activeTrains);
+    }
+
+    function populateStationDropdowns() {
+      const fromSel = document.getElementById('fromStationSelect');
+      const toSel = document.getElementById('toStationSelect');
+      const inspSel = document.getElementById('inspectorStationSelect');
+
+      const optionsHtml = STATIONS.map((s, idx) =>
+        `<option value="${idx}">${s.id}. ${s.name} (${s.ml})</option>`
+      ).join('');
+
+      fromSel.innerHTML = optionsHtml;
+      toSel.innerHTML = optionsHtml;
+      inspSel.innerHTML = optionsHtml;
+
+      fromSel.value = String(state.fromStationIdx);
+      toSel.value = String(state.toStationIdx);
+      inspSel.value = String(state.inspectedStationIdx);
+    }
+
+    function updateSpeedButtonsUI() {
+      const btnLive = document.getElementById('btnRealTime');
+      const b1 = document.getElementById('btnSpeed1x');
+      const b10 = document.getElementById('btnSpeed10x');
+      const b30 = document.getElementById('btnSpeed30x');
+
+      [btnLive, b1, b10, b30].forEach(b => {
+        b.className = 'px-2.5 py-1 rounded-xl font-mono font-semibold text-[var(--ink2)] hover:bg-[var(--card-bg)] transition';
+      });
+
+      if (state.isLiveIST && state.speedMultiplier === 1) {
+        btnLive.className = 'px-2.5 py-1 rounded-xl font-bold bg-[var(--primary)] text-white shadow-sm transition';
+      } else if (state.speedMultiplier === 1) {
+        b1.className = 'px-2.5 py-1 rounded-xl font-mono font-bold bg-[var(--primary)] text-white shadow-sm transition';
+      } else if (state.speedMultiplier === 10) {
+        b10.className = 'px-2.5 py-1 rounded-xl font-mono font-bold bg-[var(--primary)] text-white shadow-sm transition';
+      } else if (state.speedMultiplier === 30) {
+        b30.className = 'px-2.5 py-1 rounded-xl font-mono font-bold bg-[var(--primary)] text-white shadow-sm transition';
+      }
+
+      document.getElementById('clockModeLabel').textContent =
+        state.isLiveIST ? 'IST' : `${state.speedMultiplier}x`;
+    }
+
+    function updateHeavyPanels() {
+      const trains = state.activeTrains;
+      const sbCount = trains.filter(t => t.direction === 'south').length;
+      const nbCount = trains.filter(t => t.direction === 'north').length;
+      const dwellCount = trains.filter(t => t.isDwelling).length;
+
+      document.getElementById('statSouthboundCount').textContent = String(sbCount);
+      document.getElementById('statNorthboundCount').textContent = String(nbCount);
+      document.getElementById('statDwellingCount').textContent = String(dwellCount);
+      document.getElementById('badgeTotalTrains').textContent = String(trains.length);
+      document.getElementById('overlayActiveTrainsCount').textContent = `${trains.length} Trains Active`;
+
+      renderSchematicDiagram(trains);
+      renderSelectedTrainTelemetry(trains);
+      renderActiveTrainsRoster(trains);
+      updatePlannerAndSchedules();
+      updateStationInspectorBoard();
+    }
+
+    function applyTheme(themeName) {
+      document.documentElement.classList.remove('theme-doctorcare', 'theme-heritage', 'theme-midnight');
+      document.documentElement.classList.add(`theme-${themeName}`);
+
+      const bDoc = document.getElementById('btnThemeDoctorCare');
+      const bHer = document.getElementById('btnThemeHeritage');
+      const bMid = document.getElementById('btnThemeMidnight');
+
+      [bDoc, bHer, bMid].forEach(b => {
+        b.className = 'px-3 py-1.5 rounded-xl text-[var(--ink3)] hover:text-[var(--ink)] transition';
+      });
+
+      if (themeName === 'doctorcare') {
+        bDoc.className = 'px-3 py-1.5 rounded-xl bg-[var(--card-bg)] text-[var(--primary)] shadow-sm transition';
+      } else if (themeName === 'heritage') {
+        bHer.className = 'px-3 py-1.5 rounded-xl bg-[var(--card-bg)] text-[var(--primary)] shadow-sm transition';
+      } else if (themeName === 'midnight') {
+        bMid.className = 'px-3 py-1.5 rounded-xl bg-[var(--card-bg)] text-[var(--primary)] shadow-sm transition';
+      }
+
+      // Automatically sync map theme with midnight radar
+      if (themeName === 'midnight' && state.mapLayerMode !== 'dark_radar') {
+        setMapLayerMode('dark_radar');
+      } else if (themeName !== 'midnight' && state.mapLayerMode === 'dark_radar') {
+        setMapLayerMode('google_streets');
+      }
+    }
+
+    function bindEvents() {
+      document.getElementById('tabBtnTrains').addEventListener('click', () => switchSidebarTab('trains'));
+      document.getElementById('tabBtnPlanner').addEventListener('click', () => switchSidebarTab('planner'));
+      document.getElementById('tabBtnStationInfo').addEventListener('click', () => switchSidebarTab('station'));
+
+      document.getElementById('btnThemeDoctorCare').addEventListener('click', () => applyTheme('doctorcare'));
+      document.getElementById('btnThemeHeritage').addEventListener('click', () => applyTheme('heritage'));
+      document.getElementById('btnThemeMidnight').addEventListener('click', () => applyTheme('midnight'));
+
+      document.getElementById('btnRealTime').addEventListener('click', () => {
+        state.isLiveIST = true;
+        state.speedMultiplier = 1;
+        state.isPaused = false;
+        state.simSecondsFromMidnight = getCurrentISTSeconds();
+        document.getElementById('timePresetSelect').value = 'live';
+        updateSpeedButtonsUI();
+        updateHeavyPanels();
+      });
+
+      document.getElementById('btnSpeed1x').addEventListener('click', () => {
+        state.isLiveIST = false;
+        state.speedMultiplier = 1;
+        state.isPaused = false;
+        updateSpeedButtonsUI();
+      });
+
+      document.getElementById('btnSpeed10x').addEventListener('click', () => {
+        state.isLiveIST = false;
+        state.speedMultiplier = 10;
+        state.isPaused = false;
+        updateSpeedButtonsUI();
+      });
+
+      document.getElementById('btnSpeed30x').addEventListener('click', () => {
+        state.isLiveIST = false;
+        state.speedMultiplier = 30;
+        state.isPaused = false;
+        updateSpeedButtonsUI();
+      });
+
+      document.getElementById('btnQuickBoostMotion').addEventListener('click', () => {
+        state.isLiveIST = false;
+        state.speedMultiplier = state.speedMultiplier === 10 ? 1 : 10;
+        state.isPaused = false;
+        document.getElementById('btnQuickBoostMotion').textContent =
+          state.speedMultiplier === 10 ? 'Normal 1x Speed' : 'Fast-Forward (10x)';
+        updateSpeedButtonsUI();
+      });
+
+      document.getElementById('btnPauseSim').addEventListener('click', () => {
+        state.isPaused = !state.isPaused;
+        const btn = document.getElementById('btnPauseSim');
+        btn.className = state.isPaused
+          ? 'p-1.5 rounded-xl bg-amber-500 text-white transition'
+          : 'p-1.5 rounded-xl text-[var(--ink2)] hover:bg-[var(--card-bg)] transition';
+      });
+
+      document.getElementById('timePresetSelect').addEventListener('change', (e) => {
+        const val = e.target.value;
+        if (val === 'live') {
+          state.isLiveIST = true;
+          state.speedMultiplier = 1;
+          state.simSecondsFromMidnight = getCurrentISTSeconds();
+        } else {
+          state.isLiveIST = false;
+          const [hh, mm] = val.split(':').map(Number);
+          state.simSecondsFromMidnight = hh * 3600 + mm * 60;
+        }
+        state.isPaused = false;
+        updateSpeedButtonsUI();
+        updateHeavyPanels();
+      });
+
+      function setDirFilter(dir) {
+        state.directionFilter = dir;
+        const allBtn = document.getElementById('filterAllTrains');
+        const sbBtn = document.getElementById('filterSouthbound');
+        const nbBtn = document.getElementById('filterNorthbound');
+
+        allBtn.className = dir === 'all' ? 'px-2.5 py-1 rounded-lg bg-[var(--card-bg)] text-[var(--ink)] shadow-xs' : 'px-2.5 py-1 rounded-lg text-[var(--ink3)] hover:bg-[var(--card-bg)]';
+        sbBtn.className = dir === 'south' ? 'px-2.5 py-1 rounded-lg bg-[var(--primary)] text-white shadow-xs' : 'px-2.5 py-1 rounded-lg text-cyan-600 dark:text-cyan-400 hover:bg-[var(--card-bg)]';
+        nbBtn.className = dir === 'north' ? 'px-2.5 py-1 rounded-lg bg-[var(--primary)] text-white shadow-xs' : 'px-2.5 py-1 rounded-lg text-emerald-600 dark:text-emerald-400 hover:bg-[var(--card-bg)]';
+        updateHeavyPanels();
+      }
+
+      document.getElementById('filterAllTrains').addEventListener('click', () => setDirFilter('all'));
+      document.getElementById('filterSouthbound').addEventListener('click', () => setDirFilter('south'));
+      document.getElementById('filterNorthbound').addEventListener('click', () => setDirFilter('north'));
+
+      document.getElementById('btnCenterSelectedTrain').addEventListener('click', () => {
+        if (state.selectedTrainId) {
+          selectTrain(state.selectedTrainId, true);
+        }
+      });
+
+      document.getElementById('btnOpenGoogleEmbed').addEventListener('click', () => {
+        const sel = state.activeTrains.find(t => t.id === state.selectedTrainId) || state.activeTrains[0];
+        if (sel) {
+          openGoogleMapsSpotEmbed(sel.lat, sel.lng, `Train ${sel.id} near ${sel.nextStation.name}, Kochi`);
+        }
+      });
+
+      document.getElementById('btnViewStationGoogleEmbed').addEventListener('click', () => {
+        const st = STATIONS[state.inspectedStationIdx];
+        if (st) {
+          openGoogleMapsSpotEmbed(st.lat, st.lng, `${st.name} Metro Station (${st.ml}), Kochi`);
+        }
+      });
+
+      document.getElementById('btnCloseGoogleEmbed').addEventListener('click', () => {
+        const modal = document.getElementById('googleMapsEmbedModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      });
+
+      document.getElementById('fromStationSelect').addEventListener('change', (e) => {
+        state.fromStationIdx = parseInt(e.target.value, 10);
+        updateHighlightedRouteOnMap();
+        updateHeavyPanels();
+      });
+
+      document.getElementById('toStationSelect').addEventListener('change', (e) => {
+        state.toStationIdx = parseInt(e.target.value, 10);
+        updateHighlightedRouteOnMap();
+        updateHeavyPanels();
+      });
+
+      document.getElementById('btnSwapStations').addEventListener('click', () => {
+        const tmp = state.fromStationIdx;
+        state.fromStationIdx = state.toStationIdx;
+        state.toStationIdx = tmp;
+        document.getElementById('fromStationSelect').value = String(state.fromStationIdx);
+        document.getElementById('toStationSelect').value = String(state.toStationIdx);
+        updateHighlightedRouteOnMap();
+        updateHeavyPanels();
+      });
+
+      document.getElementById('btnClearRoute').addEventListener('click', () => {
+        state.fromStationIdx = 0;
+        state.toStationIdx = 24;
+        document.getElementById('fromStationSelect').value = '0';
+        document.getElementById('toStationSelect').value = '24';
+        updateHighlightedRouteOnMap();
+        updateHeavyPanels();
+      });
+
+      document.getElementById('inspectorStationSelect').addEventListener('change', (e) => {
+        const idx = parseInt(e.target.value, 10);
+        selectStationForInspection(idx, true);
+      });
+
+      document.getElementById('btnFitCorridor').addEventListener('click', () => {
+        if (map && baseCorridorLine) {
+          map.fitBounds(baseCorridorLine.getBounds(), { padding: [35, 35] });
+        }
+      });
+
+      document.getElementById('btnToggleFollow').addEventListener('click', () => {
+        state.followSelectedTrain = !state.followSelectedTrain;
+        document.getElementById('followBtnText').textContent =
+          state.followSelectedTrain ? 'Follow: On' : 'Follow: Off';
+      });
+
+      document.getElementById('btnToggleLabels').addEventListener('click', () => {
+        state.showStationLabels = !state.showStationLabels;
+        stationMarkers.forEach((m, idx) => {
+          m.unbindTooltip();
+          const st = STATIONS[idx];
+          const isTerminal = (idx === 0 || idx === STATIONS.length - 1);
+          if (state.showStationLabels) {
+            m.bindTooltip(`${st.id}. ${st.name}`, {
+              permanent: isTerminal || idx % 2 === 0,
+              direction: 'right',
+              offset: [9, 0],
+              className: 'station-tooltip-dc'
+            });
+          } else {
+            m.bindTooltip(`${st.id}. ${st.name} (${st.ml})`, {
+              permanent: false,
+              direction: 'top',
+              offset: [0, -6],
+              className: 'station-tooltip-dc'
+            });
+          }
+        });
+      });
+
+      document.getElementById('btnLayerGoogleStreets').addEventListener('click', () => setMapLayerMode('google_streets'));
+      document.getElementById('btnLayerGoogleHybrid').addEventListener('click', () => setMapLayerMode('google_hybrid'));
+      document.getElementById('btnLayerGoogleTerrain').addEventListener('click', () => setMapLayerMode('google_terrain'));
+      document.getElementById('btnToggleMapTheme').addEventListener('click', () => {
+        setMapLayerMode(state.mapLayerMode === 'dark_radar' ? 'google_streets' : 'dark_radar');
+      });
+    }
+
+    // 60 FPS Animation Loop
+    let lastFrameTime = performance.now();
+    let lastHeavySyncTime = 0;
+    let rafId = null;
+
+    function animateLoop(now) {
+      const dtSec = Math.min(0.1, Math.max(0.001, (now - lastFrameTime) / 1000));
+      lastFrameTime = now;
+
+      if (!state.isPaused) {
+        if (state.isLiveIST && state.speedMultiplier === 1) {
+          state.simSecondsFromMidnight = getCurrentISTSeconds();
+        } else {
+          state.simSecondsFromMidnight = (state.simSecondsFromMidnight + dtSec * state.speedMultiplier) % 86400;
+        }
+      }
+
+      document.getElementById('liveClockDisplay').textContent = formatClockHMS(state.simSecondsFromMidnight);
+
+      const tMin = state.simSecondsFromMidnight / 60;
+      const trains = computeActiveTrainsAtTime(tMin);
+      state.activeTrains = trains;
+
+      let sel = trains.find(t => t.id === state.selectedTrainId);
+      if (!sel && trains.length > 0) {
+        sel = trains[0];
+        state.selectedTrainId = sel.id;
+      }
+
+      // 1. Move Train Markers on Google Map (60 FPS)
+      syncTrainMarkersOnMap(trains);
+
+      // 2. Render Viaduct Canvas Scene (60 FPS)
+      drawViaductScene(sel, dtSec);
+
+      // 3. Update Heavy DOM Panels (~2 Hz)
+      if (now - lastHeavySyncTime > 450) {
+        lastHeavySyncTime = now;
+        updateHeavyPanels();
+      }
+
+      rafId = requestAnimationFrame(animateLoop);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+      populateStationDropdowns();
+      initLeafletMap();
+      bindEvents();
+      updateSpeedButtonsUI();
+
+      const initTrains = computeActiveTrainsAtTime(state.simSecondsFromMidnight / 60);
+      state.activeTrains = initTrains;
+      if (initTrains.length > 0) {
+        state.selectedTrainId = initTrains[0].id;
+      }
+      updateHeavyPanels();
+
+      if (rafId) cancelAnimationFrame(rafId);
+      lastFrameTime = performance.now();
+      rafId = requestAnimationFrame(animateLoop);
+    });
+  </script>
+</body>
+</html>
