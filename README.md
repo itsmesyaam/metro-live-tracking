@@ -1,98 +1,80 @@
-# 🚆 Kochi Metro Live Tracking & Viaduct Radar (CARE-ONE Design Edition)
+# 🚆 Kochi Metro — Premium Live Tracking & Trip Guide
 
-A high-performance, real-time web application for tracking the **Kochi Metro Blue Line (Aluva ↔ Thrippunithura Terminal • 28.125 km)**, featuring 60 FPS kinematic train tracking, real Google Maps integration, interactive viaduct camera, fare calculator, and a complete redesign inspired by the bespoke aesthetic of [**CARE-ONE**](https://github.com/itsmesyaam/CARE-ONE-).
+A redesigned, Apple-grade transit web app for the **Kochi Metro Blue Line (Aluva ↔ Thrippunithura • 28.1 km)**. Engineered around one central question: **"Where are you going?"**, with purposeful motion patterns, accessible WCAG AA contrast, and 60fps performance on mid-range Android devices.
 
----
-
-## ✨ Design Identity: Inspired by CARE-ONE
-
-This redesign borrows key design elements from [CARE-ONE](https://github.com/itsmesyaam/CARE-ONE-), elevating the transit experience:
-
-1. **Three Cohesive Design Themes**:
-   - 🏥 **DoctorCare Modern (Executive Light)**: Crisp porcelain surfaces (`#f4f6fb`), deep ink (`#0b1533`), electric royal blue (`#1f5eff`), and luxury soft elevation shadows (`0 16px 34px -20px rgba(11, 21, 51, 0.14)`).
-   - 🌿 **Kerala Kasavu Heritage**: Traditional Kerala paper (`#f3f5ee`), Periyar forest leaf green (`#1f6b4f`), Kasavu gold zari accents (`#c9a43b`), and laterite terracotta highlights (`#b23f2c`).
-   - 🌙 **Midnight Metro Radar**: Dark nocturnal cockpit mode (`#070d19` & `#0f172a`) with vibrant cyan and emerald telemetry glow.
-
-2. **Editorial & Authentic Typography**:
-   - **Primary Sans**: `Plus Jakarta Sans` for crisp UI readability.
-   - **Editorial Display**: `Instrument Serif` (italic) for titles (*"Live Fleet Tracker"*, station themes).
-   - **Malayalam Calligraphy**: `Anek Malayalam` & `Noto Sans Malayalam` for authentic bilingual station signboards.
-   - **Technical Monospace**: `JetBrains Mono` for train rake codes, speeds, chainages, and tabular countdowns.
-
-3. **Signature CARE-ONE UI Components**:
-   - 🎫 **The Perforated Ticket Stub**: Styled like a physical train boarding pass with perforated tear-line stub, circular ticket cutouts, big tabular countdowns, and platform indicator.
-   - 🎴 **Elevated `.card-dc`**: 26px rounded corners, subtle borders (`rgba(11, 21, 51, 0.08)`), and smooth hover lift physics (`translateY(-3px)`).
-   - 🔘 **Pill Buttons (`.btn-pill`)**: Tactile 9999px rounded pills with bold labels and active depression states.
-   - 🟢 **Live Pulse Indicator (`.live-pulse`)**: Expanding dual-ring radar ping wave synced with Indian Standard Time (IST).
+Live: [metro-live-tracking.vercel.app](https://metro-live-tracking.vercel.app/)
 
 ---
 
-## ⚡ Key Features
+## 🎯 Design Architecture: "Where are you going?"
 
-- **60 FPS Live Viaduct Cam**:
-  - Parallax HTML5 Canvas visualizer rendering the Kochi skyline, coconut palms, Vembanad backwater reflections, elevated KMRL concrete viaduct with vertical green gardens, and the authentic 3-coach **Alstom Metropolis** train (Teal & Lime livery, bogies, animated headlights, passenger cabin glow, and door indicators).
-- **Interactive Google Maps View of Kochi**:
-  - Official Google Maps Road network (`lyrs=m`), Google Satellite Hybrid (`lyrs=y`), Terrain (`lyrs=p`), and Midnight Radar basemaps.
-  - Realistic rotated 3-coach train markers computed from exact track bearings with live speed callouts.
-  - Interactive Google Maps Place Inspector drawer (slide-over picture-in-picture embed for any station or train coordinate).
-- **All 25 Blue Line Stations (Phase 1 + 1B)**:
-  - Aluva, Pulinchodu, Companypady, Ambattukavu, Muttom, Kalamassery, Cochin University (CUSAT), Pathadipalam, Edapally, Changampuzha Park, Palarivattom, JLN Stadium, Kaloor, Town Hall, MG Road, Maharajas College, Ernakulam South, Kadavanthra, Elamkulam, Vyttila Mobility Hub, Thykoodam, Pettah, Vadakkekotta, SN Junction, and Thrippunithura Terminal.
-- **Smart Fare & Journey Calculator**:
-  - Origin & Destination selectors with 1-click direction swap.
-  - Accurate KMRL fare calculation (₹10 – ₹60) with Kochi1 Smart Card discounts (-10%).
-  - Real-time departure board with live countdown timers.
-- **Multilingual Station Directory**:
-  - Station details in English, Malayalam (മലയാളം), and Hindi (हिन्दी).
-  - Cultural station themes (e.g., Aluva Periyar river basin, Edapally spices heritage, Changampuzha poetry, Vyttila Water Metro & Vallamkali).
-  - Multimodal interchange badges (Wheelchair, Feeder Bus, Indian Railways, Water Metro, Lulu Skywalk).
-- **Corridor Dual-Track Schematic**:
-  - Interactive linear schematic tracking all down-line (Southbound) and up-line (Northbound) rakes in real time.
-- **Kinematic Simulation Controls**:
-  - Live IST Clock Sync, 1x, 10x (fast-forward), 30x speeds, pause/play, and quick time presets (Morning Peak, Midday, Evening Rush, Late Night, First Wave).
+1. **Trip Home Screen**:
+   - **From / To Station Pickers**: Geolocation automatically detects and pre-fills the closest station.
+   - **Swap Morph Button**: Cross-slides station fields past each other with spring physics while rotating the swap icon 180°.
+   - **Large Answer Card**: Immediately provides the essential commute answer:
+     - Next train in **X min** with an animated draining circular progress ring.
+     - Platform & direction in plain language (e.g. `Platform 2 · towards Thrippunithura`).
+     - Fare in ₹ (with 10% Kochi1 Card discount), trip duration, and estimated arrival time.
+   - **Stops On Your Trip**: SVG route line that draws itself from origin to destination with popping station dots. Long trips collapse intermediate stops into `+ N more stops` to eliminate scroll fatigue.
+2. **Three-Tab Bottom Navigation**:
+   - **Trip**: Instant route & countdown answer.
+   - **Live Map**: Lazy-loaded Google Maps corridor view with live gliding train marker.
+   - **Stations**: Complete 25-station searchable directory with cultural themes and chainages.
+3. **Bilingual Support**: Instant toggle between English and Malayalam (മലയാളം).
+4. **Honest Status**: Labeled **"Simulated"** to honestly reflect simulated real-time schedule kinematics.
+5. **Secondary "Demo & Extras"**: Viaduct Cam (60 FPS Alstom Metropolis rake), time simulator, and corridor schematic tucked into a discrete drawer to keep the primary screen uncluttered.
 
 ---
 
-## 🚀 Quick Start
+## 🪄 The 6 Motion Patterns (Apple / Swishy-Inspired)
 
-### Option 1: Direct Browser Opening (No Build Required)
-Simply double-click or open `index.html` in any modern web browser. The app is completely self-contained with CDN dependencies.
+| # | Motion Pattern | Placement | Specification |
+|---|---|---|---|
+| **1** | **Page Reveal** | App load & tab switches | `translateY(24px)`, `opacity: 0`, `filter: blur(8px)` &rarr; `0 / 1 / blur(0)` over **500ms** with `cubic-bezier(0.22, 1, 0.36, 1)`. Child sections staggered by **60ms**. |
+| **2** | **Rolling Numbers** | Next-train figure, fare, arrival | Vertical odometer roll over **400ms** with spring (`stiffness: 300, damping: 30`). Only changed digits animate. Tabular numbers prevent jitter. |
+| **3** | **Circular Countdown** | Ring around next-train figure | Thin SVG ring draining with `stroke-dashoffset`. Under 1 minute: smoothly shifts color to warm amber and breathes gently once every **2s** (`scale: 1.035`). Calm, never alarming. |
+| **4** | **Journey Progress Line** | Stop list & map corridor line | SVG path draws itself from origin to destination (**600ms**). Station dots pop in with **40ms stagger** (`scale 0.6 &rarr; 1`). In Live mode, train marker glides using rAF interpolation. |
+| **5** | **Spring Notification Stack** | 2-min arrival heads-up & alerts | Slides down from top with spring (`stiffness: 400, damping: 28`). Older alerts compress behind (`scale: 0.95`, `translateY: 8px`). Swipe to dismiss. Triggers `navigator.vibrate(20)`. |
+| **6** | **Swap Morph** | From/To swap button | Icon rotates **180°**, station fields cross-slide past each other (**300ms spring**), followed by Rolling Number re-calculation. |
 
-### Option 2: Running with Vite Dev Server
+---
+
+## ♿ Accessibility & Performance
+
+- **Reduced Motion**: Respects `prefers-reduced-motion: reduce`. Disables all spatial spring movements, pulses, and line drawing, falling back to gentle 150ms opacity fades.
+- **Screen Reader Announcements**: `aria-live="polite"` on next-train countdown, throttled so announcements occur at most once per minute.
+- **Touch Targets**: All interactive elements satisfy Apple/WCAG minimums of **44×44px**.
+- **Performance Budget**: Animates strictly `transform`, `opacity`, and `filter`. Map is lazy-loaded only when requested.
+
+---
+
+## 🛠️ Project Structure
+
+```
+├── index.html                  # Core application entry
+├── package.json                # Dependencies & scripts
+├── vite.config.js              # Vite bundler configuration
+└── src/
+    ├── motion-tokens.js        # Shared motion tokens & analytical spring generator
+    └── components/
+        ├── PageReveal.js          # Animation 1: Ease & blur page reveal
+        ├── RollingNumber.js       # Animation 2: Odometer rolling numbers
+        ├── CircularCountdown.js   # Animation 3: SVG draining progress ring
+        ├── JourneyProgressLine.js # Animation 4: Self-drawing route path & dots
+        ├── NotificationStack.js   # Animation 5: Spring notification card stack
+        └── SwapMorph.js           # Animation 6: Cross-sliding swap micro-interaction
+```
+
+---
+
+## 🚀 Running Locally
+
 ```bash
-# Clone the repository
-git clone https://github.com/itsmesyaam/metro-live-tracking.git
-cd metro-live-tracking
-
 # Install dependencies
 npm install
 
-# Start development server
+# Start Vite dev server
 npm run dev
 ```
 
-Visit `http://localhost:3000` in your browser.
-
-### Option 3: Production Build
-```bash
-npm run build
-npm run preview
-```
-
----
-
-## 🛠️ Technology Stack
-
-- **HTML5 Canvas**: 60 FPS viaduct scenery, parallax scrolling, train suspension kinematics.
-- **Tailwind CSS**: Utility-first styling with custom theme token mappings.
-- **Leaflet.js + Google Maps Tiles**: Geographic viaduct rendering, marker transforms, and bounding boxes.
-- **Lucide Icons**: Feather-light icons.
-- **Google Fonts**: Plus Jakarta Sans, Instrument Serif, Anek Malayalam, Noto Sans Malayalam, and JetBrains Mono.
-- **Vite**: Ultra-fast build tool and developer environment.
-
----
-
-## 📄 License & Attribution
-
-- Built with inspiration from [CARE-ONE](https://github.com/itsmesyaam/CARE-ONE-).
-- Timetable and fare matrices based on official [Kochi Metro Rail Limited (KMRL)](https://kochimetro.org/) GTFS data.
-- Open source under the MIT License.
+Visit `http://localhost:3000`.
