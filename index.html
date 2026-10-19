@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Kochi Metro — Where are you going?</title>
+  <title>Kochi Metro — Real-Time Live Train Radar</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <!-- Leaflet Maps CSS & JS (Lazy loaded on Live Map tab) -->
+  <!-- Leaflet Maps CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <!-- Google Fonts: Plus Jakarta Sans, Anek Malayalam, Noto Sans Malayalam, JetBrains Mono -->
@@ -44,7 +44,6 @@
     :root {
       --km-accent: #00796b;
       --km-accent-hover: #00695c;
-      --km-accent-light: rgba(0, 121, 107, 0.12);
       --surface-bg: #f8fafc;
       --card-bg: #ffffff;
       --card-border: rgba(15, 23, 42, 0.08);
@@ -56,7 +55,6 @@
     html.dark {
       --km-accent: #22d3ee;
       --km-accent-hover: #06b6d4;
-      --km-accent-light: rgba(34, 211, 238, 0.15);
       --surface-bg: #090f1d;
       --card-bg: #0f172a;
       --card-border: rgba(255, 255, 255, 0.08);
@@ -84,7 +82,6 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Soft 16px Apple-quality Card Radius & Restrained Elevation */
     .card-metro {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -93,7 +90,6 @@
       transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
     }
 
-    /* Minimum 44x44px accessible touch target helper */
     .touch-target {
       min-height: 44px;
       min-width: 44px;
@@ -102,13 +98,11 @@
       justify-content: center;
     }
 
-    /* Visible Accessible Focus Rings */
     *:focus-visible {
       outline: 2px solid var(--km-accent);
       outline-offset: 2px;
     }
 
-    /* Leaflet Overrides */
     .leaflet-container {
       font-family: 'Plus Jakarta Sans', sans-serif !important;
       background: #e2e8f0 !important;
@@ -117,7 +111,6 @@
       background: #0b1120 !important;
     }
 
-    /* Reduced Motion Master Override */
     @media (prefers-reduced-motion: reduce) {
       *, ::before, ::after {
         animation-duration: 0.15s !important;
@@ -131,15 +124,13 @@
 <body class="flex flex-col selection:bg-teal-500 selection:text-white pb-24 sm:pb-28">
 
   <!-- NOTIFICATION STACK CONTAINER (Animation #5) -->
-  <div id="notificationStackContainer" class="fixed top-4 inset-x-4 z-50 pointer-events-none flex flex-col items-center">
-    <!-- Spring notification cards mount here -->
-  </div>
+  <div id="notificationStackContainer" class="fixed top-4 inset-x-4 z-50 pointer-events-none flex flex-col items-center"></div>
 
   <!-- TOP APP BAR -->
   <header class="sticky top-0 z-30 bg-[var(--card-bg)]/90 backdrop-blur-md border-b border-[var(--card-border)] px-4 sm:px-8 py-3 transition-colors">
     <div class="max-w-3xl mx-auto flex items-center justify-between gap-3">
       
-      <!-- Brand & Honesty Status Label -->
+      <!-- Brand & Honest Status -->
       <div class="flex items-center gap-2.5">
         <div class="w-9 h-9 rounded-xl bg-teal-600 dark:bg-teal-500 text-white flex items-center justify-center shadow-sm">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -156,21 +147,19 @@
           <div class="flex items-center gap-2">
             <span class="text-base sm:text-lg font-extrabold tracking-tight text-[var(--text-primary)]">Kochi Metro</span>
             <!-- Honest State: Simulated label -->
-            <span id="serviceBadge" class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+            <span class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               Simulated
             </span>
           </div>
         </div>
       </div>
 
-      <!-- Controls: Language Toggle, Theme Toggle, Extras Sheet Button -->
+      <!-- Controls: Language, Theme, Extras Sheet -->
       <div class="flex items-center gap-1.5">
-        <!-- English / Malayalam Toggle Button -->
         <button id="btnLangToggle" type="button" aria-label="Toggle language between English and Malayalam" class="touch-target px-3 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-xs font-bold text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
           <span id="langLabel">മലയാളം</span>
         </button>
 
-        <!-- Light / Dark Theme Toggle Button -->
         <button id="btnThemeToggle" type="button" aria-label="Toggle dark mode" class="touch-target p-2 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
           <svg id="themeIconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden dark:block">
             <circle cx="12" cy="12" r="4"></circle>
@@ -180,15 +169,12 @@
             <path d="m17.66 17.66 1.41 1.41"></path>
             <path d="M2 12h2"></path>
             <path d="M20 12h2"></path>
-            <path d="m6.34 17.66-1.41 1.41"></path>
-            <path d="m19.07 4.93-1.41 1.41"></path>
           </svg>
           <svg id="themeIconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block dark:hidden">
             <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
           </svg>
         </button>
 
-        <!-- Secondary Extras Sheet Modal Trigger -->
         <button id="btnOpenExtras" type="button" aria-label="Open simulator and extra views" class="touch-target p-2 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition" title="Demo & Extras">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="1"></circle>
@@ -201,7 +187,7 @@
     </div>
   </header>
 
-  <!-- MAIN VIEWPORT TABS -->
+  <!-- MAIN APPLICATION TABS -->
   <main class="max-w-3xl w-full mx-auto p-4 sm:p-6 flex-1 flex flex-col gap-6">
 
     <!-- ===================================================================== -->
@@ -209,7 +195,7 @@
     <!-- ===================================================================== -->
     <section id="tabScreenTrip" class="tab-screen flex flex-col gap-5">
 
-      <!-- QUESTION HEADER & STATION PICKERS (Animation #6: SwapMorph) -->
+      <!-- Question & Station Pickers (Animation #6 SwapMorph) -->
       <div class="card-metro p-5">
         <h2 id="headingWhere" class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] mb-4">
           Where are you going?
@@ -224,7 +210,6 @@
             </span>
             <div class="flex items-center justify-between gap-2">
               <select id="selectFromStation" aria-label="From station" class="w-full bg-transparent font-bold text-base text-[var(--text-primary)] focus:outline-none cursor-pointer">
-                <!-- Dynamically populated -->
               </select>
               <span id="badgeNearest" class="hidden shrink-0 text-[11px] font-bold px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-400">
                 Nearest
@@ -248,24 +233,22 @@
               To (Destination)
             </span>
             <select id="selectToStation" aria-label="To station" class="w-full bg-transparent font-bold text-base text-[var(--text-primary)] focus:outline-none cursor-pointer">
-              <!-- Dynamically populated -->
             </select>
           </div>
 
         </div>
       </div>
 
-      <!-- LARGE ANSWER CARD (Animation #2 RollingNumber + Animation #3 CircularCountdown) -->
+      <!-- Large Answer Card (Animation #2 RollingNumber + Animation #3 CircularCountdown) -->
       <div id="answerHeroCard" class="card-metro p-5 sm:p-6 bg-gradient-to-b from-[var(--card-bg)] to-[var(--surface-bg)] flex flex-col gap-5">
         
-        <!-- Next Train Figure with Circular Progress Ring -->
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex items-center gap-4">
             
             <!-- SVG Circular Progress Countdown (Animation #3) -->
             <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
               <svg id="countdownSvgRing" class="w-full h-full" viewBox="0 0 92 92"></svg>
-              <!-- Rolling number inside ring (Animation #2) -->
+              <!-- Rolling Number Inside Ring (Animation #2) -->
               <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
                 <span id="rollingCountdownMins" class="text-2xl font-black tabular-nums text-[var(--text-primary)] font-mono leading-none">
                   04
@@ -285,12 +268,11 @@
                 Platform 2 · towards Thrippunithura
               </h3>
               <p id="answerRakeName" class="text-xs text-[var(--text-secondary)] mt-0.5">
-                Service via Alstom Metropolis "Pampa"
+                Alstom Metropolis 3-coach service
               </p>
             </div>
           </div>
 
-          <!-- Live Accessible Announcement region -->
           <div class="hidden" aria-live="polite" id="ariaLiveCountdown"></div>
         </div>
 
@@ -327,13 +309,12 @@
             <h4 id="labelStopsHeader" class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
               Stops on your trip
             </h4>
-            <span id="liveTrackIndicator" class="flex items-center gap-1.5 text-xs font-bold text-teal-700 dark:text-teal-400">
+            <span class="flex items-center gap-1.5 text-xs font-bold text-teal-700 dark:text-teal-400">
               <span class="w-2 h-2 rounded-full bg-teal-500 animate-ping"></span>
               Live Route Line
             </span>
           </div>
 
-          <!-- Journey Progress Component Mount -->
           <div id="journeyStopsContainer"></div>
         </div>
 
@@ -342,27 +323,53 @@
     </section>
 
     <!-- ===================================================================== -->
-    <!-- TAB 2: LIVE MAP                                                        -->
+    <!-- TAB 2: LIVE MAP WITH 60 FPS CANVAS TRAIN RENDERER & TRAILS            -->
     <!-- ===================================================================== -->
     <section id="tabScreenMap" class="tab-screen hidden flex-col gap-4">
-      <div class="card-metro overflow-hidden flex flex-col">
+      <div class="card-metro overflow-hidden flex flex-col relative">
         <div class="px-5 py-3 border-b border-[var(--card-border)] flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 id="headingLiveMap" class="text-base font-extrabold text-[var(--text-primary)]">
-              Kochi Corridor Map
-            </h2>
-            <p id="subheadingLiveMap" class="text-xs text-[var(--text-secondary)]">
-              Trains gliding smoothly between Aluva and Thrippunithura
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse"></span>
+              <h2 id="headingLiveMap" class="text-base font-extrabold text-[var(--text-primary)]">
+                Kochi Corridor Map &mdash; Real-Time Train Motion
+              </h2>
+            </div>
+            <p id="subheadingLiveMap" class="text-xs text-[var(--text-secondary)] mt-0.5">
+              Kinematic speed curves, 3-coach capsule markers &amp; fading motion trails
             </p>
           </div>
-          <button id="btnFitMapCorridor" type="button" class="touch-target px-3 py-1 text-xs font-bold rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] hover:bg-[var(--card-bg)] transition">
-            Fit Full Line
-          </button>
+
+          <!-- Camera Follow & Fit Controls -->
+          <div class="flex items-center gap-2">
+            <button id="btnToggleCameraFollow" type="button" class="touch-target px-3 py-1 text-xs font-bold rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-slate-600 dark:text-slate-300 hover:border-teal-500 transition">
+              <span id="followLabel">Follow: Off</span>
+            </button>
+            <button id="btnFitMapCorridor" type="button" class="touch-target px-3 py-1 text-xs font-bold rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-slate-600 dark:text-slate-300 hover:border-teal-500 transition">
+              Fit Corridor
+            </button>
+          </div>
         </div>
 
-        <!-- Leaflet Map Container (Lazy Loaded on First Tab Click) -->
-        <div class="relative w-full h-[480px] sm:h-[540px]">
+        <!-- High-Performance Map Viewport with HTML5 Canvas Overlay -->
+        <div class="relative w-full h-[500px] sm:h-[560px]" id="mapViewportContainer">
           <div id="mapViewport" class="w-full h-full"></div>
+          
+          <!-- Direction Legend Overlay -->
+          <div class="absolute bottom-3 left-3 z-[460] bg-[var(--card-bg)]/90 backdrop-blur-md border border-[var(--card-border)] rounded-xl p-2.5 shadow-md text-xs space-y-1.5 pointer-events-auto">
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-2 rounded-sm bg-teal-600 inline-block"></span>
+              <span class="text-[var(--text-secondary)] font-semibold">Southbound (→ Thrippunithura)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-2 rounded-sm bg-emerald-500 inline-block"></span>
+              <span class="text-[var(--text-secondary)] font-semibold">Northbound (→ Aluva)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="w-3.5 h-2 rounded-sm bg-amber-400 ring-1 ring-amber-500 inline-block"></span>
+              <span class="text-[var(--text-secondary)] font-semibold">At platform (doors open)</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -372,41 +379,34 @@
     <!-- ===================================================================== -->
     <section id="tabScreenStations" class="tab-screen hidden flex-col gap-4">
       <div class="card-metro p-5">
-        <div class="flex items-center justify-between gap-2 mb-3">
-          <div>
-            <h2 id="headingStations" class="text-lg font-extrabold text-[var(--text-primary)]">
-              Blue Line Stations (25)
-            </h2>
-            <p id="subheadingStations" class="text-xs text-[var(--text-secondary)]">
-              All stations from Aluva to Thrippunithura Terminal
-            </p>
-          </div>
-        </div>
+        <h2 id="headingStations" class="text-lg font-extrabold text-[var(--text-primary)] mb-1">
+          Blue Line Stations (25)
+        </h2>
+        <p id="subheadingStations" class="text-xs text-[var(--text-secondary)] mb-4">
+          All stations along the 28.1 km corridor from Aluva to Thrippunithura Terminal
+        </p>
 
-        <!-- Search Bar -->
+        <!-- Station Search Input -->
         <div class="relative mb-4">
-          <input id="inputStationSearch" type="search" placeholder="Search station by name..." class="w-full bg-[var(--surface-bg)] border border-[var(--card-border)] rounded-xl py-2.5 pl-4 pr-10 text-sm font-semibold text-[var(--text-primary)] focus:outline-none" />
+          <input id="inputStationSearch" type="search" placeholder="Search station by name or theme..." class="w-full bg-[var(--surface-bg)] border border-[var(--card-border)] rounded-xl py-2.5 pl-4 pr-10 text-sm font-semibold text-[var(--text-primary)] focus:outline-none" />
         </div>
 
-        <!-- Station Directory List -->
-        <div id="stationsDirectoryList" class="divide-y divide-[var(--card-border)] max-h-[500px] overflow-y-auto pr-1">
-          <!-- Populated by JS -->
-        </div>
+        <div id="stationsDirectoryList" class="divide-y divide-[var(--card-border)] max-h-[500px] overflow-y-auto pr-1"></div>
       </div>
     </section>
 
   </main>
 
   <!-- ======================================================================= -->
-  <!-- SECONDARY DEMO & EXTRAS SHEET / MODAL                                   -->
+  <!-- SECONDARY DEMO & EXTRAS MODAL (Viaduct Cam + Dual-Track Schematic)       -->
   <!-- ======================================================================= -->
   <div id="extrasSheetBackdrop" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs hidden items-end sm:items-center justify-center p-0 sm:p-4 transition-opacity">
-    <div id="extrasSheetCard" class="w-full sm:max-w-xl max-h-[90vh] bg-[var(--card-bg)] rounded-t-3xl sm:rounded-3xl border border-[var(--card-border)] shadow-2xl overflow-y-auto p-5 sm:p-6 flex flex-col gap-5">
+    <div id="extrasSheetCard" class="w-full sm:max-w-2xl max-h-[90vh] bg-[var(--card-bg)] rounded-t-3xl sm:rounded-3xl border border-[var(--card-border)] shadow-2xl overflow-y-auto p-5 sm:p-6 flex flex-col gap-5">
       
       <div class="flex items-center justify-between pb-3 border-b border-[var(--card-border)]">
         <div>
           <h3 class="text-base font-extrabold text-[var(--text-primary)]">Demo and Extras</h3>
-          <p class="text-xs text-[var(--text-secondary)]">Advanced controls and visualizers</p>
+          <p class="text-xs text-[var(--text-secondary)]">Kinematic physics, speed controls &amp; schematic visualizers</p>
         </div>
         <button id="btnCloseExtras" type="button" aria-label="Close modal" class="touch-target p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -416,33 +416,39 @@
         </button>
       </div>
 
-      <!-- 1. Viaduct Cam Canvas -->
+      <!-- 1. Synchronized Dual-Track Linear Schematic -->
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
+            Dual-Track Schematic (Live Synchronized)
+          </span>
+          <span class="text-[11px] text-teal-600 dark:text-teal-400 font-mono font-bold">Matches Map Exactly</span>
+        </div>
+        <div class="w-full h-32 bg-[var(--surface-bg)] rounded-2xl border border-[var(--card-border)] p-4 relative" id="schematicMount">
+        </div>
+      </div>
+
+      <!-- 2. Simulation Speed & Headway Controller -->
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] block mb-2">
+          Kinematic Speed Multiplier
+        </span>
+        <div class="flex flex-wrap items-center gap-2">
+          <button id="btnSpeed1x" type="button" class="touch-target px-3.5 py-1.5 rounded-xl text-xs font-bold bg-teal-600 text-white shadow-sm transition">1x Normal</button>
+          <button id="btnSpeed5x" type="button" class="touch-target px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[var(--surface-bg)] text-[var(--text-primary)] border border-[var(--card-border)] hover:border-teal-500 transition">5x Glide</button>
+          <button id="btnSpeed10x" type="button" class="touch-target px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[var(--surface-bg)] text-[var(--text-primary)] border border-[var(--card-border)] hover:border-teal-500 transition">10x Fast</button>
+          <button id="btnSpeed25x" type="button" class="touch-target px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[var(--surface-bg)] text-[var(--text-primary)] border border-[var(--card-border)] hover:border-teal-500 transition">25x Fast</button>
+        </div>
+      </div>
+
+      <!-- 3. Viaduct Scenery Cam (60 FPS) -->
       <div>
         <div class="flex items-center justify-between mb-1.5">
-          <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">Viaduct Cam (60 FPS)</span>
-          <span id="extrasViaductSpeed" class="text-xs font-mono font-bold text-teal-600 dark:text-teal-400">48 km/h</span>
+          <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">Viaduct Cam (Kochi Skyline)</span>
+          <span id="extrasViaductSpeed" class="text-xs font-mono font-bold text-teal-600 dark:text-teal-400">Cruise: 80 km/h</span>
         </div>
         <div class="w-full h-36 bg-slate-950 rounded-2xl overflow-hidden relative">
           <canvas id="extrasViaductCanvas" class="w-full h-full block"></canvas>
-        </div>
-      </div>
-
-      <!-- 2. Time Simulator Controls -->
-      <div>
-        <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] block mb-2">Simulation Clock & Speed</span>
-        <div class="flex flex-wrap items-center gap-2">
-          <button id="btnSimLive" type="button" class="touch-target px-3 py-1 rounded-xl text-xs font-bold bg-teal-600 text-white">Live Time</button>
-          <button id="btnSim1x" type="button" class="touch-target px-3 py-1 rounded-xl text-xs font-bold bg-[var(--surface-bg)] text-[var(--text-primary)] border border-[var(--card-border)]">1x</button>
-          <button id="btnSim10x" type="button" class="touch-target px-3 py-1 rounded-xl text-xs font-bold bg-[var(--surface-bg)] text-[var(--text-primary)] border border-[var(--card-border)]">10x Fast</button>
-          <button id="btnSim30x" type="button" class="touch-target px-3 py-1 rounded-xl text-xs font-bold bg-[var(--surface-bg)] text-[var(--text-primary)] border border-[var(--card-border)]">30x Fast</button>
-        </div>
-      </div>
-
-      <!-- 3. Dual-Track Schematic View -->
-      <div>
-        <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] block mb-2">Corridor Schematic Track</span>
-        <div class="overflow-x-auto pb-2">
-          <div id="extrasSchematicTrack" class="min-w-[700px] h-24 bg-[var(--surface-bg)] rounded-xl border border-[var(--card-border)] p-3 relative"></div>
         </div>
       </div>
 
@@ -450,12 +456,11 @@
   </div>
 
   <!-- ======================================================================= -->
-  <!-- BOTTOM TAB NAVIGATION (Apple-Quality Fixed Pill Bar)                     -->
+  <!-- BOTTOM TAB NAVIGATION (Apple-Quality Fixed Bar)                          -->
   <!-- ======================================================================= -->
   <nav class="fixed bottom-0 inset-x-0 z-40 bg-[var(--card-bg)]/95 backdrop-blur-md border-t border-[var(--card-border)] px-4 py-2 transition-colors">
     <div class="max-w-md mx-auto grid grid-cols-3 gap-2">
       
-      <!-- Tab 1: Trip -->
       <button id="navTabTrip" type="button" class="touch-target flex flex-col items-center justify-center py-1 text-teal-600 dark:text-teal-400 font-bold transition">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
@@ -464,7 +469,6 @@
         <span id="navLabelTrip" class="text-xs mt-0.5">Trip</span>
       </button>
 
-      <!-- Tab 2: Live Map -->
       <button id="navTabMap" type="button" class="touch-target flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium transition">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon>
@@ -474,7 +478,6 @@
         <span id="navLabelMap" class="text-xs mt-0.5">Live Map</span>
       </button>
 
-      <!-- Tab 3: Stations -->
       <button id="navTabStations" type="button" class="touch-target flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium transition">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
@@ -487,10 +490,9 @@
   </nav>
 
   <!-- ======================================================================= -->
-  <!-- APPLICATION SCRIPT MODULE                                               -->
+  <!-- APPLICATION SCRIPT INTEGRATION                                          -->
   <!-- ======================================================================= -->
   <script type="module">
-    import { MOTION, isReducedMotion } from './src/motion-tokens.js';
     import { revealElement } from './src/components/PageReveal.js';
     import { RollingNumber } from './src/components/RollingNumber.js';
     import { CircularCountdown } from './src/components/CircularCountdown.js';
@@ -498,64 +500,67 @@
     import { NotificationStack } from './src/components/NotificationStack.js';
     import { SwapMorph } from './src/components/SwapMorph.js';
 
-    // 1. KOCHI METRO BLUE LINE 25 STATIONS DATASET
-    const STATIONS = [
-      { id: 1,  code: 'ALVA', name: 'Aluva',                ml: 'ആലുവ',              lat: 10.1099, lng: 76.3495, km: 0.00,  minFromAluva: 0.0,  theme: 'Periyar River Basin' },
-      { id: 2,  code: 'PLCD', name: 'Pulinchodu',           ml: 'പുളിഞ്ചോട്',          lat: 10.0951, lng: 76.3466, km: 1.73,  minFromAluva: 2.1,  theme: 'Western Ghats Flora' },
-      { id: 3,  code: 'CMPD', name: 'Companypady',          ml: 'കമ്പനിപ്പടി',         lat: 10.0873, lng: 76.3428, km: 2.70,  minFromAluva: 3.8,  theme: 'Medicinal Herbs' },
-      { id: 4,  code: 'AMBV', name: 'Ambattukavu',          ml: 'അമ്പാട്ടുകാവ്',        lat: 10.0794, lng: 76.3389, km: 3.68,  minFromAluva: 5.5,  theme: 'Bamboo Crafts' },
-      { id: 5,  code: 'MTTM', name: 'Muttom',               ml: 'മുട്ടം',              lat: 10.0727, lng: 76.3337, km: 4.62,  minFromAluva: 7.2,  theme: 'KMRL Depot & Solar' },
-      { id: 6,  code: 'KLMS', name: 'Kalamassery',          ml: 'കളമശ്ശേരി',           lat: 10.0586, lng: 76.3220, km: 6.67,  minFromAluva: 9.5,  theme: 'Industrial Cochin' },
-      { id: 7,  code: 'CUSAT',name: 'Cochin University',    ml: 'കൊച്ചിൻ യൂണിവേഴ്സിറ്റി', lat: 10.0467, lng: 76.3182, km: 8.05,  minFromAluva: 11.4, theme: 'Maritime Science' },
-      { id: 8,  code: 'PDPM', name: 'Pathadipalam',         ml: 'പത്തടിപ്പാലം',        lat: 10.0361, lng: 76.3144, km: 9.30,  minFromAluva: 13.2, theme: 'Aquatic Life' },
-      { id: 9,  code: 'EDPL', name: 'Edapally',             ml: 'ഇടപ്പള്ളി',           lat: 10.0251, lng: 76.3083, km: 10.78, minFromAluva: 15.2, theme: 'Spices Heritage & Lulu' },
-      { id: 10, code: 'CGPK', name: 'Changampuzha Park',    ml: 'ചങ്ങമ്പുഴ പാർക്ക്',    lat: 10.0152, lng: 76.3023, km: 12.08, minFromAluva: 17.1, theme: 'Kerala Literature' },
-      { id: 11, code: 'PLVM', name: 'Palarivattom',         ml: 'പാലാരിവട്ടം',         lat: 10.0099, lng: 76.3048, km: 13.09, minFromAluva: 19.0, theme: 'Flowers of Onam' },
-      { id: 12, code: 'JLNS', name: 'JLN Stadium',          ml: 'ജെ.എൽ.എൻ സ്റ്റേഡിയം',  lat: 10.0002, lng: 76.2992, km: 14.21, minFromAluva: 21.0, theme: 'Kerala Sports' },
-      { id: 13, code: 'KLOR', name: 'Kaloor',               ml: 'കലൂർ',               lat: 9.9950,  lng: 76.2914, km: 15.24, minFromAluva: 22.8, theme: 'Monsoon Rains' },
-      { id: 14, code: 'TNHL', name: 'Town Hall',            ml: 'ടൗൺ ഹാൾ',            lat: 9.9914,  lng: 76.2884, km: 15.72, minFromAluva: 24.3, theme: 'Butterflies' },
-      { id: 15, code: 'MGRD', name: 'MG Road',              ml: 'എം.ജി റോഡ്',         lat: 9.9834,  lng: 76.2823, km: 16.92, minFromAluva: 26.2, theme: 'Trade History' },
-      { id: 16, code: 'MHRJ', name: 'Maharajas College',    ml: 'മഹാരാജാസ് കോളേജ്',   lat: 9.9732,  lng: 76.2851, km: 18.10, minFromAluva: 28.2, theme: 'Endemic Reptiles' },
-      { id: 17, code: 'ERSH', name: 'Ernakulam South',      ml: 'എറണാകുളം സൗത്ത്',    lat: 9.9685,  lng: 76.2893, km: 18.96, minFromAluva: 30.0, theme: 'Temple Murals' },
-      { id: 18, code: 'KDVN', name: 'Kadavanthra',          ml: 'കടവന്ത്ര',            lat: 9.9666,  lng: 76.2983, km: 20.14, minFromAluva: 32.0, theme: 'Handloom & Coir' },
-      { id: 19, code: 'ELMK', name: 'Elamkulam',            ml: 'എളംകുളം',            lat: 9.9671,  lng: 76.3087, km: 21.29, minFromAluva: 33.8, theme: 'Pokkali Farming' },
-      { id: 20, code: 'VYTL', name: 'Vyttila',              ml: 'വൈറ്റില',             lat: 9.9675,  lng: 76.3204, km: 22.63, minFromAluva: 36.0, theme: 'Snake Boat Races' },
-      { id: 21, code: 'THKD', name: 'Thykoodam',            ml: 'തൈക്കൂടം',            lat: 9.9601,  lng: 76.3235, km: 23.66, minFromAluva: 38.0, theme: 'Fishing Nets' },
-      { id: 22, code: 'PETA', name: 'Pettah',               ml: 'പേട്ട',               lat: 9.9525,  lng: 76.3308, km: 24.84, minFromAluva: 40.0, theme: 'Mangroves' },
-      { id: 23, code: 'VDKT', name: 'Vadakkekotta',         ml: 'വടക്കേക്കോട്ട',        lat: 9.9518,  lng: 76.3396, km: 25.88, minFromAluva: 42.0, theme: 'Kalaripayattu Fort' },
-      { id: 24, code: 'SNJN', name: 'SN Junction',          ml: 'എസ്.എൻ ജംഗ്ഷൻ',      lat: 9.9522,  lng: 76.3463, km: 26.98, minFromAluva: 44.0, theme: 'Kerala Renaissance' },
-      { id: 25, code: 'TPHT', name: 'Thrippunithura',       ml: 'തൃപ്പൂണിത്തുറ',        lat: 9.9504,  lng: 76.3518, km: 28.13, minFromAluva: 46.0, theme: 'Royal Cochin Capital' }
-    ];
+    // Kinematics and Motion Modules
+    import { STATIONS, TrackGeometry } from './src/kinematics/track-geometry.js';
+    import { TrainMotionEngine } from './src/kinematics/train-motion-engine.js';
+    import { MapCanvasRenderer } from './src/kinematics/map-canvas-renderer.js';
+    import { SchematicRenderer } from './src/kinematics/schematic-renderer.js';
 
-    const TOTAL_LINE_MINUTES = 46.0;
-
-    // 2. KMRL FARE CALCULATION (Official Fare Slabs)
-    function getFare(fromIdx, toIdx) {
-      if (fromIdx === toIdx) return 10;
-      const d = Math.abs(STATIONS[toIdx].km - STATIONS[fromIdx].km);
-      if (d <= 2.0) return 10;
-      if (d <= 5.0) return 20;
-      if (d <= 10.0) return 30;
-      if (d <= 15.0) return 40;
-      if (d <= 22.0) return 50;
-      return 60;
-    }
-
-    // 3. APP STATE
+    // App State
     const state = {
-      lang: 'en', // 'en' | 'ml'
-      activeTab: 'trip', // 'trip' | 'map' | 'stations'
-      fromIdx: 0, // Default: Aluva
-      toIdx: 8,   // Default: Edapally
+      lang: 'en',
+      activeTab: 'trip',
+      fromIdx: 0,
+      toIdx: 8,
       isStopsCollapsed: true,
-      simSeconds: 15 * 3600 + 20 * 60,
-      simSpeed: 1,
-      isLiveTime: true,
       mapInitialized: false,
       lastAriaAnnouncedMins: null,
     };
 
-    // Geolocation Helper: prefill nearest station
+    // Instantiate Kinematics Geometry & Motion Engine
+    const trackGeometry = new TrackGeometry(STATIONS);
+    const motionEngine = new TrainMotionEngine({ geometry: trackGeometry });
+
+    // Register active metro fleet across the 28.1 km corridor
+    // Southbound Trains (Towards Thrippunithura)
+    motionEngine.registerTrain({ id: 'KM-101', name: 'Pampa', direction: 'south', initialStationIndex: 2 });
+    motionEngine.registerTrain({ id: 'KM-102', name: 'Periyar', direction: 'south', initialStationIndex: 7 });
+    motionEngine.registerTrain({ id: 'KM-103', name: 'Kabani', direction: 'south', initialStationIndex: 12 });
+    motionEngine.registerTrain({ id: 'KM-104', name: 'Nila', direction: 'south', initialStationIndex: 17 });
+    motionEngine.registerTrain({ id: 'KM-105', name: 'Chalakudy', direction: 'south', initialStationIndex: 21 });
+
+    // Northbound Trains (Towards Aluva)
+    motionEngine.registerTrain({ id: 'KM-201', name: 'Chaliyar', direction: 'north', initialStationIndex: 23 });
+    motionEngine.registerTrain({ id: 'KM-202', name: 'Kallada', direction: 'north', initialStationIndex: 18 });
+    motionEngine.registerTrain({ id: 'KM-203', name: 'Karamana', direction: 'north', initialStationIndex: 13 });
+    motionEngine.registerTrain({ id: 'KM-204', name: 'Meenachil', direction: 'north', initialStationIndex: 8 });
+    motionEngine.registerTrain({ id: 'KM-205', name: 'Neyyar', direction: 'north', initialStationIndex: 3 });
+
+    // Components
+    let rollingCountdown = null;
+    let rollingFareInstance = null;
+    let rollingDurationInstance = null;
+    let rollingArrivalInstance = null;
+    let circularCountdownInstance = null;
+    let journeyLineInstance = null;
+    let notificationStackInstance = null;
+    let swapMorphInstance = null;
+
+    let leafletMap = null;
+    let mapCanvasRenderer = null;
+    let schematicRenderer = null;
+
+    function getFare(fromI, toI) {
+      if (fromI === toI) return 10;
+      const d = Math.abs(STATIONS[toI].km - STATIONS[fromI].km);
+      if (d <= 2) return 10;
+      if (d <= 5) return 20;
+      if (d <= 10) return 30;
+      if (d <= 15) return 40;
+      if (d <= 22) return 50;
+      return 60;
+    }
+
     function detectNearestStation() {
       if (!('geolocation' in navigator)) return;
       navigator.geolocation.getCurrentPosition(
@@ -571,7 +576,6 @@
               nearestIdx = idx;
             }
           });
-          // If within ~30km of Kochi, select it as origin
           if (minDist < 0.35) {
             state.fromIdx = nearestIdx;
             document.getElementById('selectFromStation').value = String(nearestIdx);
@@ -579,20 +583,10 @@
             updateTripScreen();
           }
         },
-        () => { /* Silent fallback to default */ },
+        () => {},
         { timeout: 6000 }
       );
     }
-
-    // 4. INITIALIZE ANIMATED COMPONENTS
-    let rollingCountdown = null;
-    let rollingFareInstance = null;
-    let rollingDurationInstance = null;
-    let rollingArrivalInstance = null;
-    let circularCountdownInstance = null;
-    let journeyLineInstance = null;
-    let notificationStackInstance = null;
-    let swapMorphInstance = null;
 
     function initAnimatedComponents() {
       rollingCountdown = new RollingNumber(document.getElementById('rollingCountdownMins'), '04');
@@ -603,8 +597,6 @@
       circularCountdownInstance = new CircularCountdown(document.getElementById('countdownSvgRing'), {
         radius: 36,
         strokeWidth: 3.5,
-        normalColor: 'var(--km-accent, #00796b)',
-        warningColor: '#f59e0b',
       });
 
       journeyLineInstance = new JourneyProgressLine(document.getElementById('journeyStopsContainer'));
@@ -625,26 +617,38 @@
       });
     }
 
-    // 5. COMPUTE COMMUTE TELEMETRY IN PLAIN LANGUAGE
     function calculateCommute() {
       const fromSt = STATIONS[state.fromIdx];
       const toSt = STATIONS[state.toIdx];
       const isSouthbound = state.toIdx >= state.fromIdx;
-      const directionTargetName = isSouthbound ? (state.lang === 'ml' ? 'തൃപ്പൂണിത്തുറ' : 'Thrippunithura') : (state.lang === 'ml' ? 'ആലുവ' : 'Aluva');
+      const directionTargetName = isSouthbound
+        ? (state.lang === 'ml' ? 'തൃപ്പൂണിത്തുറ' : 'Thrippunithura')
+        : (state.lang === 'ml' ? 'ആലുവ' : 'Aluva');
       const platformNum = isSouthbound ? 'Platform 2' : 'Platform 1';
 
       const fare = getFare(state.fromIdx, state.toIdx);
       const cardFare = Math.round(fare * 0.9);
       const dist = Math.abs(toSt.km - fromSt.km).toFixed(1);
-      const durationMins = Math.max(2, Math.round(Math.abs(toSt.minFromAluva - fromSt.minFromAluva)));
+      const durationMins = Math.max(2, Math.round(Math.abs(toSt.minFromAluva - fromSt.minFromAluva || (dist * 1.6))));
       const stopsCount = Math.abs(state.toIdx - state.fromIdx);
 
-      // Simulation clock calculations for next train arrival
-      const currentMin = (state.simSeconds / 60) % (24 * 60);
-      const headway = 7.5; // 7.5 mins between trains
-      const nextArrivalMin = (Math.ceil(currentMin / headway) * headway);
-      const remainingMinutes = Math.max(1, Math.round(nextArrivalMin - currentMin));
-      const remainingSeconds = Math.max(10, Math.round((nextArrivalMin - currentMin) * 60));
+      // Match physical train positioning for departure countdown
+      const snapshot = motionEngine.getFleetSnapshot();
+      const relevantTrains = snapshot.filter(t => t.direction === (isSouthbound ? 'south' : 'north'));
+      let closestRemainingSec = 240;
+
+      if (relevantTrains.length > 0) {
+        const fromMeters = trackGeometry.stationDistanceMeters[state.fromIdx];
+        relevantTrains.forEach(t => {
+          const diff = isSouthbound ? (fromMeters - t.currentDistanceMeters) : (t.currentDistanceMeters - fromMeters);
+          if (diff > 0 && diff < 3000) {
+            const sec = Math.round(diff / Math.max(10, (t.velocityKmh / 3.6)));
+            if (sec < closestRemainingSec) closestRemainingSec = sec;
+          }
+        });
+      }
+
+      const remainingMinutes = Math.max(1, Math.round(closestRemainingSec / 60));
 
       const arrivalTimestamp = new Date();
       arrivalTimestamp.setMinutes(arrivalTimestamp.getMinutes() + remainingMinutes + durationMins);
@@ -664,25 +668,21 @@
         durationMins,
         stopsCount,
         remainingMinutes,
-        remainingSeconds,
+        remainingSeconds: closestRemainingSec,
         arrivalTimeString
       };
     }
 
-    // 6. UPDATE TRIP SCREEN WITH ANIMATIONS
     function updateTripScreen(forceReRoll = false) {
       const data = calculateCommute();
 
-      // Rolling Number Countdown update (Animation #2)
       rollingCountdown.update(String(data.remainingMinutes).padStart(2, '0'));
       rollingFareInstance.update(`₹${data.fare}`);
       rollingDurationInstance.update(`${data.durationMins} mins`);
       rollingArrivalInstance.update(data.arrivalTimeString);
 
-      // Circular Countdown progress update (Animation #3)
-      circularCountdownInstance.update(data.remainingSeconds, 450);
+      circularCountdownInstance.update(data.remainingSeconds, 360);
 
-      // Platform & Direction in Plain Language
       const platformPrefix = state.lang === 'ml' ? 'പ്ലാറ്റ്ഫോം' : 'Platform';
       const towardsPrefix = state.lang === 'ml' ? 'ലേക്ക്' : 'towards';
       document.getElementById('answerPlatformDirection').textContent =
@@ -694,20 +694,16 @@
       document.getElementById('distanceLabel').textContent = `${data.dist} km`;
       document.getElementById('labelKochi1Fare').textContent = `Card: ₹${data.cardFare}`;
 
-      // Accessible Screen Reader Announcement (throttled to at most once per minute)
       if (state.lastAriaAnnouncedMins !== data.remainingMinutes) {
         state.lastAriaAnnouncedMins = data.remainingMinutes;
         const liveRegion = document.getElementById('ariaLiveCountdown');
         liveRegion.textContent = `Next train in ${data.remainingMinutes} minutes, arriving at ${data.platformNum} towards ${data.directionTargetName}. Fare is ${data.fare} rupees.`;
       }
 
-      // Journey Stops Line (Animation #4)
       const minI = Math.min(state.fromIdx, state.toIdx);
       const maxI = Math.max(state.fromIdx, state.toIdx);
       let tripStations = STATIONS.slice(minI, maxI + 1);
-      if (state.toIdx < state.fromIdx) {
-        tripStations.reverse();
-      }
+      if (state.toIdx < state.fromIdx) tripStations.reverse();
 
       journeyLineInstance.renderJourney({
         stations: tripStations,
@@ -720,7 +716,6 @@
       });
     }
 
-    // 7. TAB NAVIGATION & PAGE REVEAL (Animation #1)
     function switchTab(newTab) {
       if (state.activeTab === newTab) return;
       state.activeTab = newTab;
@@ -738,13 +733,12 @@
           screenEl.classList.remove('hidden');
           screenEl.classList.add('flex');
           btnEl.className = 'touch-target flex flex-col items-center justify-center py-1 text-teal-600 dark:text-teal-400 font-bold transition';
-          
-          // Trigger Page Reveal (Animation #1)
           revealElement(screenEl, { staggerChildren: true });
 
-          // Lazy load Leaflet on first Map tab opening
           if (newTab === 'map' && !state.mapInitialized) {
             initLeafletCorridorMap();
+          } else if (newTab === 'map' && mapCanvasRenderer) {
+            mapCanvasRenderer.resizeCanvas();
           }
         } else {
           screenEl.classList.add('hidden');
@@ -754,7 +748,6 @@
       });
     }
 
-    // 8. POPULATE STATIONS & TRANSLATIONS
     function populateDropdowns() {
       const fromSel = document.getElementById('selectFromStation');
       const toSel = document.getElementById('selectToStation');
@@ -766,7 +759,6 @@
 
       fromSel.innerHTML = options;
       toSel.innerHTML = options;
-
       fromSel.value = String(state.fromIdx);
       toSel.value = String(state.toIdx);
     }
@@ -787,10 +779,8 @@
       }
 
       container.innerHTML = filtered.map(st => {
-        const isCurrentOrigin = st.id - 1 === state.fromIdx;
         const name = state.lang === 'ml' ? st.ml : st.name;
         const subName = state.lang === 'ml' ? st.name : st.ml;
-
         return `
           <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
             <div>
@@ -824,11 +814,7 @@
       });
     }
 
-    // 9. LEAFLET MAP (Lazy Loaded for 60fps Mobile Performance)
-    let leafletMap = null;
-    let mapTrackLine = null;
-    let liveTrainGlider = null;
-
+    // Leaflet Map with Single-Canvas Motion Overlay
     function initLeafletCorridorMap() {
       state.mapInitialized = true;
       leafletMap = L.map('mapViewport', {
@@ -842,18 +828,25 @@
         maxZoom: 19
       }).addTo(leafletMap);
 
-      const coords = STATIONS.map(s => [s.lat, s.lng]);
+      const coords = trackGeometry.getPolylineCoords();
 
-      // Viaduct Track line
-      mapTrackLine = L.polyline(coords, {
-        color: '#00796b',
-        weight: 5,
-        opacity: 0.9,
+      // Viaduct Track Line Casing & Fill
+      L.polyline(coords, {
+        color: '#0f172a',
+        weight: 8,
+        opacity: 0.6,
         lineCap: 'round'
       }).addTo(leafletMap);
 
-      // Station Pins
-      STATIONS.forEach((st, idx) => {
+      const trackPolyline = L.polyline(coords, {
+        color: '#00796b',
+        weight: 5,
+        opacity: 0.95,
+        lineCap: 'round'
+      }).addTo(leafletMap);
+
+      // Station Markers
+      STATIONS.forEach((st) => {
         const pin = L.circleMarker([st.lat, st.lng], {
           radius: 5,
           color: '#00796b',
@@ -861,40 +854,84 @@
           fillOpacity: 1,
           weight: 2
         }).addTo(leafletMap);
-
         pin.bindTooltip(`${st.id}. ${st.name}`, { direction: 'right', className: 'text-xs font-bold' });
       });
 
-      // Gliding Live Train Marker (Animation #4 Glider)
-      const trainIcon = L.divIcon({
-        html: `
-          <div class="w-8 h-8 rounded-full bg-teal-600 text-white shadow-lg flex items-center justify-center border-2 border-white ring-2 ring-teal-500/40">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="4" y="3" width="16" height="16" rx="2"></rect><circle cx="8" cy="15" r="1"></circle><circle cx="16" cy="15" r="1"></circle></svg>
-          </div>
-        `,
-        className: 'live-train-marker',
-        iconSize: [32, 32],
-        iconAnchor: [16, 16]
+      // Mount 60 FPS Canvas Overlay Renderer
+      mapCanvasRenderer = new MapCanvasRenderer(leafletMap, document.getElementById('mapViewportContainer'));
+
+      // Subscribe Canvas Overlay to Kinematic Motion Engine
+      motionEngine.subscribe((snapshot, dt) => {
+        if (state.activeTab === 'map' && mapCanvasRenderer) {
+          mapCanvasRenderer.render(snapshot, dt);
+        }
       });
 
-      liveTrainGlider = L.marker([STATIONS[8].lat, STATIONS[8].lng], { icon: trainIcon }).addTo(leafletMap);
-
+      // Fit corridor button
       document.getElementById('btnFitMapCorridor').addEventListener('click', () => {
-        if (leafletMap && mapTrackLine) {
-          leafletMap.fitBounds(mapTrackLine.getBounds(), { padding: [30, 30] });
+        if (leafletMap && trackPolyline) {
+          leafletMap.fitBounds(trackPolyline.getBounds(), { padding: [35, 35] });
+        }
+      });
+
+      // Camera Follow Toggle
+      let isFollowing = false;
+      const btnFollow = document.getElementById('btnToggleCameraFollow');
+      const followLabel = document.getElementById('followLabel');
+
+      btnFollow.addEventListener('click', () => {
+        isFollowing = !isFollowing;
+        if (isFollowing) {
+          const snapshot = motionEngine.getFleetSnapshot();
+          const target = snapshot[0];
+          mapCanvasRenderer.setFollowedTrain(target ? target.id : null);
+          btnFollow.className = 'touch-target px-3 py-1 text-xs font-bold rounded-xl bg-teal-600 text-white transition';
+          followLabel.textContent = `Following: ${target ? target.id : 'On'}`;
+        } else {
+          mapCanvasRenderer.setFollowedTrain(null);
+          btnFollow.className = 'touch-target px-3 py-1 text-xs font-bold rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-slate-600 dark:text-slate-300 hover:border-teal-500 transition';
+          followLabel.textContent = 'Follow: Off';
+        }
+      });
+
+      mapCanvasRenderer.onFollowCancelled = () => {
+        isFollowing = false;
+        btnFollow.className = 'touch-target px-3 py-1 text-xs font-bold rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-slate-600 dark:text-slate-300 hover:border-teal-500 transition';
+        followLabel.textContent = 'Follow: Off';
+      };
+    }
+
+    // Initialize Synchronized Dual-Track Linear Schematic in Extras
+    function initSchematic() {
+      const mount = document.getElementById('schematicMount');
+      if (!mount) return;
+      schematicRenderer = new SchematicRenderer(mount, STATIONS, {
+        onTrainSelected: (trainId) => {
+          motionEngine.selectedTrainId = trainId;
+          if (mapCanvasRenderer) mapCanvasRenderer.setFollowedTrain(trainId);
+        },
+        onStationSelected: (stationIdx) => {
+          state.fromIdx = stationIdx;
+          document.getElementById('selectFromStation').value = String(stationIdx);
+          updateTripScreen(true);
+        }
+      });
+
+      motionEngine.subscribe((snapshot) => {
+        if (schematicRenderer) {
+          schematicRenderer.render(snapshot);
         }
       });
     }
 
-    // 10. SECONDARY EXTRAS & VIADUCT SIMULATOR
+    // Viaduct Cam
     let viaductCanvas = null;
     let viaductCtx = null;
     let viaductScroll = 0;
 
     function initViaductCam() {
       viaductCanvas = document.getElementById('extrasViaductCanvas');
-      if (!viaductCanvas) return;
-      viaductCtx = viaductCanvas.getContext('2d');
+      if (viaductCanvas) viaductCtx = viaductCanvas.getContext('2d');
     }
 
     function renderViaductFrame(dt) {
@@ -906,30 +943,26 @@
         viaductCanvas.height = H;
       }
 
-      viaductScroll = (viaductScroll + 60 * dt * state.simSpeed) % 1200;
+      viaductScroll = (viaductScroll + 80 * dt * motionEngine.simSpeedMultiplier) % 1200;
 
-      // Sky
       const grad = viaductCtx.createLinearGradient(0, 0, 0, H);
       grad.addColorStop(0, '#0a192f');
       grad.addColorStop(1, '#172a45');
       viaductCtx.fillStyle = grad;
       viaductCtx.fillRect(0, 0, W, H);
 
-      // Track Deck
       const deckY = H - 36;
       viaductCtx.fillStyle = '#475569';
       viaductCtx.fillRect(0, deckY, W, 8);
       viaductCtx.fillStyle = '#06b6d4';
       viaductCtx.fillRect(0, deckY + 3, W, 2);
 
-      // Concrete Pillars
       for (let x = -140; x < W + 140; x += 140) {
         const px = x - (viaductScroll % 140);
         viaductCtx.fillStyle = '#334155';
         viaductCtx.fillRect(px, deckY + 8, 20, H - deckY);
       }
 
-      // 3-Coach Alstom Train
       const trainW = 220;
       const startX = (W - trainW) / 2;
       const trainY = deckY - 26;
@@ -939,20 +972,16 @@
       viaductCtx.roundRect(startX, trainY, trainW, 24, [6, 6, 2, 2]);
       viaductCtx.fill();
 
-      // KMRL Teal stripe
       viaductCtx.fillStyle = '#00897b';
       viaductCtx.fillRect(startX + 2, trainY + 16, trainW - 4, 4);
 
-      // Windows
       viaductCtx.fillStyle = '#0f172a';
       for (let w = 0; w < 6; w++) {
         viaductCtx.fillRect(startX + 16 + w * 32, trainY + 6, 20, 9);
       }
     }
 
-    // 11. BIND USER INTERFACES & REDUCED MOTION TESTING
     function bindEvents() {
-      // Station Dropdowns
       document.getElementById('selectFromStation').addEventListener('change', (e) => {
         state.fromIdx = parseInt(e.target.value, 10);
         updateTripScreen(true);
@@ -963,17 +992,13 @@
         updateTripScreen(true);
       });
 
-      // Bottom Tabs
       document.getElementById('navTabTrip').addEventListener('click', () => switchTab('trip'));
       document.getElementById('navTabMap').addEventListener('click', () => switchTab('map'));
       document.getElementById('navTabStations').addEventListener('click', () => switchTab('stations'));
 
-      // Language Switcher
       document.getElementById('btnLangToggle').addEventListener('click', () => {
         state.lang = state.lang === 'en' ? 'ml' : 'en';
         document.getElementById('langLabel').textContent = state.lang === 'en' ? 'മലയാളം' : 'English';
-        
-        // Update Static Labels
         document.getElementById('headingWhere').textContent = state.lang === 'ml' ? 'നിങ്ങൾ എങ്ങോട്ടാണ് പോകുന്നത്?' : 'Where are you going?';
         document.getElementById('labelFrom').textContent = state.lang === 'ml' ? 'പുറപ്പെടുന്ന സ്റ്റേഷൻ' : 'From (Origin)';
         document.getElementById('labelTo').textContent = state.lang === 'ml' ? 'എത്തിച്ചേരേണ്ട സ്റ്റേഷൻ' : 'To (Destination)';
@@ -988,18 +1013,15 @@
         updateTripScreen();
       });
 
-      // Theme Switcher
       document.getElementById('btnThemeToggle').addEventListener('click', () => {
         const isDark = document.documentElement.classList.toggle('dark');
         document.documentElement.classList.toggle('light', !isDark);
       });
 
-      // Search Station Input
       document.getElementById('inputStationSearch').addEventListener('input', (e) => {
         renderStationsDirectory(e.target.value);
       });
 
-      // Extras Modal
       const extrasBackdrop = document.getElementById('extrasSheetBackdrop');
       document.getElementById('btnOpenExtras').addEventListener('click', () => {
         extrasBackdrop.classList.remove('hidden');
@@ -1011,86 +1033,61 @@
         extrasBackdrop.classList.remove('flex');
       });
 
-      // Sim Speed Buttons
-      document.getElementById('btnSimLive').addEventListener('click', () => {
-        state.isLiveTime = true;
-        state.simSpeed = 1;
-      });
-      document.getElementById('btnSim1x').addEventListener('click', () => {
-        state.isLiveTime = false;
-        state.simSpeed = 1;
-      });
-      document.getElementById('btnSim10x').addEventListener('click', () => {
-        state.isLiveTime = false;
-        state.simSpeed = 10;
-      });
-      document.getElementById('btnSim30x').addEventListener('click', () => {
-        state.isLiveTime = false;
-        state.simSpeed = 30;
-      });
-    }
+      // Simulation Speed Buttons
+      const btn1x = document.getElementById('btnSpeed1x');
+      const btn5x = document.getElementById('btnSpeed5x');
+      const btn10x = document.getElementById('btnSpeed10x');
+      const btn25x = document.getElementById('btnSpeed25x');
 
-    // 12. RUNTIME SIMULATION CLOCK & 60 FPS MOTION RUNNER
-    let lastTime = performance.now();
-    let hasAlertFired = false;
-
-    function tickLoop(now) {
-      const dt = Math.min(0.1, (now - lastTime) / 1000);
-      lastTime = now;
-
-      if (state.isLiveTime) {
-        const d = new Date();
-        state.simSeconds = d.getHours() * 3600 + d.getMinutes() * 60 + d.getSeconds();
-      } else {
-        state.simSeconds = (state.simSeconds + dt * state.simSpeed) % 86400;
-      }
-
-      // Smooth Live Train Gliding on Leaflet Map (Animation #4)
-      if (liveTrainGlider && leafletMap) {
-        const cycleSeconds = 90;
-        const progress = ((state.simSeconds / cycleSeconds) % 1);
-        const idxFloat = progress * (STATIONS.length - 1);
-        const lowerIdx = Math.floor(idxFloat);
-        const upperIdx = Math.min(STATIONS.length - 1, lowerIdx + 1);
-        const subFraction = idxFloat - lowerIdx;
-
-        const curLat = STATIONS[lowerIdx].lat + (STATIONS[upperIdx].lat - STATIONS[lowerIdx].lat) * subFraction;
-        const curLng = STATIONS[lowerIdx].lng + (STATIONS[upperIdx].lng - STATIONS[lowerIdx].lng) * subFraction;
-        liveTrainGlider.setLatLng([curLat, curLng]);
-      }
-
-      // Render Extras Viaduct Scene
-      renderViaductFrame(dt);
-
-      // Trigger 2-minute arrival notification heads-up once (Animation #5)
-      const data = calculateCommute();
-      if (data.remainingMinutes <= 2 && !hasAlertFired) {
-        hasAlertFired = true;
-        notificationStackInstance.pushNotification({
-          id: 'alert-arrival',
-          title: 'Your train is arriving in 2 minutes',
-          body: `${data.platformNum} · ${data.directionTargetName}. Please stand behind the yellow line.`,
-          duration: 9000,
+      const setSpeedBtn = (activeBtn, mult) => {
+        [btn1x, btn5x, btn10x, btn25x].forEach(b => {
+          b.className = 'touch-target px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[var(--surface-bg)] text-[var(--text-primary)] border border-[var(--card-border)] hover:border-teal-500 transition';
         });
-      }
+        activeBtn.className = 'touch-target px-3.5 py-1.5 rounded-xl text-xs font-bold bg-teal-600 text-white shadow-sm transition';
+        motionEngine.setSimulationSpeed(mult);
+      };
 
-      requestAnimationFrame(tickLoop);
+      btn1x.addEventListener('click', () => setSpeedBtn(btn1x, 1.0));
+      btn5x.addEventListener('click', () => setSpeedBtn(btn5x, 5.0));
+      btn10x.addEventListener('click', () => setSpeedBtn(btn10x, 10.0));
+      btn25x.addEventListener('click', () => setSpeedBtn(btn25x, 25.0));
     }
 
-    // INIT APP
+    // App Initialization
     window.addEventListener('DOMContentLoaded', () => {
       populateDropdowns();
       initAnimatedComponents();
       renderStationsDirectory();
       bindEvents();
       initViaductCam();
+      initSchematic();
       detectNearestStation();
       updateTripScreen();
 
-      // Trigger Initial Page Reveal (Animation #1)
       revealElement(document.getElementById('tabScreenTrip'), { staggerChildren: true });
 
-      requestAnimationFrame(tickLoop);
+      // Start Kinematic Physics Engine
+      motionEngine.start();
+
+      // Hook up Viaduct frame rendering
+      motionEngine.subscribe((snapshot, dt) => {
+        renderViaductFrame(dt);
+      });
+
+      // Trigger 2-minute arrival notification heads-up
+      let alertShown = false;
+      motionEngine.subscribe((snapshot) => {
+        const data = calculateCommute();
+        if (data.remainingMinutes <= 2 && !alertShown) {
+          alertShown = true;
+          notificationStackInstance.pushNotification({
+            id: 'alert-arrival-heads-up',
+            title: 'Your train is arriving in 2 minutes',
+            body: `${data.platformNum} · ${data.directionTargetName}. Please stand behind the yellow platform line.`,
+            duration: 9000,
+          });
+        }
+      });
     });
   </script>
 </body>
