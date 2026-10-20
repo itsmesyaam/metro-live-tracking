@@ -21,25 +21,25 @@ export class SchematicRenderer {
       <div class="relative w-full h-full select-none flex flex-col justify-between py-1">
         <!-- Southbound Track (Top) -->
         <div class="relative h-9 flex items-center">
-          <div class="absolute left-0 top-0 text-[10px] font-mono font-bold text-teal-700 dark:text-teal-400 uppercase tracking-wider">
+          <div class="absolute left-0 top-0 text-[10px] font-mono font-bold uppercase tracking-wider" style="color:var(--km-accent,#eb5e28)">
             Southbound &rarr; towards Thrippunithura
           </div>
-          <div class="absolute inset-x-2 top-6 h-1 bg-teal-500/20 rounded-full"></div>
+          <div class="absolute inset-x-2 top-6 h-1 rounded-full" style="background:rgba(235,94,40,0.25)"></div>
           <div id="schematicTrainsSouth" class="absolute inset-x-2 top-4 h-6"></div>
         </div>
 
         <!-- Middle Station Stations Axis -->
         <div class="relative h-6 flex items-center">
-          <div class="absolute inset-x-2 top-1/2 -translate-y-1/2 h-0.5 bg-slate-300 dark:bg-slate-700"></div>
+          <div class="absolute inset-x-2 top-1/2 -translate-y-1/2 h-0.5" style="background:var(--km-surface-2,#403d39)"></div>
           <div id="schematicStationsAxis" class="absolute inset-x-2 inset-y-0"></div>
         </div>
 
         <!-- Northbound Track (Bottom) -->
         <div class="relative h-9 flex items-center">
-          <div class="absolute left-0 top-0 text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">
+          <div class="absolute left-0 top-0 text-[10px] font-mono font-bold uppercase tracking-wider" style="color:var(--km-text-secondary,#ccc5b9)">
             Northbound &rarr; towards Aluva
           </div>
-          <div class="absolute inset-x-2 top-6 h-1 bg-emerald-500/20 rounded-full"></div>
+          <div class="absolute inset-x-2 top-6 h-1 rounded-full" style="background:rgba(204,197,185,0.25)"></div>
           <div id="schematicTrainsNorth" class="absolute inset-x-2 top-4 h-6"></div>
         </div>
       </div>
@@ -60,7 +60,7 @@ export class SchematicRenderer {
           style="left: ${leftPct}%"
           class="schematic-station-pin absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center group focus:outline-none"
           title="${st.id}. ${st.name} (${st.km.toFixed(1)} km)">
-          <span class="w-2.5 h-2.5 rounded-full bg-white dark:bg-slate-900 border-2 border-slate-400 dark:border-slate-500 group-hover:scale-125 group-hover:border-teal-500 transition-transform"></span>
+          <span class="w-2.5 h-2.5 rounded-full border-2 transition-transform group-hover:scale-125" style="background:var(--km-base,#252422);border-color:var(--km-surface-2,#403d39)"></span>
         </button>
       `;
     }).join('');
@@ -89,14 +89,16 @@ export class SchematicRenderer {
       const isDwelling = t.state === 'DWELLING';
       const isSelected = t.isSelected;
 
-      const baseBg = isSouth ? 'bg-teal-600 text-white' : 'bg-emerald-600 text-white';
-      const dwellRing = isDwelling ? 'ring-2 ring-amber-400' : '';
-      const selectedRing = isSelected ? 'ring-2 ring-rose-500 scale-110 z-30' : 'z-20';
+      const styleBg = isSouth
+        ? 'background:var(--km-accent,#eb5e28);color:#fffcf2;'
+        : 'background:var(--km-text-secondary,#ccc5b9);color:#252422;';
+      const dwellRing = isDwelling ? 'box-shadow:0 0 0 2px #fffcf2;' : '';
+      const selectedRing = isSelected ? 'box-shadow:0 0 0 2px var(--km-accent,#eb5e28);transform:scale(1.1);' : '';
 
       return `
         <button type="button" data-train-id="${t.id}"
-          style="left: ${leftPct}%;"
-          class="schematic-train-marker absolute -translate-x-1/2 top-0 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold shadow-md hover:scale-110 transition-transform ${baseBg} ${dwellRing} ${selectedRing}"
+          style="left: ${leftPct}%;${styleBg}${dwellRing}${selectedRing}"
+          class="schematic-train-marker absolute -translate-x-1/2 top-0 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold shadow-md hover:scale-110 transition-transform z-20"
           title="${t.id} - ${t.state} (${t.velocityKmh} km/h)">
           ${t.id} ${isSouth ? '&rarr;' : '&larr;'}
         </button>

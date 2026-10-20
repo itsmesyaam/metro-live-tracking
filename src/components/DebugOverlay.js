@@ -25,48 +25,48 @@ export class DebugOverlay {
     }`;
 
     this.container.innerHTML = `
-      <div class="bg-slate-950/90 text-slate-100 backdrop-blur-md border border-teal-500/30 rounded-2xl p-4 shadow-2xl w-72 font-mono text-xs flex flex-col gap-3">
+      <div class="bg-[#252422]/95 text-[#fffcf2] backdrop-blur-md border border-[var(--km-accent,#eb5e28)]/40 rounded-2xl p-4 shadow-2xl w-72 font-mono text-xs flex flex-col gap-3">
         <!-- Title & Close -->
-        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+        <div class="flex items-center justify-between border-b border-[#403d39] pb-2">
           <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping"></span>
-            <span class="font-bold text-[11px] tracking-wider uppercase text-teal-400">Kinematics Diagnostics</span>
+            <span class="w-2.5 h-2.5 rounded-full bg-[var(--km-accent,#eb5e28)] animate-ping"></span>
+            <span class="font-bold text-[11px] tracking-wider uppercase text-[var(--km-accent,#eb5e28)]">Kinematics Diagnostics</span>
           </div>
-          <span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-bold">Press 'D'</span>
+          <span class="text-[10px] bg-[#403d39] text-[#ccc5b9] px-1.5 py-0.5 rounded font-bold">Press 'D'</span>
         </div>
 
         <!-- Metric Grid -->
         <div class="grid grid-cols-2 gap-2">
-          <div class="bg-slate-900/80 rounded-xl p-2 border border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Frame Rate</span>
-            <span id="dbgFps" class="text-base font-black text-emerald-400 font-mono">60 FPS</span>
+          <div class="bg-[#2e2b28] rounded-xl p-2 border border-[#403d39]">
+            <span class="text-[10px] text-[#ccc5b9] uppercase tracking-wider block">Frame Rate</span>
+            <span id="dbgFps" class="text-base font-black text-[#fffcf2] font-mono">60 FPS</span>
           </div>
 
-          <div class="bg-slate-900/80 rounded-xl p-2 border border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Active Fleet</span>
-            <span id="dbgTrains" class="text-base font-black text-cyan-400 font-mono">10 Trains</span>
+          <div class="bg-[#2e2b28] rounded-xl p-2 border border-[#403d39]">
+            <span class="text-[10px] text-[#ccc5b9] uppercase tracking-wider block">Active Fleet</span>
+            <span id="dbgTrains" class="text-base font-black text-[var(--km-accent,#eb5e28)] font-mono">10 Trains</span>
           </div>
 
-          <div class="bg-slate-900/80 rounded-xl p-2 border border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Tick Age</span>
-            <span id="dbgTickAge" class="text-base font-black text-slate-200 font-mono">0 ms</span>
+          <div class="bg-[#2e2b28] rounded-xl p-2 border border-[#403d39]">
+            <span class="text-[10px] text-[#ccc5b9] uppercase tracking-wider block">Tick Age</span>
+            <span id="dbgTickAge" class="text-base font-black text-[#fffcf2] font-mono">0 ms</span>
           </div>
 
-          <div class="bg-slate-900/80 rounded-xl p-2 border border-slate-800">
-            <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Max Error</span>
-            <span id="dbgMaxError" class="text-base font-black text-teal-300 font-mono">0.0 m</span>
+          <div class="bg-[#2e2b28] rounded-xl p-2 border border-[#403d39]">
+            <span class="text-[10px] text-[#ccc5b9] uppercase tracking-wider block">Max Error</span>
+            <span id="dbgMaxError" class="text-base font-black text-[var(--km-accent,#eb5e28)] font-mono">0.0 m</span>
           </div>
         </div>
 
         <!-- Source Badge & Forward Motion Indicator -->
-        <div class="bg-slate-900/80 rounded-xl p-2 border border-slate-800 flex flex-col gap-1">
+        <div class="bg-[#2e2b28] rounded-xl p-2 border border-[#403d39] flex flex-col gap-1">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] text-slate-400 uppercase">Data Source</span>
-            <span id="dbgSource" class="text-[10px] font-bold text-teal-400 px-1.5 py-0.5 rounded bg-teal-500/10">ESTIMATED (IST Timetable)</span>
+            <span class="text-[10px] text-[#ccc5b9] uppercase">Data Source</span>
+            <span id="dbgSource" class="text-[10px] font-bold text-[var(--km-accent,#eb5e28)] px-1.5 py-0.5 rounded bg-[rgba(235,94,40,0.12)]">ESTIMATED (IST Timetable)</span>
           </div>
           <div class="flex items-center justify-between">
-            <span class="text-[10px] text-slate-400 uppercase">Rail Direction</span>
-            <span class="text-[10px] font-bold text-emerald-400">Strictly Non-Reversing</span>
+            <span class="text-[10px] text-[#ccc5b9] uppercase">Rail Direction</span>
+            <span class="text-[10px] font-bold text-[#3fae5a]">Strictly Non-Reversing</span>
           </div>
         </div>
 

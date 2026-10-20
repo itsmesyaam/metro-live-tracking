@@ -64,7 +64,7 @@ export class JourneyProgressLine {
     drawLine.setAttribute('y1', '0');
     drawLine.setAttribute('x2', '2');
     drawLine.setAttribute('y2', '100%');
-    drawLine.setAttribute('stroke', 'var(--km-accent, #00897b)');
+    drawLine.setAttribute('stroke', 'var(--km-accent, #eb5e28)');
     drawLine.setAttribute('stroke-width', '3');
     drawLine.setAttribute('stroke-linecap', 'round');
     drawLine.setAttribute('class', 'journey-draw-path');
@@ -81,7 +81,7 @@ export class JourneyProgressLine {
       if (st.isCollapseBadge) {
         const collapseBtn = document.createElement('button');
         collapseBtn.type = 'button';
-        collapseBtn.className = 'w-full text-left py-2 px-3.5 my-1 text-sm font-semibold rounded-xl bg-slate-100 dark:bg-slate-800/80 text-[var(--km-accent, #00897b)] hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center justify-between';
+        collapseBtn.className = 'w-full text-left py-2 px-3.5 my-1 text-sm font-semibold rounded-xl bg-slate-100 dark:bg-slate-800/80 text-[var(--km-accent, #eb5e28)] hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center justify-between';
         collapseBtn.innerHTML = `
           <span>+ ${st.count} more stops</span>
           <span class="text-xs uppercase tracking-wider text-slate-500 font-bold">Tap to view</span>
@@ -103,8 +103,8 @@ export class JourneyProgressLine {
       const dot = document.createElement('span');
       dot.className = `journey-station-dot absolute left-3.5 -translate-x-1/2 w-3.5 h-3.5 rounded-full border-2 transition-transform ${
         isOrigin || isDestination
-          ? 'bg-[var(--km-accent,#00897b)] border-white dark:border-slate-900 ring-4 ring-[var(--km-accent,#00897b)]/20'
-          : 'bg-white dark:bg-slate-900 border-slate-400 dark:border-slate-600'
+          ? 'bg-[var(--km-accent,#eb5e28)] border-[#252422] ring-4 ring-[var(--km-accent,#eb5e28)]/20'
+          : 'bg-[#252422] border-[#403d39]'
       }`;
       dot.style.marginTop = '2px';
       stopRow.appendChild(dot);

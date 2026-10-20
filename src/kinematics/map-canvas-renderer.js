@@ -145,7 +145,7 @@ export class MapCanvasRenderer {
         ctx.save();
         ctx.beginPath();
         ctx.arc(pt.x, pt.y, radius, 0, Math.PI * 2);
-        ctx.strokeStyle = '#00897b';
+        ctx.strokeStyle = this.config.colors.southbound;
         ctx.lineWidth = 2;
         ctx.globalAlpha = alpha;
         ctx.stroke();
@@ -217,7 +217,7 @@ export class MapCanvasRenderer {
     }
 
     // Coach 1: Rear Car
-    ctx.fillStyle = '#f8fafc';
+    ctx.fillStyle = '#fffcf2';
     ctx.beginPath();
     ctx.roundRect(startX, startY, coachW, coachH, [4, 1, 1, 4]);
     ctx.fill();
@@ -225,12 +225,12 @@ export class MapCanvasRenderer {
     ctx.fillRect(startX + 2, startY + 2, coachW - 4, coachH - 4);
 
     // Inter-coach articulated bellows
-    ctx.fillStyle = '#1e293b';
+    ctx.fillStyle = '#403d39';
     ctx.fillRect(startX + coachW, startY + 2, gap, coachH - 4);
 
     // Coach 2: Center Car
     const cx = startX + coachW + gap;
-    ctx.fillStyle = '#f8fafc';
+    ctx.fillStyle = '#fffcf2';
     ctx.beginPath();
     ctx.roundRect(cx, startY, coachW, coachH, 1);
     ctx.fill();
@@ -238,12 +238,12 @@ export class MapCanvasRenderer {
     ctx.fillRect(cx + 2, startY + 2, coachW - 4, coachH - 4);
 
     // Inter-coach articulated bellows
-    ctx.fillStyle = '#1e293b';
+    ctx.fillStyle = '#403d39';
     ctx.fillRect(cx + coachW, startY + 2, gap, coachH - 4);
 
     // Coach 3: Front Cab with Aerodynamic Light Visor
     const fx = cx + coachW + gap;
-    ctx.fillStyle = '#f8fafc';
+    ctx.fillStyle = '#fffcf2';
     ctx.beginPath();
     ctx.roundRect(fx, startY, coachW, coachH, [1, 5, 5, 1]);
     ctx.fill();
@@ -260,7 +260,7 @@ export class MapCanvasRenderer {
     if (!isDwelling) {
       const beamGrad = ctx.createLinearGradient(fx + coachW, 0, fx + coachW + 18, 0);
       beamGrad.addColorStop(0, this.config.colors.headlightBeam);
-      beamGrad.addColorStop(1, 'rgba(254, 240, 138, 0)');
+      beamGrad.addColorStop(1, 'rgba(255, 252, 242, 0)');
       ctx.fillStyle = beamGrad;
       ctx.beginPath();
       ctx.moveTo(fx + coachW, startY + 2);
@@ -276,20 +276,20 @@ export class MapCanvasRenderer {
     // Draw non-rotating plain text tag above train marker
     if (isDwelling || isSelected) {
       ctx.save();
-      ctx.font = 'bold 10px "Plus Jakarta Sans", sans-serif';
-      const label = isDwelling ? 'At platform' : `${train.velocityKmh} km/h`;
+      ctx.font = '500 10px "JetBrains Mono", monospace';
+      const label = isDwelling ? 'AT PLATFORM' : `${train.velocityKmh} KM/H`;
       const textMetrics = ctx.measureText(label);
       const bgW = textMetrics.width + 10;
       const bgH = 16;
       const tagX = pt.x - bgW / 2;
       const tagY = pt.y - 24;
 
-      ctx.fillStyle = isDwelling ? 'rgba(245, 158, 11, 0.95)' : 'rgba(15, 23, 42, 0.85)';
+      ctx.fillStyle = isDwelling ? 'rgba(235, 94, 40, 0.95)' : 'rgba(37, 36, 34, 0.92)';
       ctx.beginPath();
-      ctx.roundRect(tagX, tagY, bgW, bgH, 5);
+      ctx.roundRect(tagX, tagY, bgW, bgH, 4);
       ctx.fill();
 
-      ctx.fillStyle = isDwelling ? '#000000' : '#ffffff';
+      ctx.fillStyle = '#fffcf2';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(label, pt.x, tagY + bgH / 2);

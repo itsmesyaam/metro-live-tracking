@@ -1,0 +1,215 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ============================================================
+   SYAM SURESH — DESIGN TOKENS (extracted from syamsuresh.in)
+   Source of truth: style.css + index.html inline styles
+   Purpose: restyle metro tracker to match main portfolio
+   ============================================================ */
+
+/* ── 1. COLOUR PALETTE ──────────────────────────────────────── */
+:root {
+  /* Base backgrounds */
+  --km-base:          #252422;   /* carbon-black  — page background (dark theme)     */
+  --km-surface:       #2e2b28;   /* carbon-black + 9 lightness — elevated surfaces  */
+  --km-surface-2:     #403d39;   /* charcoal-brown — secondary surfaces / borders   */
+
+  /* Text */
+  --km-text-primary:  #fffcf2;   /* floral-white  — headings, primary body           */
+  --km-text-secondary:#ccc5b9;   /* dust-grey     — labels, captions, muted text     */
+  --km-text-muted:    #403d39;   /* charcoal-brown— paragraph / supporting text      */
+
+  /* Accent */
+  --km-accent:        #eb5e28;   /* spicy-paprika — CTAs, highlights, fig labels     */
+  --km-accent-hover:  #d44d18;   /* paprika dark  — hover state for accent buttons   */
+
+  /* Borders & Dividers */
+  --km-border:        rgba(204,197,185,.14);   /* subtle border on dark bg */
+  --km-border-strong: rgba(255,252,242,.10);   /* card border on dark bg   */
+  --km-border-surface:#403d39;                 /* hard border on dark cards */
+
+  /* Semantic status */
+  --km-green:         #3fae5a;   /* availability / open status dot */
+
+  /* Blueprint grid */
+  --km-grid-line:     rgba(64,61,57,.06);      /* 48px grid overlay on light bg */
+  --km-grid-line-dark:rgba(255,252,242,.035);  /* 48px grid overlay on dark bg  */
+
+  /* Map and Canvas Specific */
+  --km-train-southbound: #eb5e28;   /* spicy-paprika */
+  --km-train-northbound: #ccc5b9;   /* dust-grey     */
+  --km-train-dwell:      #fffcf2;   /* floral-white  */
+  --km-track-line:       #403d39;   /* charcoal-brown */
+  --km-focus:            #eb5e28;   /* spicy-paprika */
+  --km-map-bg:           #1a1816;
+}
+
+/* ── 2. TYPOGRAPHY ──────────────────────────────────────────── */
+:root {
+  --km-sans:  'Inter Tight', system-ui, -apple-system, sans-serif;
+  --km-serif: 'Instrument Serif', Georgia, serif;
+  --km-mono:  'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* ── 3. TYPE SCALE ──────────────────────────────────────────── */
+:root {
+  --km-text-xs:   11px;
+  --km-text-sm:   12px;
+  --km-text-base: 14px;
+  --km-text-md:   17px;
+  --km-text-lg:   19px;
+}
+
+/* ── 4. EASINGS ─────────────────────────────────────────────── */
+:root {
+  --km-spring: cubic-bezier(.34, 1.56, .64, 1);
+  --km-smooth: cubic-bezier(.22, 1, .36, 1);
+  --km-expo:   cubic-bezier(.87, 0, .13, 1);
+}
+
+/* ── 5. SPACING & LAYOUT ────────────────────────────────────── */
+:root {
+  --km-wrap-max:    1240px;
+  --km-wrap-narrow:  860px;
+  --km-wrap-pad:      28px;
+  --km-wrap-pad-sm:   18px;
+  --km-grid-size:     48px;
+  --km-radius-pill: 999px;
+  --km-radius-card:   20px;
+  --km-radius-btn:   999px;
+  --km-shadow-hard: 8px 8px 0 var(--km-base);
+}
+
+/* ── 6. SHADOWS ─────────────────────────────────────────────── */
+:root {
+  --km-shadow-card:  0 20px 40px -15px rgba(0,0,0,.45);
+  --km-shadow-nav:   0 10px 40px -10px rgba(0,0,0,.6);
+  --km-shadow-form:  8px 8px 0 var(--km-base);
+}
+
+/* ── 7. COMPONENT TOKENS ────────────────────────────────────── */
+:root {
+  --km-nav-bg:       rgba(37,36,34,.88);
+  --km-nav-blur:     14px;
+  --km-nav-top:      18px;
+  --km-dot-color:    #3fae5a;
+  --km-selection-bg:   var(--km-accent);
+  --km-selection-text: var(--km-text-primary);
+}
+
+/* ── 8. Z-INDEX SCALE ───────────────────────────────────────── */
+:root {
+  --km-z-grid:     0;
+  --km-z-content:  1;
+  --km-z-cursor:  100;
+  --km-z-xhair:   120;
+  --km-z-progress:150;
+  --km-z-nav:      50;
+  --km-z-loader:  200;
+  --km-z-modal:   210;
+}
+
+/* ── 9. KEYFRAMES ───────────────────────────────────────────── */
+@keyframes km-bar {
+  0%   { transform: scaleX(0); transform-origin: left; }
+  50%  { transform: scaleX(1); transform-origin: left; }
+  50.1%{ transform-origin: right; }
+  100% { transform: scaleX(0); transform-origin: right; }
+}
+
+@keyframes km-show { to { opacity: 1; } }
+@keyframes km-rip { to { transform: scale(4); opacity: 0; } }
+
+@keyframes km-ping {
+  70%  { box-shadow: 0 0 0 8px rgba(63,174,90,0); }
+  100% { box-shadow: 0 0 0 0   rgba(63,174,90,0); }
+}
+
+@keyframes km-spinStar { to { transform: rotate(360deg); } }
+@keyframes km-glow { 50% { transform: scale(1.5); opacity: .2; } }
+
+@keyframes km-lift {
+  40%  { transform: translateY(-120%); }
+  41%  { transform: translateY( 120%); }
+  100% { transform: none; }
+}
+
+@keyframes km-sign {
+  0%     { stroke-dashoffset: 1; }
+  45%,80%{ stroke-dashoffset: 0; }
+  100%   { stroke-dashoffset:-1; }
+}
+
+@keyframes km-domino { to { transform: none; opacity: 1; } }
+@keyframes km-slideUp { from { transform: translateY(105%); } to { transform: none; } }
+
+/* ── 10. UTILITIES ──────────────────────────────────────────── */
+.km-fig {
+  color: var(--km-accent);
+  font-family: var(--km-mono);
+  font-size: var(--km-text-sm);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.km-fig::before {
+  content: "";
+  width: 28px;
+  height: 1.5px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.km-mono {
+  font-family: var(--km-mono);
+  font-size: var(--km-text-sm);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.km-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 1s var(--km-smooth), transform 1s var(--km-smooth);
+}
+.km-reveal.km-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.km-status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--km-dot-color);
+  box-shadow: 0 0 0 0 rgba(63,174,90,.6);
+  animation: km-ping 2s infinite;
+}
+
+.km-grid-bg {
+  background-image:
+    linear-gradient(var(--km-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--km-grid-line) 1px, transparent 1px);
+  background-size: var(--km-grid-size) var(--km-grid-size);
+}
+.km-grid-bg-dark {
+  background-image:
+    linear-gradient(var(--km-grid-line-dark) 1px, transparent 1px),
+    linear-gradient(90deg, var(--km-grid-line-dark) 1px, transparent 1px);
+  background-size: var(--km-grid-size) var(--km-grid-size);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .km-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .km-status-dot {
+    animation: none !important;
+    box-shadow: none !important;
+  }
+}

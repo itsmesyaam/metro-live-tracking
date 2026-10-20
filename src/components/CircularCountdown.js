@@ -14,8 +14,8 @@ export class CircularCountdown {
     this.circumference = 2 * Math.PI * this.radius;
     this.isPulsing = false;
     this.pulseAnimation = null;
-    this.normalColor = options.normalColor || 'var(--km-accent, #00897b)';
-    this.warningColor = options.warningColor || '#f59e0b';
+    this.normalColor = options.normalColor || 'var(--km-accent, #eb5e28)';
+    this.warningColor = options.warningColor || 'var(--km-accent, #eb5e28)';
 
     this.render();
   }

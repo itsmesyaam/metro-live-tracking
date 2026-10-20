@@ -48,13 +48,13 @@ export const MOTION_CONFIG = {
 
   // Color Palette
   colors: {
-    southbound: '#00897b',        // KMRL signature teal (Towards Thrippunithura)
-    southboundAccent: '#06b6d4',  // Lighter cyan aerodynamic nose visor
-    northbound: '#10b981',        // Emerald green (Towards Aluva)
-    northboundAccent: '#34d399',  // Lighter mint aerodynamic nose visor
-    dwellingGlow: '#f59e0b',      // Amber halo when doors are open at platform
-    selectedRing: '#f43f5e',      // Rose focus ring
-    headlightBeam: 'rgba(254, 240, 138, 0.65)', // Warm headlight glow
+    southbound: '#eb5e28',        // Spicy Paprika (Towards Thrippunithura)
+    southboundAccent: '#f48a5f',  // Lighter paprika aerodynamic nose visor
+    northbound: '#ccc5b9',        // Dust grey (Towards Aluva)
+    northboundAccent: '#fffcf2',  // Floral white aerodynamic nose visor
+    dwellingGlow: '#fffcf2',      // Floral white halo when doors are open at platform
+    selectedRing: '#eb5e28',      // Paprika focus ring
+    headlightBeam: 'rgba(255, 252, 242, 0.65)', // Warm floral white headlight glow
   },
 
   // Performance Safeguards
