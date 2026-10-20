@@ -1247,9 +1247,82 @@
       .strip { grid-template-columns: 1fr; }
       .bar { flex-direction: column; align-items: flex-start; }
     }
+
+    /* Scroll Progress Bar */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--km-accent, #eb5e28);
+      width: 0;
+      z-index: 999;
+      transition: width .1s ease-out;
+    }
+
+    /* Crosshair Cursor with Live Coordinates */
+    .xhair {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 998;
+      transform: translate(-50%, -50%);
+    }
+    .xhair::before, .xhair::after {
+      content: "";
+      position: absolute;
+      background: var(--km-accent, #eb5e28);
+      transition: transform .4s var(--km-spring, cubic-bezier(.34, 1.56, .64, 1));
+    }
+    .xhair::before {
+      width: 22px;
+      height: 1.5px;
+      left: -11px;
+      top: 0;
+    }
+    .xhair::after {
+      width: 1.5px;
+      height: 22px;
+      top: -11px;
+      left: 0;
+    }
+    .xhair b {
+      position: absolute;
+      left: 14px;
+      top: 10px;
+      font: 500 10px var(--km-mono, 'JetBrains Mono', monospace);
+      color: var(--km-text-secondary, #ccc5b9);
+      white-space: nowrap;
+      transition: opacity .2s;
+    }
+    .xhair.hot::before, .xhair.hot::after {
+      transform: rotate(45deg);
+    }
+    @media (hover: none), (pointer: coarse) {
+      .xhair { display: none !important; }
+    }
+
+    /* Prefers-reduced-motion accessibility guards */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+      }
+      .xhair { display: none !important; }
+      .mq-track { animation: none !important; }
+      .status-dot { animation: none !important; }
+      .badge svg { animation: none !important; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- Progress Bar & Crosshair Cursor -->
+  <div class="progress" id="progress"></div>
+  <div class="xhair" id="xh"><b id="xhl">x 0000 · y 0000</b></div>
 
   <!-- Blueprint Grid Backdrop -->
   <div class="grid-bg"></div>
@@ -1297,13 +1370,13 @@
     <!-- STATUS BAR -->
     <div class="status-bar-strip mono">
       <span><i class="status-dot"></i>SCHEDULE-BASED POSITIONS · UNOFFICIAL</span>
-      <span>Kochi, Kerala · <b id="clock" class="tabular-nums">--:--:--</b> IST</span>
+      <span><span id="sectionProgress" style="color:var(--km-accent,#eb5e28);font-weight:700;">FIG 01/07</span> · Kochi, Kerala · <b id="clock" class="tabular-nums">--:--:--</b> IST</span>
       <span>10.0251°N 76.3083°E</span>
     </div>
 
     <!-- PAGE HEADER -->
     <header class="page-header">
-      <div class="fig">Fig. 01 — Live Telemetry &amp; Transit Guide</div>
+      <div class="mono" style="font-size:12px;color:var(--km-accent,#eb5e28);letter-spacing:.1em;margin-bottom:8px;">KOCHI METRO · BLUE LINE CORRIDOR</div>
       <h1>Kochi Metro <em>Live Tracker</em></h1>
 
       <!-- TECHNICAL HUD CONTROLS BAR -->
@@ -1355,8 +1428,9 @@
     <!-- ===================================================================== -->
     <section id="tabScreenTrip" class="tab-screen" style="display:flex;flex-direction:column;">
 
-      <div class="card-metro">
+      <div class="card-metro" data-fig="01">
         <div class="card-metro-body">
+          <div class="fig">Fig. 01 — Route Planner &amp; Commute Estimate</div>
           <h2 id="headingWhere" style="font-size:clamp(20px,3.2vw,28px);font-weight:800;letter-spacing:-.03em;margin-bottom:16px;">
             Where are you going?
           </h2>
@@ -1519,9 +1593,10 @@
     <!-- TAB 2: CORRIDOR MAP WITH 60 FPS CANVAS TRAIN SIMULATION               -->
     <!-- ===================================================================== -->
     <section id="tabScreenMap" class="tab-screen" style="display:none;flex-direction:column;">
-      <div class="card-metro" style="overflow:hidden;">
+      <div class="card-metro" style="overflow:hidden;" data-fig="02">
         <div class="map-header">
           <div>
+            <div class="fig" style="margin-bottom:6px;">Fig. 02 — Corridor Map &amp; Fleet Radar</div>
             <div style="display:flex;align-items:center;gap:8px;">
               <span class="status-dot"></span>
               <h2 id="headingLiveMap" style="font-size:16px;font-weight:800;color:var(--km-text-primary,#fffcf2);">
@@ -1584,8 +1659,9 @@
     <!-- TAB 3: STATIONS DIRECTORY                                              -->
     <!-- ===================================================================== -->
     <section id="tabScreenStations" class="tab-screen" style="display:none;flex-direction:column;">
-      <div class="card-metro">
+      <div class="card-metro" data-fig="03">
         <div class="card-metro-body">
+          <div class="fig">Fig. 03 — Blue Line Stations Directory</div>
           <h2 id="headingStations" style="font-size:20px;font-weight:800;color:var(--km-text-primary,#fffcf2);margin-bottom:4px;">
             Blue Line Stations (25)
           </h2>
@@ -2039,9 +2115,9 @@
     <!-- ===================================================================== -->
     
     <!-- 1. Intro & Architecture Context -->
-    <section class="card-metro" style="margin-top:32px;">
+    <section class="card-metro" style="margin-top:32px;" id="overview" data-fig="04">
       <div class="card-metro-body">
-        <div class="fig">Fig. 02 — Corridor Overview</div>
+        <div class="fig">Fig. 04 — Corridor Overview &amp; Architecture</div>
         <h2 style="font-size:clamp(22px,3.5vw,32px);font-weight:800;letter-spacing:-.03em;margin-bottom:12px;">
           About the Kochi Metro Blue Line Tracker
         </h2>
@@ -2052,8 +2128,8 @@
     </section>
 
     <!-- 2. Static 25 Station Directory Grid with Direct Crawlable Links -->
-    <section style="margin-top:36px;" id="stations">
-      <div class="fig">Fig. 03 — All 25 Stations</div>
+    <section style="margin-top:36px;" id="stations" data-fig="05">
+      <div class="fig">Fig. 05 — 25 Station Timetables &amp; Landmarks</div>
       <h2 style="font-size:clamp(22px,3.5vw,32px);font-weight:800;letter-spacing:-.03em;">All 25 Stations on the Blue Line</h2>
       <p style="font-size:13px;color:var(--km-text-secondary,#ccc5b9);margin-top:4px;margin-bottom:20px;">
         Explore station-specific timetables, platform guides, first and last train schedules, and landmark connections.
@@ -2438,9 +2514,9 @@
     </section>
 
     <!-- 3. Frequently Asked Questions (AEO Direct Answers) -->
-    <section class="card-metro" style="margin-top:40px;" id="faq">
+    <section class="card-metro" style="margin-top:40px;" id="faq" data-fig="06">
       <div class="card-metro-body">
-        <div class="fig">Fig. 04 — Frequently Asked Questions</div>
+        <div class="fig">Fig. 06 — Frequently Asked Questions</div>
         <h2 style="font-size:clamp(22px,3.5vw,32px);font-weight:800;letter-spacing:-.03em;margin-bottom:6px;">Frequently Asked Questions</h2>
         <p style="font-size:13px;color:var(--km-text-secondary,#ccc5b9);margin-bottom:24px;">Direct answers to common passenger and technical questions about Kochi Metro tracking.</p>
 
@@ -2472,6 +2548,27 @@
               Yes. It runs in any phone browser at 60 FPS, with no download needed.
             </div>
           </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Custom Engineering & Architecture CTA Strip -->
+    <section class="card-metro" style="margin-top:40px;text-align:center;position:relative;overflow:hidden;" id="cta" data-fig="07">
+      <div class="card-metro-body" style="padding:clamp(40px,6vw,64px) 24px;">
+        <div class="fig" style="justify-content:center;">Fig. 07 — Custom Engineering &amp; Architecture</div>
+        <h2 style="font-size:clamp(26px,5vw,44px);font-weight:900;letter-spacing:-.04em;margin:12px auto 16px;max-width:24ch;line-height:1.15;">
+          Need a real-time telemetry app <em>like this?</em>
+        </h2>
+        <p style="font-size:clamp(14px,1.8vw,16px);color:var(--km-text-secondary,#ccc5b9);max-width:580px;margin:0 auto 28px;line-height:1.65;">
+          From sub-second state synchronization and 60 FPS Canvas physics to high-concurrency web architecture — I build robust, production-grade applications that perform smoothly under load.
+        </p>
+        <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;">
+          <a href="/contact" class="btn-hud" style="background:var(--km-accent,#eb5e28);color:#fffcf2;border-color:var(--km-accent,#eb5e28);padding:14px 28px;font-size:14px;font-weight:700;border-radius:999px;">
+            Let's talk ↗
+          </a>
+          <a href="/work/kochi-metro-tracker" class="btn-hud" style="padding:14px 24px;font-size:14px;border-radius:999px;">
+            Read the Case Study ↗
+          </a>
         </div>
       </div>
     </section>
@@ -2748,6 +2845,9 @@
     let rollingDurationInstance = null;
     let rollingDistanceInstance = null;
     let rollingArrivalInstance = null;
+    let rollingLegendSouthInstance = null;
+    let rollingLegendNorthInstance = null;
+    let rollingLegendDwellInstance = null;
     let circularCountdownInstance = null;
     let journeyLineInstance = null;
     let notificationStackInstance = null;
@@ -2790,6 +2890,13 @@
       rollingDurationInstance = new RollingNumber(document.getElementById('rollingDuration'), '17 mins');
       rollingDistanceInstance = new RollingNumber(document.getElementById('rollingDistance'), '10.8 km');
       rollingArrivalInstance = new RollingNumber(document.getElementById('rollingArrival'), '5:48 PM');
+
+      const elSouth = document.getElementById('legendCountSouth');
+      const elNorth = document.getElementById('legendCountNorth');
+      const elDwell = document.getElementById('legendCountDwell');
+      if (elSouth) rollingLegendSouthInstance = new RollingNumber(elSouth, '0');
+      if (elNorth) rollingLegendNorthInstance = new RollingNumber(elNorth, '0');
+      if (elDwell) rollingLegendDwellInstance = new RollingNumber(elDwell, '0');
 
       circularCountdownInstance = new CircularCountdown(document.getElementById('countdownSvgRing'), {
         radius: 36,
@@ -3039,14 +3146,14 @@
       // Viaduct Track Line Casing & Blueprint Track Fill
       L.polyline(coords, {
         color: '#1a1816',
-        weight: 8,
-        opacity: 0.8,
+        weight: 6,
+        opacity: 0.9,
         lineCap: 'round'
       }).addTo(leafletMap);
 
       const trackPolyline = L.polyline(coords, {
         color: '#403d39',
-        weight: 4,
+        weight: 2,
         opacity: 0.95,
         lineCap: 'round'
       }).addTo(leafletMap);
@@ -3054,11 +3161,11 @@
       // Station Drafting Markers
       STATIONS.forEach((st) => {
         const pin = L.circleMarker([st.lat, st.lng], {
-          radius: 4.5,
+          radius: 3.5,
           color: '#eb5e28',
           fillColor: '#252422',
           fillOpacity: 1,
-          weight: 2
+          weight: 1.5
         }).addTo(leafletMap);
         pin.bindTooltip(`${st.id}. ${st.name}`, { direction: 'right', className: 'mono' });
       });
@@ -3413,9 +3520,12 @@
 
         if (headerCountBadge) headerCountBadge.innerHTML = `<i class="status-dot"></i> ${total} Trains Active`;
         if (mapFooterCount) mapFooterCount.textContent = `${total} Active`;
-        if (legendSouth) legendSouth.textContent = String(southCount);
-        if (legendNorth) legendNorth.textContent = String(northCount);
-        if (legendDwell) legendDwell.textContent = String(dwellCount);
+        if (rollingLegendSouthInstance) rollingLegendSouthInstance.update(String(southCount));
+        else if (legendSouth) legendSouth.textContent = String(southCount);
+        if (rollingLegendNorthInstance) rollingLegendNorthInstance.update(String(northCount));
+        else if (legendNorth) legendNorth.textContent = String(northCount);
+        if (rollingLegendDwellInstance) rollingLegendDwellInstance.update(String(dwellCount));
+        else if (legendDwell) legendDwell.textContent = String(dwellCount);
 
         renderViaductFrame(dt);
       });
@@ -3441,7 +3551,73 @@
           });
         }
       });
+
+      // 1. Crosshair Cursor with Live Coordinates
+      const xh = document.getElementById('xh');
+      const xl = document.getElementById('xhl');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (xh && xl && !reduceMotion) {
+        window.addEventListener('mousemove', (e) => {
+          xh.style.left = e.clientX + 'px';
+          xh.style.top = e.clientY + 'px';
+          xl.textContent = `x ${String(e.clientX).padStart(4, '0')} · y ${String(Math.round(e.clientY + window.scrollY)).padStart(4, '0')}`;
+        });
+
+        document.querySelectorAll('a, button, select, input, .card-metro, .btn-hud, .faq-item, summary, .km-station-card').forEach((el) => {
+          el.addEventListener('mouseenter', () => xh.classList.add('hot'));
+          el.addEventListener('mouseleave', () => xh.classList.remove('hot'));
+        });
+      }
+
+      // 2. Scroll Progress Bar
+      const progressBar = document.getElementById('progress');
+      if (progressBar) {
+        window.addEventListener('scroll', () => {
+          const max = document.documentElement.scrollHeight - window.innerHeight;
+          if (max > 0) {
+            progressBar.style.width = ((window.scrollY / max) * 100) + '%';
+          }
+        }, { passive: true });
+      }
+
+      // 3. Dynamic Section Progress Indicator (FIG 01/07 to FIG 07/07)
+      const scrollSections = [
+        { el: document.getElementById('overview'), fig: '04' },
+        { el: document.getElementById('stations'), fig: '05' },
+        { el: document.getElementById('faq'), fig: '06' },
+        { el: document.getElementById('cta'), fig: '07' }
+      ];
+
+      if ('IntersectionObserver' in window) {
+        const secObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const fig = entry.target.getAttribute('data-fig');
+              if (fig) updateSectionProgress(fig);
+            }
+          });
+        }, { rootMargin: '-20% 0px -60% 0px' });
+
+        scrollSections.forEach(s => {
+          if (s.el) secObserver.observe(s.el);
+        });
+
+        window.addEventListener('scroll', () => {
+          if (window.scrollY < 250) {
+            const tabFigs = { trip: '01', map: '02', stations: '03' };
+            updateSectionProgress(tabFigs[state.activeTab] || '01');
+          }
+        }, { passive: true });
+      }
     });
+
+    // Helper: Dynamic Section Progress Indicator
+    function updateSectionProgress(figNum) {
+      const sectionProgressEl = document.getElementById('sectionProgress');
+      if (sectionProgressEl) {
+        sectionProgressEl.textContent = `FIG ${String(figNum).padStart(2, '0')}/07`;
+      }
+    }
   </script>
 </body>
 </html>
