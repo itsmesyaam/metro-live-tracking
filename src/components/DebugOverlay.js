@@ -1,7 +1,7 @@
 /**
  * Kochi Metro Developer Debug Overlay
  * Toggled via keyboard shortcut 'D' or floating Dev badge.
- * Provides real-time telemetry: FPS counter, active trains, ms since last 2s data tick,
+ * Provides kinematics diagnostics: FPS counter, active trains, ms since last 2s data tick,
  * maximum blend error in meters across the fleet, and authoritative source mode.
  */
 
@@ -30,7 +30,7 @@ export class DebugOverlay {
         <div class="flex items-center justify-between border-b border-slate-800 pb-2">
           <div class="flex items-center gap-2">
             <span class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-ping"></span>
-            <span class="font-bold text-[11px] tracking-wider uppercase text-teal-400">Kinematics Dev Radar</span>
+            <span class="font-bold text-[11px] tracking-wider uppercase text-teal-400">Kinematics Diagnostics</span>
           </div>
           <span class="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded font-bold">Press 'D'</span>
         </div>
@@ -62,7 +62,7 @@ export class DebugOverlay {
         <div class="bg-slate-900/80 rounded-xl p-2 border border-slate-800 flex flex-col gap-1">
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-slate-400 uppercase">Data Source</span>
-            <span id="dbgSource" class="text-[10px] font-bold text-teal-400 px-1.5 py-0.5 rounded bg-teal-500/10">LIVE (KMRL IST)</span>
+            <span id="dbgSource" class="text-[10px] font-bold text-teal-400 px-1.5 py-0.5 rounded bg-teal-500/10">ESTIMATED (IST Timetable)</span>
           </div>
           <div class="flex items-center justify-between">
             <span class="text-[10px] text-slate-400 uppercase">Rail Direction</span>
@@ -70,9 +70,9 @@ export class DebugOverlay {
           </div>
         </div>
 
-        <!-- Selected Train Telemetry -->
+        <!-- Selected Train Metrics -->
         <div id="dbgSelectedBox" class="bg-slate-900/60 rounded-xl p-2 border border-slate-800/80 text-[11px]">
-          <span class="text-[10px] text-slate-400 uppercase block mb-1">Focus Telemetry</span>
+          <span class="text-[10px] text-slate-400 uppercase block mb-1">Focus Metrics</span>
           <div id="dbgSelectedDetails" class="text-slate-300">Train KM-101 · Cruise 80 km/h · 0.0 m err</div>
         </div>
       </div>

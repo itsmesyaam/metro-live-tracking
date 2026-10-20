@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://www.syamsuresh.in/kochi-metro",
+      "permanent": true
+    }
+  ]
+}

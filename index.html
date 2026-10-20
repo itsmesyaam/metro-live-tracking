@@ -1,9 +1,118 @@
 <!DOCTYPE html>
-<html lang="en" class="light">
+<html lang="en-IN" class="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Kochi Metro — Real-Time Live Train Radar</title>
+  <title>Kochi Metro Tracker (Unofficial) — Estimated Train Positions | Syam Suresh</title>
+  <meta name="description" content="Track estimated train positions across all 25 stations on the Kochi Metro Blue Line from Aluva to Thrippunithura. Timetable-based estimates." />
+  <meta name="theme-color" content="#00796b" />
+  <link rel="canonical" href="https://www.syamsuresh.in/kochi-metro" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Kochi Metro Tracker (Unofficial) — Estimated Train Positions" />
+  <meta property="og:description" content="Track estimated train positions across all 25 stations on the Kochi Metro Blue Line from Aluva to Thrippunithura. Timetable-based estimates." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.syamsuresh.in/kochi-metro" />
+  <meta property="og:image" content="https://www.syamsuresh.in/assets/images/work/kochi-metro-og.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Kochi Metro Tracker (Unofficial) — Estimated Train Positions" />
+  <meta name="twitter:description" content="Track estimated train positions across all 25 stations on the Kochi Metro Blue Line from Aluva to Thrippunithura. Timetable-based estimates." />
+  <meta name="twitter:image" content="https://www.syamsuresh.in/assets/images/work/kochi-metro-og.png" />
+
+  <!-- Structured Data JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Kochi Metro Tracker (Unofficial)",
+        "applicationCategory": "TravelApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript and HTML5 Canvas",
+        "isAccessibleForFree": true,
+        "url": "https://www.syamsuresh.in/kochi-metro",
+        "description": "Interactive schedule-based estimated train positions and station transit guide for the Kochi Metro Blue Line from Aluva to Thrippunithura.",
+        "author": {
+          "@type": "Person",
+          "name": "Syam Suresh",
+          "url": "https://www.syamsuresh.in/"
+        }
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Are the train positions on this tracker real-time GPS coordinates?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Train positions on this tracker are estimated using a physical kinematics engine synchronized with the official Kochi Metro timetable in Indian Standard Time (IST). They are not live GPS signals, and unexpected operational delays are not reflected."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What are the operating hours of the Kochi Metro?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Trains on the Kochi Metro Blue Line generally operate from 06:00 AM to 10:30 PM daily. Headway intervals range from 7 to 8.5 minutes during peak morning and evening commute hours."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How many stations are on the Kochi Metro Blue Line?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "The Blue Line spans 25 operational stations over 28.13 km, beginning at Aluva in Ernakulam district and terminating at Thrippunithura Railway Station."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "How long does it take to travel the entire line from Aluva to Thrippunithura?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "End-to-end travel time between Aluva and Thrippunithura is approximately 49 minutes, maintaining an average commercial operating speed of approximately 35 to 40 km/h inclusive of station dwell times."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is the maximum operating speed of Kochi Metro trains?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Alstom Metropolis 3-coach train rakes are designed for a maximum operational speed of 80 km/h on viaduct track stretches between stations."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Where can I find official Kochi Metro services and smart cards?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Official transit services, Kochi1 Smart Card recharges, and live alerts are managed directly by Kochi Metro Rail Limited (KMRL) via their official mobile app and website at kochimetro.org."
+            }
+          }
+        ]
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://www.syamsuresh.in/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Kochi Metro Tracker",
+            "item": "https://www.syamsuresh.in/kochi-metro"
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <!-- Leaflet Maps CSS & JS -->
@@ -11,7 +120,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <!-- Google Fonts: Plus Jakarta Sans, Anek Malayalam, Noto Sans Malayalam, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script>
@@ -113,26 +222,26 @@
 
     @media (prefers-reduced-motion: reduce) {
       *, ::before, ::after {
-        animation-duration: 0.15s !important;
+        animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
-        transition-duration: 0.15s !important;
+        transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
       }
     }
   </style>
 </head>
-<body class="flex flex-col selection:bg-teal-500 selection:text-white pb-24 sm:pb-28">
+<body class="flex flex-col selection:bg-teal-500 selection:text-white pb-20">
 
-  <!-- NOTIFICATION STACK CONTAINER (Animation #5) -->
+  <!-- NOTIFICATION STACK CONTAINER -->
   <div id="notificationStackContainer" class="fixed top-4 inset-x-4 z-50 pointer-events-none flex flex-col items-center"></div>
 
   <!-- TOP APP BAR -->
   <header class="sticky top-0 z-30 bg-[var(--card-bg)]/90 backdrop-blur-md border-b border-[var(--card-border)] px-4 sm:px-8 py-3 transition-colors">
     <div class="max-w-3xl mx-auto flex items-center justify-between gap-3">
       
-      <!-- Brand & Unified Fleet Status (One Source of Truth) -->
+      <!-- Brand & Unified Fleet Status -->
       <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-teal-600 dark:bg-teal-500 text-white flex items-center justify-center shadow-sm">
+        <a href="/" class="w-9 h-9 rounded-xl bg-teal-600 dark:bg-teal-500 text-white flex items-center justify-center shadow-sm shrink-0" title="Syam Suresh Portfolio">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="4" y="3" width="16" height="16" rx="2"></rect>
             <path d="M4 11h16"></path>
@@ -142,21 +251,21 @@
             <circle cx="8" cy="15" r="1"></circle>
             <circle cx="16" cy="15" r="1"></circle>
           </svg>
-        </div>
+        </a>
         <div>
-          <div class="flex items-center gap-2">
-            <span class="text-base sm:text-lg font-extrabold tracking-tight text-[var(--text-primary)]">Kochi Metro</span>
-            <!-- Live Active Fleet Count Badge linked directly to Train Store -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-base sm:text-lg font-extrabold tracking-tight text-[var(--text-primary)]">Kochi Metro Tracker (Unofficial)</span>
+            <!-- Fleet status with clean placeholder -->
             <span id="headerTrainCountBadge" class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-500/20">
-              10 Trains Active
+              Loading trains…
             </span>
           </div>
         </div>
       </div>
 
-      <!-- Controls: Dev Radar [D], Language, Theme, Extras Sheet -->
-      <div class="flex items-center gap-1.5">
-        <button id="btnToggleDebug" type="button" aria-label="Toggle Developer Telemetry Radar (D key)" class="touch-target px-2.5 py-1 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-xs font-mono font-bold text-teal-600 dark:text-teal-400 hover:border-teal-500 transition" title="Toggle Kinematics Debug Radar (Press 'D')">
+      <!-- Controls: Dev Diagnostics [D], Language, Theme, Extras Sheet -->
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button id="btnToggleDebug" type="button" aria-label="Toggle Developer Diagnostics (D key)" class="touch-target px-2.5 py-1 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-xs font-mono font-bold text-teal-600 dark:text-teal-400 hover:border-teal-500 transition" title="Toggle Kinematics Diagnostics (Press 'D')">
           <span>Dev [D]</span>
         </button>
 
@@ -194,12 +303,24 @@
   <!-- MAIN APPLICATION TABS -->
   <main class="max-w-3xl w-full mx-auto p-4 sm:p-6 flex-1 flex flex-col gap-6">
 
+    <!-- VISIBLE DISCLAIMER NOTICE -->
+    <div class="p-3.5 bg-amber-500/10 border border-amber-500/25 rounded-2xl text-xs text-amber-900 dark:text-amber-200 flex items-center gap-3">
+      <svg class="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <p class="font-medium leading-relaxed">
+        <strong>Notice:</strong> Positions are estimated from the official timetable, not GPS. Delays aren't shown.
+      </p>
+    </div>
+
     <!-- ===================================================================== -->
     <!-- TAB 1: TRIP HOME SCREEN ("Where are you going?")                       -->
     <!-- ===================================================================== -->
     <section id="tabScreenTrip" class="tab-screen flex flex-col gap-5">
 
-      <!-- Question & Station Pickers (Animation #6 SwapMorph) -->
+      <!-- Question & Station Pickers -->
       <div class="card-metro p-5">
         <h2 id="headingWhere" class="text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--text-primary)] mb-4">
           Where are you going?
@@ -214,6 +335,31 @@
             </span>
             <div class="flex items-center justify-between gap-2">
               <select id="selectFromStation" aria-label="From station" class="w-full bg-transparent font-bold text-base text-[var(--text-primary)] focus:outline-none cursor-pointer">
+                <option value="0">1. Aluva (ആലുവ)</option>
+                <option value="1">2. Pulinchodu (പുളിഞ്ചോട്)</option>
+                <option value="2">3. Companypady (കമ്പനിപ്പടി)</option>
+                <option value="3">4. Ambattukavu (അമ്പാട്ടുകാവ്)</option>
+                <option value="4">5. Muttom (മുട്ടം)</option>
+                <option value="5">6. Kalamassery (കളമശ്ശേരി)</option>
+                <option value="6">7. Cochin University (കൊച്ചിൻ യൂണിവേഴ്സിറ്റി)</option>
+                <option value="7">8. Pathadipalam (പത്തടിപ്പാലം)</option>
+                <option value="8">9. Edapally (ഇടപ്പള്ളി)</option>
+                <option value="9">10. Changampuzha Park (ചങ്ങമ്പുഴ പാർക്ക്)</option>
+                <option value="10">11. Palarivattom (പാലാരിവട്ടം)</option>
+                <option value="11">12. JLN Stadium (ജെ.എൽ.എൻ സ്റ്റേഡിയം)</option>
+                <option value="12">13. Kaloor (കലൂർ)</option>
+                <option value="13">14. Town Hall (ടൗൺ ഹാൾ)</option>
+                <option value="14">15. MG Road (എം.ജി റോഡ്)</option>
+                <option value="15">16. Maharajas College (മഹാരാജാസ് കോളേജ്)</option>
+                <option value="16">17. Ernakulam South (എറണാകുളം സൗത്ത്)</option>
+                <option value="17">18. Kadavanthra (കടവന്ത്ര)</option>
+                <option value="18">19. Elamkulam (എളംകുളം)</option>
+                <option value="19">20. Vyttila (വൈറ്റില)</option>
+                <option value="20">21. Thykoodam (തൈക്കൂടം)</option>
+                <option value="21">22. Pettah (പേട്ട)</option>
+                <option value="22">23. Vadakkekotta (വടക്കേക്കോട്ട)</option>
+                <option value="23">24. SN Junction (എസ്.എൻ ജംഗ്ഷൻ)</option>
+                <option value="24">25. Thrippunithura (തൃപ്പൂണിത്തുറ)</option>
               </select>
               <span id="badgeNearest" class="hidden shrink-0 text-[11px] font-bold px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-400">
                 Nearest
@@ -221,7 +367,7 @@
             </div>
           </div>
 
-          <!-- Swap Button (Animation #6) -->
+          <!-- Swap Button -->
           <div class="flex items-center justify-center -my-1 z-20">
             <button id="btnSwapStations" type="button" aria-label="Swap origin and destination stations" class="touch-target w-11 h-11 rounded-full bg-[var(--card-bg)] border border-[var(--card-border)] text-[var(--text-primary)] shadow-sm hover:border-[var(--km-accent)] transition">
               <svg id="swapSvgIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -237,22 +383,47 @@
               To (Destination)
             </span>
             <select id="selectToStation" aria-label="To station" class="w-full bg-transparent font-bold text-base text-[var(--text-primary)] focus:outline-none cursor-pointer">
+              <option value="0">1. Aluva (ആലുവ)</option>
+                <option value="1">2. Pulinchodu (പുളിഞ്ചോട്)</option>
+                <option value="2">3. Companypady (കമ്പനിപ്പടി)</option>
+                <option value="3">4. Ambattukavu (അമ്പാട്ടുകാവ്)</option>
+                <option value="4">5. Muttom (മുട്ടം)</option>
+                <option value="5">6. Kalamassery (കളമശ്ശേരി)</option>
+                <option value="6">7. Cochin University (കൊച്ചിൻ യൂണിവേഴ്സിറ്റി)</option>
+                <option value="7">8. Pathadipalam (പത്തടിപ്പാലം)</option>
+                <option value="8">9. Edapally (ഇടപ്പള്ളി)</option>
+                <option value="9">10. Changampuzha Park (ചങ്ങമ്പുഴ പാർക്ക്)</option>
+                <option value="10">11. Palarivattom (പാലാരിവട്ടം)</option>
+                <option value="11">12. JLN Stadium (ജെ.എൽ.എൻ സ്റ്റേഡിയം)</option>
+                <option value="12">13. Kaloor (കലൂർ)</option>
+                <option value="13">14. Town Hall (ടൗൺ ഹാൾ)</option>
+                <option value="14">15. MG Road (എം.ജി റോഡ്)</option>
+                <option value="15">16. Maharajas College (മഹാരാജാസ് കോളേജ്)</option>
+                <option value="16">17. Ernakulam South (എറണാകുളം സൗത്ത്)</option>
+                <option value="17">18. Kadavanthra (കടവന്ത്ര)</option>
+                <option value="18">19. Elamkulam (എളംകുളം)</option>
+                <option value="19">20. Vyttila (വൈറ്റില)</option>
+                <option value="20">21. Thykoodam (തൈക്കൂടം)</option>
+                <option value="21">22. Pettah (പേട്ട)</option>
+                <option value="22">23. Vadakkekotta (വടക്കേക്കോട്ട)</option>
+                <option value="23">24. SN Junction (എസ്.എൻ ജംഗ്ഷൻ)</option>
+                <option value="24">25. Thrippunithura (തൃപ്പൂണിത്തുറ)</option>
             </select>
           </div>
 
         </div>
       </div>
 
-      <!-- Large Answer Card (Animation #2 RollingNumber + Animation #3 CircularCountdown) -->
+      <!-- Large Commuter Answer Card -->
       <div id="answerHeroCard" class="card-metro p-5 sm:p-6 bg-gradient-to-b from-[var(--card-bg)] to-[var(--surface-bg)] flex flex-col gap-5">
         
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="flex items-center gap-4">
             
-            <!-- SVG Circular Progress Countdown (Animation #3) -->
+            <!-- SVG Circular Progress Countdown -->
             <div class="relative w-20 h-20 shrink-0 flex items-center justify-center">
               <svg id="countdownSvgRing" class="w-full h-full" viewBox="0 0 92 92"></svg>
-              <!-- Rolling Number Inside Ring (Animation #2) -->
+              <!-- Rolling Number Inside Ring -->
               <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
                 <span id="rollingCountdownMins" class="text-2xl font-black tabular-nums text-[var(--text-primary)] font-mono leading-none">
                   04
@@ -280,42 +451,48 @@
           <div class="hidden" aria-live="polite" id="ariaLiveCountdown"></div>
         </div>
 
-        <!-- 3-Pillar Commute Metrics -->
+        <!-- 3-Pillar Commute Metrics (ZERO FARES / ZERO PRICING) -->
         <div class="grid grid-cols-3 gap-3 pt-4 border-t border-[var(--card-border)] text-center">
           <div class="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)]">
-            <span id="labelFare" class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Fare</span>
-            <strong id="rollingFare" class="text-lg sm:text-xl font-extrabold text-teal-700 dark:text-teal-400 tabular-nums">
-              ₹40
-            </strong>
-            <span id="labelKochi1Fare" class="block text-[11px] text-slate-500 font-medium">Card: ₹36</span>
-          </div>
-
-          <div class="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)]">
-            <span id="labelTripTime" class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Trip Time</span>
+            <span id="labelTripTime" class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Travel Time</span>
             <strong id="rollingDuration" class="text-lg sm:text-xl font-extrabold text-[var(--text-primary)] tabular-nums">
               17 mins
             </strong>
-            <span id="stopsCountLabel" class="block text-[11px] text-slate-500 font-medium">8 stops</span>
+            <span id="labelTripTimeSub" class="block text-[11px] text-slate-500 font-medium">Estimated ride</span>
           </div>
 
           <div class="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)]">
-            <span id="labelArrival" class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Arrival</span>
-            <strong id="rollingArrival" class="text-lg sm:text-xl font-extrabold text-[var(--text-primary)] tabular-nums">
-              5:48 PM
+            <span id="labelDistance" class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Distance</span>
+            <strong id="rollingDistance" class="text-lg sm:text-xl font-extrabold text-teal-700 dark:text-teal-400 tabular-nums">
+              10.8 km
             </strong>
-            <span id="distanceLabel" class="block text-[11px] text-slate-500 font-medium">10.8 km</span>
+            <span id="distanceLabelSub" class="block text-[11px] text-slate-500 font-medium">Corridor length</span>
+          </div>
+
+          <div class="p-2.5 rounded-xl bg-[var(--card-bg)] border border-[var(--card-border)]">
+            <span id="labelStops" class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Stations</span>
+            <strong id="stopsCountNum" class="text-lg sm:text-xl font-extrabold text-[var(--text-primary)] tabular-nums">
+              8 stops
+            </strong>
+            <span id="stopsCountSub" class="block text-[11px] text-slate-500 font-medium">Intermediate</span>
           </div>
         </div>
 
-        <!-- STOPS ON YOUR TRIP (Animation #4: JourneyProgressLine with Collapse) -->
+        <!-- Arrival Time Notice -->
+        <div class="text-center pt-1 text-xs text-slate-500">
+          <span>Expected Arrival: </span>
+          <strong id="rollingArrival" class="text-sm font-bold text-[var(--text-primary)] tabular-nums">5:48 PM</strong>
+        </div>
+
+        <!-- STOPS ON YOUR TRIP -->
         <div class="pt-4 border-t border-[var(--card-border)]">
           <div class="flex items-center justify-between mb-2">
             <h4 id="labelStopsHeader" class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
               Stops on your trip
             </h4>
             <span class="flex items-center gap-1.5 text-xs font-bold text-teal-700 dark:text-teal-400">
-              <span class="w-2 h-2 rounded-full bg-teal-500 animate-ping"></span>
-              Live Route Line
+              <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+              Route Line
             </span>
           </div>
 
@@ -327,7 +504,7 @@
     </section>
 
     <!-- ===================================================================== -->
-    <!-- TAB 2: LIVE MAP WITH 60 FPS CANVAS TRAIN RENDERER & TRAILS            -->
+    <!-- TAB 2: CORRIDOR MAP WITH 60 FPS CANVAS TRAIN SIMULATION               -->
     <!-- ===================================================================== -->
     <section id="tabScreenMap" class="tab-screen hidden flex-col gap-4">
       <div class="card-metro overflow-hidden flex flex-col relative">
@@ -336,11 +513,11 @@
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-teal-500 animate-pulse"></span>
               <h2 id="headingLiveMap" class="text-base font-extrabold text-[var(--text-primary)]">
-                Kochi Corridor Map &mdash; Real-Time Train Motion
+                Kochi Corridor Map &mdash; Timetable Motion Simulation
               </h2>
             </div>
             <p id="subheadingLiveMap" class="text-xs text-[var(--text-secondary)] mt-0.5">
-              Kinematic speed curves, 3-coach capsule markers &amp; fading motion trails
+              Kinematic speed curves, 3-coach capsule markers &amp; motion trails
             </p>
           </div>
 
@@ -359,32 +536,32 @@
         <div class="relative w-full h-[500px] sm:h-[560px]" id="mapViewportContainer">
           <div id="mapViewport" class="w-full h-full"></div>
           
-          <!-- Direction Legend Overlay with Unified Telemetry Counts -->
+          <!-- Direction Legend Overlay with Unified Metrics -->
           <div class="absolute bottom-3 left-3 z-[460] bg-[var(--card-bg)]/90 backdrop-blur-md border border-[var(--card-border)] rounded-xl p-2.5 shadow-md text-xs space-y-1.5 pointer-events-auto">
             <div class="flex items-center justify-between gap-3 text-[11px] font-mono border-b border-[var(--card-border)] pb-1 mb-1">
-              <span class="text-slate-400 font-bold">RADAR TELEMETRY</span>
-              <span id="mapFooterFleetCount" class="font-bold text-teal-600 dark:text-teal-400">10 Active</span>
+              <span class="text-slate-400 font-bold">SIMULATION METRICS</span>
+              <span id="mapFooterFleetCount" class="font-bold text-teal-600 dark:text-teal-400">Loading…</span>
             </div>
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-2">
                 <span class="w-3.5 h-2 rounded-sm bg-teal-600 inline-block"></span>
                 <span class="text-[var(--text-secondary)] font-semibold">Southbound (→ Thrippunithura)</span>
               </div>
-              <span id="legendCountSouth" class="font-mono text-[11px] font-bold text-slate-500">5</span>
+              <span id="legendCountSouth" class="font-mono text-[11px] font-bold text-slate-500">—</span>
             </div>
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-2">
                 <span class="w-3.5 h-2 rounded-sm bg-emerald-500 inline-block"></span>
                 <span class="text-[var(--text-secondary)] font-semibold">Northbound (→ Aluva)</span>
               </div>
-              <span id="legendCountNorth" class="font-mono text-[11px] font-bold text-slate-500">5</span>
+              <span id="legendCountNorth" class="font-mono text-[11px] font-bold text-slate-500">—</span>
             </div>
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-2">
                 <span class="w-3.5 h-2 rounded-sm bg-amber-400 ring-1 ring-amber-500 inline-block"></span>
                 <span class="text-[var(--text-secondary)] font-semibold">At platform (doors open)</span>
               </div>
-              <span id="legendCountDwell" class="font-mono text-[11px] font-bold text-amber-600">2</span>
+              <span id="legendCountDwell" class="font-mono text-[11px] font-bold text-amber-600">—</span>
             </div>
           </div>
         </div>
@@ -408,7 +585,937 @@
           <input id="inputStationSearch" type="search" placeholder="Search station by name or theme..." class="w-full bg-[var(--surface-bg)] border border-[var(--card-border)] rounded-xl py-2.5 pl-4 pr-10 text-sm font-semibold text-[var(--text-primary)] focus:outline-none" />
         </div>
 
-        <div id="stationsDirectoryList" class="divide-y divide-[var(--card-border)] max-h-[500px] overflow-y-auto pr-1"></div>
+        <div id="stationsDirectoryList" class="divide-y divide-[var(--card-border)] max-h-[500px] overflow-y-auto pr-1">
+          
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  1
+                </span>
+                <a href="/kochi-metro/stations/aluva" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Aluva</a>
+                <span class="text-xs text-slate-400 font-malayalam">ആലുവ</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Periyar River Basin</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">0.0 km</span>
+              <button type="button" data-origin-idx="0" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  2
+                </span>
+                <a href="/kochi-metro/stations/pulinchodu" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Pulinchodu</a>
+                <span class="text-xs text-slate-400 font-malayalam">പുളിഞ്ചോട്</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Western Ghats Flora</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">1.7 km</span>
+              <button type="button" data-origin-idx="1" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  3
+                </span>
+                <a href="/kochi-metro/stations/companypady" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Companypady</a>
+                <span class="text-xs text-slate-400 font-malayalam">കമ്പനിപ്പടി</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Medicinal Herbs</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">2.7 km</span>
+              <button type="button" data-origin-idx="2" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  4
+                </span>
+                <a href="/kochi-metro/stations/ambattukavu" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Ambattukavu</a>
+                <span class="text-xs text-slate-400 font-malayalam">അമ്പാട്ടുകാവ്</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Bamboo Crafts</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">3.7 km</span>
+              <button type="button" data-origin-idx="3" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  5
+                </span>
+                <a href="/kochi-metro/stations/muttom" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Muttom</a>
+                <span class="text-xs text-slate-400 font-malayalam">മുട്ടം</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Metro Depot & Solar Sustainability</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">4.6 km</span>
+              <button type="button" data-origin-idx="4" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  6
+                </span>
+                <a href="/kochi-metro/stations/kalamassery" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Kalamassery</a>
+                <span class="text-xs text-slate-400 font-malayalam">കളമശ്ശേരി</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Industrial Cochin</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">6.7 km</span>
+              <button type="button" data-origin-idx="5" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  7
+                </span>
+                <a href="/kochi-metro/stations/cochin-university" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Cochin University</a>
+                <span class="text-xs text-slate-400 font-malayalam">കൊച്ചിൻ യൂണിവേഴ്സിറ്റി</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Maritime Science</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">8.1 km</span>
+              <button type="button" data-origin-idx="6" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  8
+                </span>
+                <a href="/kochi-metro/stations/pathadipalam" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Pathadipalam</a>
+                <span class="text-xs text-slate-400 font-malayalam">പത്തടിപ്പാലം</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Aquatic Life</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">9.3 km</span>
+              <button type="button" data-origin-idx="7" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  9
+                </span>
+                <a href="/kochi-metro/stations/edapally" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Edapally</a>
+                <span class="text-xs text-slate-400 font-malayalam">ഇടപ്പള്ളി</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Spices Heritage & Lulu</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">10.8 km</span>
+              <button type="button" data-origin-idx="8" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  10
+                </span>
+                <a href="/kochi-metro/stations/changampuzha-park" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Changampuzha Park</a>
+                <span class="text-xs text-slate-400 font-malayalam">ചങ്ങമ്പുഴ പാർക്ക്</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Kerala Literature</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">12.1 km</span>
+              <button type="button" data-origin-idx="9" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  11
+                </span>
+                <a href="/kochi-metro/stations/palarivattom" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Palarivattom</a>
+                <span class="text-xs text-slate-400 font-malayalam">പാലാരിവട്ടം</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Flowers of Onam</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">13.1 km</span>
+              <button type="button" data-origin-idx="10" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  12
+                </span>
+                <a href="/kochi-metro/stations/jln-stadium" class="text-sm font-bold text-[var(--text-primary)] hover:underline">JLN Stadium</a>
+                <span class="text-xs text-slate-400 font-malayalam">ജെ.എൽ.എൻ സ്റ്റേഡിയം</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Kerala Sports</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">14.2 km</span>
+              <button type="button" data-origin-idx="11" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  13
+                </span>
+                <a href="/kochi-metro/stations/kaloor" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Kaloor</a>
+                <span class="text-xs text-slate-400 font-malayalam">കലൂർ</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Monsoon Rains</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">15.2 km</span>
+              <button type="button" data-origin-idx="12" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  14
+                </span>
+                <a href="/kochi-metro/stations/town-hall" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Town Hall</a>
+                <span class="text-xs text-slate-400 font-malayalam">ടൗൺ ഹാൾ</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Butterflies</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">15.7 km</span>
+              <button type="button" data-origin-idx="13" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  15
+                </span>
+                <a href="/kochi-metro/stations/mg-road" class="text-sm font-bold text-[var(--text-primary)] hover:underline">MG Road</a>
+                <span class="text-xs text-slate-400 font-malayalam">എം.ജി റോഡ്</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Trade History</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">16.9 km</span>
+              <button type="button" data-origin-idx="14" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  16
+                </span>
+                <a href="/kochi-metro/stations/maharajas-college" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Maharajas College</a>
+                <span class="text-xs text-slate-400 font-malayalam">മഹാരാജാസ് കോളേജ്</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Endemic Reptiles</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">18.1 km</span>
+              <button type="button" data-origin-idx="15" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  17
+                </span>
+                <a href="/kochi-metro/stations/ernakulam-south" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Ernakulam South</a>
+                <span class="text-xs text-slate-400 font-malayalam">എറണാകുളം സൗത്ത്</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Temple Murals</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">19.0 km</span>
+              <button type="button" data-origin-idx="16" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  18
+                </span>
+                <a href="/kochi-metro/stations/kadavanthra" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Kadavanthra</a>
+                <span class="text-xs text-slate-400 font-malayalam">കടവന്ത്ര</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Handloom & Coir</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">20.1 km</span>
+              <button type="button" data-origin-idx="17" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  19
+                </span>
+                <a href="/kochi-metro/stations/elamkulam" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Elamkulam</a>
+                <span class="text-xs text-slate-400 font-malayalam">എളംകുളം</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Pokkali Farming</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">21.3 km</span>
+              <button type="button" data-origin-idx="18" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  20
+                </span>
+                <a href="/kochi-metro/stations/vyttila" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Vyttila</a>
+                <span class="text-xs text-slate-400 font-malayalam">വൈറ്റില</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Snake Boat Races</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">22.6 km</span>
+              <button type="button" data-origin-idx="19" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  21
+                </span>
+                <a href="/kochi-metro/stations/thykoodam" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Thykoodam</a>
+                <span class="text-xs text-slate-400 font-malayalam">തൈക്കൂടം</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Fishing Nets</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">23.7 km</span>
+              <button type="button" data-origin-idx="20" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  22
+                </span>
+                <a href="/kochi-metro/stations/pettah" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Pettah</a>
+                <span class="text-xs text-slate-400 font-malayalam">പേട്ട</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Mangroves</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">24.8 km</span>
+              <button type="button" data-origin-idx="21" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  23
+                </span>
+                <a href="/kochi-metro/stations/vadakkekotta" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Vadakkekotta</a>
+                <span class="text-xs text-slate-400 font-malayalam">വടക്കേക്കോട്ട</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Kalaripayattu Fort</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">25.9 km</span>
+              <button type="button" data-origin-idx="22" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  24
+                </span>
+                <a href="/kochi-metro/stations/sn-junction" class="text-sm font-bold text-[var(--text-primary)] hover:underline">SN Junction</a>
+                <span class="text-xs text-slate-400 font-malayalam">എസ്.എൻ ജംഗ്ഷൻ</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Kerala Renaissance</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">27.0 km</span>
+              <button type="button" data-origin-idx="23" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+
+          <div class="py-3 px-2 flex items-center justify-between gap-3 hover:bg-[var(--surface-bg)] rounded-xl transition">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
+                  25
+                </span>
+                <a href="/kochi-metro/stations/thrippunithura" class="text-sm font-bold text-[var(--text-primary)] hover:underline">Thrippunithura</a>
+                <span class="text-xs text-slate-400 font-malayalam">തൃപ്പൂണിത്തുറ</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5 ml-8">Royal Cochin Capital</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono text-slate-400 tabular-nums">28.1 km</span>
+              <button type="button" data-origin-idx="24" class="btn-set-origin px-2.5 py-1 text-xs font-bold rounded-lg border border-[var(--card-border)] bg-[var(--surface-bg)] text-teal-600 dark:text-teal-400 hover:border-teal-500">
+                Depart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- STATIC CRAWLABLE CONTENT BELOW APP (SEO & AEO OPTIMIZED)              -->
+    <!-- ===================================================================== -->
+    
+    <!-- 1. Intro & Architecture Context -->
+    <section class="card-metro p-6 flex flex-col gap-4 mt-2">
+      <h2 class="text-xl font-extrabold text-[var(--text-primary)]">About the Kochi Metro Blue Line Tracker</h2>
+      <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+        The <strong>Kochi Metro Blue Line</strong> is a 28.13-kilometer rapid transit corridor spanning 25 elevated and at-grade stations from <strong>Aluva</strong> in the north to <strong>Thrippunithura Terminal</strong> in the south. Opened in 2017 and expanded in phases through 2024, it connects key commercial hubs across Greater Cochin including Kalamassery, Edapally, Kaloor, MG Road, Ernakulam South, and Vyttila Mobility Hub.
+      </p>
+      <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+        This tracker is an <strong>independent engineering project</strong> designed by <a href="/" class="text-teal-600 dark:text-teal-400 font-bold hover:underline">Syam Suresh</a>. Because live GPS feeds from Kochi Metro train sets are not publicly exposed via open APIs, train positions on this tracker are calculated using a <strong>deterministic physical kinematics engine</strong>. The engine simulates physical S-curve acceleration (1.0 m/s²), maximum cruising velocity (80 km/h), platform dwell intervals (24 seconds), and published headway schedules in Indian Standard Time (IST).
+      </p>
+    </section>
+
+    <!-- 2. Static 25 Station Directory Grid with Direct Crawlable Links -->
+    <section class="flex flex-col gap-4 mt-2" id="stations">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-xl font-extrabold text-[var(--text-primary)]">All 25 Stations on the Blue Line</h2>
+          <p class="text-xs text-[var(--text-secondary)] mt-0.5">Explore station-specific timetables, platform guides, first and last train schedules, and landmark connections.</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        
+        <a href="/kochi-metro/stations/aluva" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 01</span>
+              <span>0.0 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Aluva</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">ആലുവ</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/pulinchodu" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 02</span>
+              <span>1.7 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Pulinchodu</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">പുളിഞ്ചോട്</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/companypady" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 03</span>
+              <span>2.7 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Companypady</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">കമ്പനിപ്പടി</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/ambattukavu" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 04</span>
+              <span>3.7 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Ambattukavu</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">അമ്പാട്ടുകാവ്</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/muttom" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 05</span>
+              <span>4.6 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Muttom</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">മുട്ടം</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/kalamassery" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 06</span>
+              <span>6.7 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Kalamassery</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">കളമശ്ശേരി</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/cochin-university" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 07</span>
+              <span>8.1 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Cochin University</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">കൊച്ചിൻ യൂണിവേഴ്സിറ്റി</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/pathadipalam" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 08</span>
+              <span>9.3 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Pathadipalam</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">പത്തടിപ്പാലം</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/edapally" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 09</span>
+              <span>10.8 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Edapally</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">ഇടപ്പള്ളി</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/changampuzha-park" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 10</span>
+              <span>12.1 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Changampuzha Park</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">ചങ്ങമ്പുഴ പാർക്ക്</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/palarivattom" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 11</span>
+              <span>13.1 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Palarivattom</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">പാലാരിവട്ടം</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/jln-stadium" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 12</span>
+              <span>14.2 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">JLN Stadium</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">ജെ.എൽ.എൻ സ്റ്റേഡിയം</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/kaloor" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 13</span>
+              <span>15.2 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Kaloor</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">കലൂർ</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/town-hall" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 14</span>
+              <span>15.7 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Town Hall</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">ടൗൺ ഹാൾ</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/mg-road" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 15</span>
+              <span>16.9 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">MG Road</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">എം.ജി റോഡ്</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/maharajas-college" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 16</span>
+              <span>18.1 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Maharajas College</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">മഹാരാജാസ് കോളേജ്</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/ernakulam-south" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 17</span>
+              <span>19.0 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Ernakulam South</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">എറണാകുളം സൗത്ത്</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/kadavanthra" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 18</span>
+              <span>20.1 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Kadavanthra</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">കടവന്ത്ര</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/elamkulam" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 19</span>
+              <span>21.3 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Elamkulam</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">എളംകുളം</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/vyttila" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 20</span>
+              <span>22.6 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Vyttila</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">വൈറ്റില</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/thykoodam" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 21</span>
+              <span>23.7 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Thykoodam</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">തൈക്കൂടം</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/pettah" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 22</span>
+              <span>24.8 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Pettah</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">പേട്ട</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/vadakkekotta" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 23</span>
+              <span>25.9 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Vadakkekotta</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">വടക്കേക്കോട്ട</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/sn-junction" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 24</span>
+              <span>27.0 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">SN Junction</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">എസ്.എൻ ജംഗ്ഷൻ</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+
+        <a href="/kochi-metro/stations/thrippunithura" class="p-4 rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] hover:border-teal-500 transition flex flex-col justify-between group">
+          <div>
+            <div class="flex items-center justify-between text-xs text-slate-400 font-mono mb-1">
+              <span>Station 25</span>
+              <span>28.1 km</span>
+            </div>
+            <h3 class="text-base font-bold text-[var(--text-primary)] group-hover:text-teal-600 dark:group-hover:text-teal-400 transition">Thrippunithura</h3>
+            <p class="text-xs text-slate-500 font-malayalam mt-0.5">തൃപ്പൂണിത്തുറ</p>
+          </div>
+          <div class="mt-3 pt-2 border-t border-[var(--card-border)] text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center justify-between">
+            <span>View Schedule</span>
+            <span>→</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <!-- 3. Frequently Asked Questions (AEO Direct Answers) -->
+    <section class="card-metro p-6 flex flex-col gap-6 mt-2" id="faq">
+      <div>
+        <h2 class="text-xl font-extrabold text-[var(--text-primary)]">Frequently Asked Questions</h2>
+        <p class="text-xs text-[var(--text-secondary)] mt-0.5">Direct answers to common passenger and technical questions about Kochi Metro tracking.</p>
+      </div>
+
+      <div class="space-y-4 divide-y divide-[var(--card-border)]">
+        <div class="pt-3">
+          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">Are the train positions on this tracker real-time GPS coordinates?</h3>
+          <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+            <strong>Direct Answer:</strong> No. Train positions shown on this tracker are estimated using a physical kinematics engine synchronized with the official Kochi Metro timetable in Indian Standard Time (IST). They are not live GPS signals, and unexpected operational delays are not reflected.
+          </p>
+        </div>
+
+        <div class="pt-3">
+          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">What are the operating hours of the Kochi Metro?</h3>
+          <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+            <strong>Direct Answer:</strong> Trains on the Kochi Metro Blue Line generally operate from 06:00 AM to 10:30 PM daily. Headway intervals range from 7 to 8.5 minutes during peak morning and evening commute hours.
+          </p>
+        </div>
+
+        <div class="pt-3">
+          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">How many stations are on the Kochi Metro Blue Line?</h3>
+          <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+            <strong>Direct Answer:</strong> The Blue Line spans 25 operational stations over 28.13 km, beginning at Aluva in Ernakulam district and terminating at Thrippunithura Railway Station.
+          </p>
+        </div>
+
+        <div class="pt-3">
+          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">How long does it take to travel the entire line from Aluva to Thrippunithura?</h3>
+          <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+            <strong>Direct Answer:</strong> End-to-end travel time between Aluva and Thrippunithura is approximately 49 minutes, maintaining an average commercial operating speed of approximately 35 to 40 km/h inclusive of station dwell times.
+          </p>
+        </div>
+
+        <div class="pt-3">
+          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">What is the maximum operating speed of Kochi Metro trains?</h3>
+          <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+            <strong>Direct Answer:</strong> Alstom Metropolis 3-coach train rakes are designed for a maximum operational speed of 80 km/h on viaduct track stretches between stations.
+          </p>
+        </div>
+
+        <div class="pt-3">
+          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">Where can I find official Kochi Metro services and smart cards?</h3>
+          <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
+            <strong>Direct Answer:</strong> Official transit services, Kochi1 Smart Card recharges, and live alerts are managed directly by Kochi Metro Rail Limited (KMRL) via their official mobile app and website at kochimetro.org.
+          </p>
+        </div>
       </div>
     </section>
 
@@ -422,8 +1529,8 @@
       
       <div class="flex items-center justify-between pb-3 border-b border-[var(--card-border)]">
         <div>
-          <h3 class="text-base font-extrabold text-[var(--text-primary)]">Demo and Extras</h3>
-          <p class="text-xs text-[var(--text-secondary)]">Kinematic physics, speed controls &amp; schematic visualizers</p>
+          <h3 class="text-base font-extrabold text-[var(--text-primary)]">Simulation Controls and Extras</h3>
+          <p class="text-xs text-[var(--text-secondary)]">Kinematic physics, timetable presets, and schematic visualizer</p>
         </div>
         <button id="btnCloseExtras" type="button" aria-label="Close modal" class="touch-target p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -433,7 +1540,60 @@
         </button>
       </div>
 
-      <!-- 1. Synchronized Dual-Track Linear Schematic -->
+      <!-- 1. Timetable Presets with Clean SVG Icons (NO EMOJIS) -->
+      <div>
+        <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] block mb-2">
+          Timetable Simulation Period
+        </span>
+        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          <!-- Morning Peak -->
+          <button type="button" class="btn-time-preset touch-target px-2.5 py-2 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-xs font-medium text-[var(--text-primary)] hover:border-teal-500 transition flex flex-col items-center gap-1">
+            <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v6m0 0l-2-2m2 2l2-2"></path><path d="M4.93 10.93l1.41 1.41"></path><path d="M2 18h20"></path><path d="M20 18a8 8 0 0 0-16 0"></path>
+            </svg>
+            <span class="text-[11px] font-bold">08:30 AM</span>
+            <span class="text-[9px] text-slate-400">Morning Peak</span>
+          </button>
+
+          <!-- Midday Service -->
+          <button type="button" class="btn-time-preset touch-target px-2.5 py-2 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-xs font-medium text-[var(--text-primary)] hover:border-teal-500 transition flex flex-col items-center gap-1">
+            <svg class="w-4 h-4 text-yellow-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path>
+            </svg>
+            <span class="text-[11px] font-bold">11:00 AM</span>
+            <span class="text-[9px] text-slate-400">Midday</span>
+          </button>
+
+          <!-- Afternoon -->
+          <button type="button" class="btn-time-preset touch-target px-2.5 py-2 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-xs font-medium text-[var(--text-primary)] hover:border-teal-500 transition flex flex-col items-center gap-1">
+            <svg class="w-4 h-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 8V2m0 6l-2-2m2 2l2-2"></path><path d="M2 18h20"></path><path d="M20 18a8 8 0 0 0-16 0"></path>
+            </svg>
+            <span class="text-[11px] font-bold">02:00 PM</span>
+            <span class="text-[9px] text-slate-400">Afternoon</span>
+          </button>
+
+          <!-- Evening Rush -->
+          <button type="button" class="btn-time-preset touch-target px-2.5 py-2 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-xs font-medium text-[var(--text-primary)] hover:border-teal-500 transition flex flex-col items-center gap-1">
+            <svg class="w-4 h-4 text-orange-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 18a5 5 0 0 0-10 0"></path><line x1="12" y1="2" x2="12" y2="9"></line><line x1="4.22" y1="10.22" x2="5.64" y2="11.64"></line><line x1="1" y1="18" x2="3" y2="18"></line><line x1="21" y1="18" x2="23" y2="18"></line><line x1="18.36" y1="11.64" x2="19.78" y2="10.22"></line><line x1="23" y1="22" x2="1" y2="22"></line>
+            </svg>
+            <span class="text-[11px] font-bold">05:15 PM</span>
+            <span class="text-[9px] text-slate-400">Evening Rush</span>
+          </button>
+
+          <!-- Late Evening -->
+          <button type="button" class="btn-time-preset touch-target px-2.5 py-2 rounded-xl border border-[var(--card-border)] bg-[var(--surface-bg)] text-xs font-medium text-[var(--text-primary)] hover:border-teal-500 transition flex flex-col items-center gap-1">
+            <svg class="w-4 h-4 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+            <span class="text-[11px] font-bold">09:30 PM</span>
+            <span class="text-[9px] text-slate-400">Late Evening</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. Synchronized Dual-Track Linear Schematic -->
       <div>
         <div class="flex items-center justify-between mb-2">
           <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">
@@ -445,7 +1605,7 @@
         </div>
       </div>
 
-      <!-- 2. Simulation Speed Controller -->
+      <!-- 3. Simulation Speed Controller -->
       <div>
         <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)] block mb-2">
           Kinematic Speed Multiplier
@@ -458,7 +1618,7 @@
         </div>
       </div>
 
-      <!-- 3. Viaduct Scenery Cam (60 FPS) -->
+      <!-- 4. Viaduct Scenery Cam (60 FPS) -->
       <div>
         <div class="flex items-center justify-between mb-1.5">
           <span class="text-xs font-bold uppercase tracking-wider text-[var(--text-secondary)]">Viaduct Cam (Kochi Skyline)</span>
@@ -473,7 +1633,23 @@
   </div>
 
   <!-- ======================================================================= -->
-  <!-- BOTTOM TAB NAVIGATION (Apple-Quality Fixed Bar)                          -->
+  <!-- FOOTER                                                                  -->
+  <!-- ======================================================================= -->
+  <footer class="max-w-3xl w-full mx-auto px-4 py-8 border-t border-[var(--card-border)] text-center text-xs text-[var(--text-secondary)] space-y-2 mt-6">
+    <p class="font-bold text-[var(--text-primary)]">Kochi Metro Tracker (Unofficial)</p>
+    <p>Not affiliated with Kochi Metro Rail Ltd. Train positions are estimated from the published schedule timetable, not GPS. Delays aren't shown.</p>
+    <div class="flex items-center justify-center gap-4 pt-2 text-teal-600 dark:text-teal-400 font-semibold flex-wrap">
+      <a href="/" class="hover:underline">Syam Suresh Portfolio</a>
+      <span>·</span>
+      <a href="/work/kochi-metro-tracker" class="hover:underline">Engineering Case Study</a>
+      <span>·</span>
+      <a href="/contact" class="hover:underline">Contact</a>
+    </div>
+    <p class="text-[11px] text-slate-400 pt-1">© 2026 Syam Suresh. Kochi, Kerala, India.</p>
+  </footer>
+
+  <!-- ======================================================================= -->
+  <!-- BOTTOM TAB NAVIGATION                                                   -->
   <!-- ======================================================================= -->
   <nav class="fixed bottom-0 inset-x-0 z-40 bg-[var(--card-bg)]/95 backdrop-blur-md border-t border-[var(--card-border)] px-4 py-2 transition-colors">
     <div class="max-w-md mx-auto grid grid-cols-3 gap-2">
@@ -492,7 +1668,7 @@
           <line x1="9" y1="3" x2="9" y2="18"></line>
           <line x1="15" y1="6" x2="15" y2="21"></line>
         </svg>
-        <span id="navLabelMap" class="text-xs mt-0.5">Live Map</span>
+        <span id="navLabelMap" class="text-xs mt-0.5">Corridor Map</span>
       </button>
 
       <button id="navTabStations" type="button" class="touch-target flex flex-col items-center justify-center py-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 font-medium transition">
@@ -533,6 +1709,7 @@
       isStopsCollapsed: true,
       mapInitialized: false,
       lastAriaAnnouncedMins: null,
+      viaductActive: false
     };
 
     // Instantiate Kinematics Geometry & Motion Engine
@@ -556,8 +1733,8 @@
 
     // Components
     let rollingCountdown = null;
-    let rollingFareInstance = null;
     let rollingDurationInstance = null;
+    let rollingDistanceInstance = null;
     let rollingArrivalInstance = null;
     let circularCountdownInstance = null;
     let journeyLineInstance = null;
@@ -568,17 +1745,6 @@
     let leafletMap = null;
     let mapCanvasRenderer = null;
     let schematicRenderer = null;
-
-    function getFare(fromI, toI) {
-      if (fromI === toI) return 10;
-      const d = Math.abs(STATIONS[toI].km - STATIONS[fromI].km);
-      if (d <= 2) return 10;
-      if (d <= 5) return 20;
-      if (d <= 10) return 30;
-      if (d <= 15) return 40;
-      if (d <= 22) return 50;
-      return 60;
-    }
 
     function detectNearestStation() {
       if (!('geolocation' in navigator)) return;
@@ -609,8 +1775,8 @@
 
     function initAnimatedComponents() {
       rollingCountdown = new RollingNumber(document.getElementById('rollingCountdownMins'), '04');
-      rollingFareInstance = new RollingNumber(document.getElementById('rollingFare'), '₹40');
       rollingDurationInstance = new RollingNumber(document.getElementById('rollingDuration'), '17 mins');
+      rollingDistanceInstance = new RollingNumber(document.getElementById('rollingDistance'), '10.8 km');
       rollingArrivalInstance = new RollingNumber(document.getElementById('rollingArrival'), '5:48 PM');
 
       circularCountdownInstance = new CircularCountdown(document.getElementById('countdownSvgRing'), {
@@ -635,7 +1801,7 @@
         }
       });
 
-      // Developer Debug Overlay (Press 'D' to toggle)
+      // Developer Debug Diagnostics (Press 'D' to toggle)
       debugOverlayInstance = new DebugOverlay(motionEngine, { defaultVisible: false });
     }
 
@@ -648,8 +1814,6 @@
         : (state.lang === 'ml' ? 'ആലുവ' : 'Aluva');
       const platformNum = isSouthbound ? 'Platform 2' : 'Platform 1';
 
-      const fare = getFare(state.fromIdx, state.toIdx);
-      const cardFare = Math.round(fare * 0.9);
       const dist = Math.abs(toSt.km - fromSt.km).toFixed(1);
       const durationMins = Math.max(2, Math.round(Math.abs(toSt.minFromAluva - fromSt.minFromAluva || (dist * 1.6))));
       const stopsCount = Math.abs(state.toIdx - state.fromIdx);
@@ -665,7 +1829,6 @@
       if (relevantTrains.length > 0) {
         let minDiff = Infinity;
         relevantTrains.forEach(t => {
-          // Calculate distance along track to origin station
           const diff = isSouthbound
             ? (fromMeters - t.currentDistanceMeters)
             : (t.currentDistanceMeters - fromMeters);
@@ -679,7 +1842,6 @@
         });
 
         if (minDiff === Infinity) {
-          // All trains have passed; wrap around next scheduled service headway
           closestRemainingSec = 360;
         }
       }
@@ -698,8 +1860,6 @@
         toSt,
         platformNum,
         directionTargetName,
-        fare,
-        cardFare,
         dist,
         durationMins,
         stopsCount,
@@ -713,8 +1873,8 @@
       const data = calculateCommute();
 
       rollingCountdown.update(String(data.remainingMinutes).padStart(2, '0'));
-      rollingFareInstance.update(`₹${data.fare}`);
       rollingDurationInstance.update(`${data.durationMins} mins`);
+      rollingDistanceInstance.update(`${data.dist} km`);
       rollingArrivalInstance.update(data.arrivalTimeString);
 
       circularCountdownInstance.update(data.remainingSeconds, 360);
@@ -726,14 +1886,12 @@
           ? `${platformPrefix} ${data.platformNum.slice(-1)} · ${data.directionTargetName} ${towardsPrefix}`
           : `${data.platformNum} · ${towardsPrefix} ${data.directionTargetName}`;
 
-      document.getElementById('stopsCountLabel').textContent = `${data.stopsCount} stops`;
-      document.getElementById('distanceLabel').textContent = `${data.dist} km`;
-      document.getElementById('labelKochi1Fare').textContent = `Card: ₹${data.cardFare}`;
+      document.getElementById('stopsCountNum').textContent = `${data.stopsCount} stops`;
 
       if (state.lastAriaAnnouncedMins !== data.remainingMinutes) {
         state.lastAriaAnnouncedMins = data.remainingMinutes;
         const liveRegion = document.getElementById('ariaLiveCountdown');
-        liveRegion.textContent = `Next train in ${data.remainingMinutes} minutes, arriving at ${data.platformNum} towards ${data.directionTargetName}. Fare is ${data.fare} rupees.`;
+        liveRegion.textContent = `Next train in ${data.remainingMinutes} minutes, arriving at ${data.platformNum} towards ${data.directionTargetName}. Estimated ride duration is ${data.durationMins} minutes.`;
       }
 
       const minI = Math.min(state.fromIdx, state.toIdx);
@@ -824,7 +1982,7 @@
                 <span class="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center justify-center font-mono">
                   ${st.id}
                 </span>
-                <strong class="text-sm font-bold text-[var(--text-primary)]">${name}</strong>
+                <a href="/kochi-metro/stations/${st.slug}" class="text-sm font-bold text-[var(--text-primary)] hover:underline">${name}</a>
                 <span class="text-xs text-slate-400 font-malayalam">${subName}</span>
               </div>
               <p class="text-xs text-slate-500 mt-0.5 ml-8">${st.theme}</p>
@@ -971,7 +2129,7 @@
     }
 
     function renderViaductFrame(dt) {
-      if (!viaductCtx || !viaductCanvas) return;
+      if (!viaductCtx || !viaductCanvas || !state.viaductActive) return;
       const W = viaductCanvas.clientWidth;
       const H = viaductCanvas.clientHeight;
       if (viaductCanvas.width !== W || viaductCanvas.height !== H) {
@@ -1032,7 +2190,7 @@
       document.getElementById('navTabMap').addEventListener('click', () => switchTab('map'));
       document.getElementById('navTabStations').addEventListener('click', () => switchTab('stations'));
 
-      // Dev Debug Radar Toggle Button
+      // Dev Diagnostics Toggle Button
       document.getElementById('btnToggleDebug').addEventListener('click', () => {
         if (debugOverlayInstance) debugOverlayInstance.toggle();
       });
@@ -1044,9 +2202,9 @@
         document.getElementById('labelFrom').textContent = state.lang === 'ml' ? 'പുറപ്പെടുന്ന സ്റ്റേഷൻ' : 'From (Origin)';
         document.getElementById('labelTo').textContent = state.lang === 'ml' ? 'എത്തിച്ചേരേണ്ട സ്റ്റേഷൻ' : 'To (Destination)';
         document.getElementById('labelNextTrain').textContent = state.lang === 'ml' ? 'അടുത്ത ട്രെയിൻ എത്താൻ' : 'Next train arriving in';
-        document.getElementById('labelFare').textContent = state.lang === 'ml' ? 'യാത്രാനിരക്ക്' : 'Fare';
-        document.getElementById('labelTripTime').textContent = state.lang === 'ml' ? 'യാത്രാസമയം' : 'Trip Time';
-        document.getElementById('labelArrival').textContent = state.lang === 'ml' ? 'എത്തിച്ചേരൽ' : 'Arrival';
+        document.getElementById('labelTripTime').textContent = state.lang === 'ml' ? 'യാത്രാസമയം' : 'Travel Time';
+        document.getElementById('labelDistance').textContent = state.lang === 'ml' ? 'ദൂരം' : 'Distance';
+        document.getElementById('labelStops').textContent = state.lang === 'ml' ? 'സ്റ്റോപ്പുകൾ' : 'Stations';
         document.getElementById('labelStopsHeader').textContent = state.lang === 'ml' ? 'യാത്രയിലെ സ്റ്റോപ്പുകൾ' : 'Stops on your trip';
 
         populateDropdowns();
@@ -1067,11 +2225,13 @@
       document.getElementById('btnOpenExtras').addEventListener('click', () => {
         extrasBackdrop.classList.remove('hidden');
         extrasBackdrop.classList.add('flex');
+        state.viaductActive = true;
       });
 
       document.getElementById('btnCloseExtras').addEventListener('click', () => {
         extrasBackdrop.classList.add('hidden');
         extrasBackdrop.classList.remove('flex');
+        state.viaductActive = false;
       });
 
       // Simulation Speed Buttons
@@ -1118,7 +2278,6 @@
       const legendDwell = document.getElementById('legendCountDwell');
 
       motionEngine.subscribe((snapshot, dt) => {
-        // Synchronize counts
         const southCount = snapshot.filter(t => t.direction === 'south').length;
         const northCount = snapshot.filter(t => t.direction === 'north').length;
         const dwellCount = snapshot.filter(t => t.state === 'DWELLING').length;
@@ -1130,7 +2289,6 @@
         if (legendNorth) legendNorth.textContent = String(northCount);
         if (legendDwell) legendDwell.textContent = String(dwellCount);
 
-        // Render Viaduct frame
         renderViaductFrame(dt);
       });
 

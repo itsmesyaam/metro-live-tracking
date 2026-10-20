@@ -523,7 +523,7 @@ export class TrainMotionEngine {
       activeTrainsCount: this.trains.size,
       msSinceLastTick: this.msSinceLastTick,
       maxErrorMeters: this.maxFleetErrorMeters,
-      source: this.sourceMode === 'LIVE' ? 'LIVE (KMRL IST)' : 'SIMULATED',
+      source: this.sourceMode === 'LIVE' ? 'ESTIMATED (IST Timetable)' : 'SIMULATED',
       selectedTrain: selected ? {
         id: selected.id,
         direction: selected.direction,

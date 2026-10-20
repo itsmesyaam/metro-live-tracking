@@ -1,6 +1,6 @@
 /**
  * Animation 2: Rolling Number Countdown ("years rolling text")
- * Where: Next train figure, fare, arrival time.
+ * Where: Next train figure, distance, travel time, arrival time.
  * Motion: Each digit rolls vertically like an odometer when its value changes.
  *         Only changed digits animate.
  * Timing: 400ms spring (stiffness 300, damping 30). Tabular nums guarantee zero width shifts.
