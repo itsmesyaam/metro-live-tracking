@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Kochi Metro Tracker (Unofficial) — Estimated Train Positions | Syam Suresh</title>
-  <meta name="description" content="Track estimated train positions across all 25 stations on the Kochi Metro Blue Line from Aluva to Thrippunithura. Timetable-based estimates." />
+  <title>Kochi Metro Live Tracker: Train Positions & Timings (Unofficial)</title>
+  <meta name="description" content="See where Kochi Metro trains are right now, estimated from the official timetable. All 25 Blue Line stations, Aluva to Thrippunithura. Free, no app needed." />
   <meta name="theme-color" content="#00796b" />
   <link rel="canonical" href="https://www.syamsuresh.in/kochi-metro" />
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Kochi Metro Tracker (Unofficial) — Estimated Train Positions" />
-  <meta property="og:description" content="Track estimated train positions across all 25 stations on the Kochi Metro Blue Line from Aluva to Thrippunithura. Timetable-based estimates." />
+  <meta property="og:title" content="Kochi Metro Live Tracker: Train Positions & Timings (Unofficial)" />
+  <meta property="og:description" content="See where Kochi Metro trains are right now, estimated from the official timetable. All 25 Blue Line stations, Aluva to Thrippunithura. Free, no app needed." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.syamsuresh.in/kochi-metro" />
   <meta property="og:image" content="https://www.syamsuresh.in/assets/images/work/kochi-metro-og.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Kochi Metro Tracker (Unofficial) — Estimated Train Positions" />
-  <meta name="twitter:description" content="Track estimated train positions across all 25 stations on the Kochi Metro Blue Line from Aluva to Thrippunithura. Timetable-based estimates." />
+  <meta name="twitter:title" content="Kochi Metro Live Tracker: Train Positions & Timings (Unofficial)" />
+  <meta name="twitter:description" content="See where Kochi Metro trains are right now, estimated from the official timetable. All 25 Blue Line stations, Aluva to Thrippunithura. Free, no app needed." />
   <meta name="twitter:image" content="https://www.syamsuresh.in/assets/images/work/kochi-metro-og.png" />
 
   <!-- Structured Data JSON-LD -->
@@ -44,18 +44,18 @@
         "mainEntity": [
           {
             "@type": "Question",
-            "name": "Are the train positions on this tracker real-time GPS coordinates?",
+            "name": "Is this the official Kochi Metro app?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "No. Train positions on this tracker are estimated using a physical kinematics engine synchronized with the official Kochi Metro timetable in Indian Standard Time (IST). They are not live GPS signals, and unexpected operational delays are not reflected."
+              "text": "No. This is an independent tracker built by Syam Suresh, a web developer in Kochi. For official announcements, use the KMRL website or app."
             }
           },
           {
             "@type": "Question",
-            "name": "What are the operating hours of the Kochi Metro?",
+            "name": "Are the train positions exact?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Trains on the Kochi Metro Blue Line generally operate from 06:00 AM to 10:30 PM daily. Headway intervals range from 7 to 8.5 minutes during peak morning and evening commute hours."
+              "text": "They’re estimated from the official timetable, not GPS. If a train is delayed, the tracker won’t show it."
             }
           },
           {
@@ -63,31 +63,15 @@
             "name": "How many stations are on the Kochi Metro Blue Line?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "The Blue Line spans 25 operational stations over 28.13 km, beginning at Aluva in Ernakulam district and terminating at Thrippunithura Railway Station."
+              "text": "25 stations across about 28 km, from Aluva in the north to Thrippunithura in the south."
             }
           },
           {
             "@type": "Question",
-            "name": "How long does it take to travel the entire line from Aluva to Thrippunithura?",
+            "name": "Does it work on mobile?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "End-to-end travel time between Aluva and Thrippunithura is approximately 49 minutes, maintaining an average commercial operating speed of approximately 35 to 40 km/h inclusive of station dwell times."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is the maximum operating speed of Kochi Metro trains?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Alstom Metropolis 3-coach train rakes are designed for a maximum operational speed of 80 km/h on viaduct track stretches between stations."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "Where can I find official Kochi Metro services and smart cards?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Official transit services, Kochi1 Smart Card recharges, and live alerts are managed directly by Kochi Metro Rail Limited (KMRL) via their official mobile app and website at kochimetro.org."
+              "text": "Yes. It runs in any phone browser at 60 FPS, with no download needed."
             }
           }
         ]
@@ -254,7 +238,7 @@
         </a>
         <div>
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-base sm:text-lg font-extrabold tracking-tight text-[var(--text-primary)]">Kochi Metro Tracker (Unofficial)</span>
+            <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-[var(--text-primary)]">Kochi Metro Live Tracker</h1>
             <!-- Fleet status with clean placeholder -->
             <span id="headerTrainCountBadge" class="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-400 border border-teal-500/20">
               Loading trains…
@@ -1065,6 +1049,12 @@
       </div>
     </section>
 
+    
+        <!-- Subtle Credit Line at Bottom of Tool -->
+        <div class="py-2.5 px-4 text-center text-xs text-slate-500 border border-[var(--card-border)] bg-[var(--surface-bg)] rounded-xl my-3">
+          Built by Syam Suresh, web &amp; web app developer in Kochi. <a href="/work/kochi-metro-tracker" class="text-teal-600 dark:text-teal-400 font-semibold hover:underline">Need something like this? →</a>
+        </div>
+
     <!-- ===================================================================== -->
     <!-- STATIC CRAWLABLE CONTENT BELOW APP (SEO & AEO OPTIMIZED)              -->
     <!-- ===================================================================== -->
@@ -1073,10 +1063,7 @@
     <section class="card-metro p-6 flex flex-col gap-4 mt-2">
       <h2 class="text-xl font-extrabold text-[var(--text-primary)]">About the Kochi Metro Blue Line Tracker</h2>
       <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
-        The <strong>Kochi Metro Blue Line</strong> is a 28.13-kilometer rapid transit corridor spanning 25 elevated and at-grade stations from <strong>Aluva</strong> in the north to <strong>Thrippunithura Terminal</strong> in the south. Opened in 2017 and expanded in phases through 2024, it connects key commercial hubs across Greater Cochin including Kalamassery, Edapally, Kaloor, MG Road, Ernakulam South, and Vyttila Mobility Hub.
-      </p>
-      <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
-        This tracker is an <strong>independent engineering project</strong> designed by <a href="/" class="text-teal-600 dark:text-teal-400 font-bold hover:underline">Syam Suresh</a>. Because live GPS feeds from Kochi Metro train sets are not publicly exposed via open APIs, train positions on this tracker are calculated using a <strong>deterministic physical kinematics engine</strong>. The engine simulates physical S-curve acceleration (1.0 m/s²), maximum cruising velocity (80 km/h), platform dwell intervals (24 seconds), and published headway schedules in Indian Standard Time (IST).
+        Track every Kochi Metro train on the Blue Line from Aluva to Thrippunithura in real time. Positions are calculated every two seconds from the official KMRL timetable in Indian Standard Time, so you can see which train is closest to your station and when it should arrive. It works in any browser, with no app or login needed.
       </p>
     </section>
 
@@ -1476,44 +1463,30 @@
 
       <div class="space-y-4 divide-y divide-[var(--card-border)]">
         <div class="pt-3">
-          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">Are the train positions on this tracker real-time GPS coordinates?</h3>
+          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">Is this the official Kochi Metro app?</h3>
           <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
-            <strong>Direct Answer:</strong> No. Train positions shown on this tracker are estimated using a physical kinematics engine synchronized with the official Kochi Metro timetable in Indian Standard Time (IST). They are not live GPS signals, and unexpected operational delays are not reflected.
+            No. This is an independent tracker built by Syam Suresh, a web developer in Kochi. For official announcements, use the KMRL website or app.
           </p>
         </div>
 
         <div class="pt-3">
-          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">What are the operating hours of the Kochi Metro?</h3>
+          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">Are the train positions exact?</h3>
           <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
-            <strong>Direct Answer:</strong> Trains on the Kochi Metro Blue Line generally operate from 06:00 AM to 10:30 PM daily. Headway intervals range from 7 to 8.5 minutes during peak morning and evening commute hours.
+            They’re estimated from the official timetable, not GPS. If a train is delayed, the tracker won’t show it.
           </p>
         </div>
 
         <div class="pt-3">
           <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">How many stations are on the Kochi Metro Blue Line?</h3>
           <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
-            <strong>Direct Answer:</strong> The Blue Line spans 25 operational stations over 28.13 km, beginning at Aluva in Ernakulam district and terminating at Thrippunithura Railway Station.
+            25 stations across about 28 km, from Aluva in the north to Thrippunithura in the south.
           </p>
         </div>
 
         <div class="pt-3">
-          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">How long does it take to travel the entire line from Aluva to Thrippunithura?</h3>
+          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">Does it work on mobile?</h3>
           <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
-            <strong>Direct Answer:</strong> End-to-end travel time between Aluva and Thrippunithura is approximately 49 minutes, maintaining an average commercial operating speed of approximately 35 to 40 km/h inclusive of station dwell times.
-          </p>
-        </div>
-
-        <div class="pt-3">
-          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">What is the maximum operating speed of Kochi Metro trains?</h3>
-          <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
-            <strong>Direct Answer:</strong> Alstom Metropolis 3-coach train rakes are designed for a maximum operational speed of 80 km/h on viaduct track stretches between stations.
-          </p>
-        </div>
-
-        <div class="pt-3">
-          <h3 class="text-base font-bold text-[var(--text-primary)] mb-1">Where can I find official Kochi Metro services and smart cards?</h3>
-          <p class="text-sm text-[var(--text-secondary)] leading-relaxed">
-            <strong>Direct Answer:</strong> Official transit services, Kochi1 Smart Card recharges, and live alerts are managed directly by Kochi Metro Rail Limited (KMRL) via their official mobile app and website at kochimetro.org.
+            Yes. It runs in any phone browser at 60 FPS, with no download needed.
           </p>
         </div>
       </div>
