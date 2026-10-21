@@ -12,6 +12,9 @@
     });
   </script>
   <meta charset="UTF-8" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kochi Metro Live Tracker: Train Positions & Timings (Unofficial)</title>
   <meta name="description" content="See where Kochi Metro trains are right now, estimated from the official timetable. All 25 Blue Line stations, Aluva to Thrippunithura. Free, no app needed." />
@@ -1422,12 +1425,34 @@
     0%, 100% { opacity: 0.85; transform: scale(1); }
     50% { opacity: 0.4; transform: scale(1.15); }
   }
+  @keyframes trainRadarPing {
+    0% { transform: scale(0.6); opacity: 0.9; }
+    80%, 100% { transform: scale(2.2); opacity: 0; }
+  }
   .headlight-beam {
     animation: headlightPulse 1.4s ease-in-out infinite;
   }
   .custom-3coach-train-marker {
     background: transparent !important;
     border: none !important;
+    transition: none !important;
+    will-change: transform;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .custom-3coach-train-marker .train-ping {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    margin: -22px 0 0 -22px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: trainRadarPing 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+  #mapViewport.dark-radar-filter .leaflet-tile-pane {
+    filter: invert(90%) hue-rotate(180deg) contrast(110%) brightness(85%);
   }
   .custom-station-pin {
     background: transparent !important;
@@ -3742,8 +3767,8 @@
         attr: 'Terrain &copy; Google Maps Kochi'
       },
       dark: {
-        url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-        attr: '&copy; OpenStreetMap &copy; CARTO'
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+        attr: '&copy; Esri &copy; OpenStreetMap'
       }
     };
 
@@ -3758,6 +3783,10 @@
         attribution: MAP_TILES.streets.attr,
         maxZoom: 20
       }).addTo(map);
+
+      setTimeout(() => { if (map) map.invalidateSize(); }, 150);
+      setTimeout(() => { if (map) map.invalidateSize(); }, 600);
+      window.addEventListener('resize', () => { if (map) map.invalidateSize(); });
 
       const fullCoords = STATIONS.map(s => [s.lat, s.lng]);
 
@@ -3838,6 +3867,10 @@
       if (tileLayer) {
         tileLayer.setUrl(spec.url);
       }
+      const mapViewport = document.getElementById('mapViewport');
+      if (mapViewport) {
+        mapViewport.classList.toggle('dark-radar-filter', mode === 'dark');
+      }
 
       ['btnLayerStreets', 'btnLayerSatellite', 'btnLayerTerrain', 'btnLayerDark'].forEach(id => {
         const btn = document.getElementById(id);
@@ -3892,29 +3925,32 @@
           ? '#fbbf24'
           : (train.direction === 'south' ? '#eb5e28' : '#34d399');
 
+      const pingColor = train.direction === 'south' ? 'rgba(235,94,40,0.45)' : 'rgba(52,211,153,0.45)';
+
       const badgeBg = isSelected
         ? 'background:#eb5e28;color:#fffcf2;border-color:#eb5e28;'
         : train.isDwelling
-          ? 'background:rgba(245,158,11,0.2);color:#fbbf24;border-color:#f59e0b;'
-          : (train.direction === 'south' ? 'background:rgba(235,94,40,0.2);color:#eb5e28;border-color:#eb5e28;' : 'background:rgba(16,185,129,0.2);color:#34d399;border-color:#10b981;');
+          ? 'background:rgba(245,158,11,0.25);color:#fbbf24;border-color:#f59e0b;'
+          : (train.direction === 'south' ? 'background:rgba(235,94,40,0.25);color:#eb5e28;border-color:#eb5e28;' : 'background:rgba(16,185,129,0.25);color:#34d399;border-color:#10b981;');
 
       const dirArrow = train.direction === 'south' ? '▼' : '▲';
-      const speedLabel = train.isDwelling ? 'STOP' : (train.speedKmh + 'k');
+      const speedLabel = train.isDwelling ? 'STOP' : (train.speedKmh + ' km/h');
 
-      return '<div style="position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:auto;width:84px;height:52px;">' +
-        '<div class="mono" style="padding:2px 5px;border-radius:4px;border:1px solid;font-size:9px;font-weight:700;white-space:nowrap;line-height:1;margin-bottom:2px;box-shadow:0 2px 6px rgba(0,0,0,0.6);' + badgeBg + '">' +
+      return '<div style="position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:auto;width:92px;height:56px;">' +
+        '<div class="train-ping" style="border:2px solid ' + pingColor + ';box-shadow:0 0 10px ' + pingColor + ';"></div>' +
+        '<div class="mono" style="padding:2px 6px;border-radius:4px;border:1px solid;font-size:9px;font-weight:700;white-space:nowrap;line-height:1;margin-bottom:2px;box-shadow:0 2px 6px rgba(0,0,0,0.8);' + badgeBg + '">' +
           dirArrow + ' ' + train.id + ' · ' + speedLabel +
         '</div>' +
         '<div style="position:relative;display:flex;align-items:center;justify-content:center;transform:rotate(' + train.angleDeg.toFixed(1) + 'deg);">' +
-          '<svg width="56" height="18" viewBox="0 0 56 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.8));">' +
-            '<polygon points="48,3 56,0 56,18 48,15" fill="rgba(254,240,138,0.7)" class="headlight-beam" />' +
-            '<rect x="2" y="3" width="13" height="12" rx="3" fill="#fffcf2" stroke="#252422" stroke-width="1.5"/>' +
-            '<rect x="4" y="5" width="9" height="8" rx="1" fill="' + bodyColor + '"/>' +
-            '<rect x="17" y="3" width="13" height="12" rx="2" fill="#fffcf2" stroke="#252422" stroke-width="1.5"/>' +
-            '<rect x="19" y="5" width="9" height="8" rx="1" fill="' + bodyColor + '"/>' +
-            '<path d="M32 3 H44 C47.5 3 49.5 5.5 49.5 9 C49.5 12.5 47.5 15 44 15 H32 V3 Z" fill="#fffcf2" stroke="#252422" stroke-width="1.5"/>' +
-            '<rect x="34" y="5" width="9" height="8" rx="1" fill="' + bodyColor + '"/>' +
-            '<path d="M44 5.5 C46 5.5 47.2 7 47.2 9 C47.2 11 46 12.5 44 12.5 Z" fill="#252422"/>' +
+          '<svg width="58" height="20" viewBox="0 0 58 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter:drop-shadow(0 3px 6px rgba(0,0,0,0.9));">' +
+            '<polygon points="48,4 58,0 58,20 48,16" fill="rgba(254,240,138,0.75)" class="headlight-beam" />' +
+            '<rect x="2" y="4" width="13" height="12" rx="3" fill="#fffcf2" stroke="#252422" stroke-width="1.5"/>' +
+            '<rect x="4" y="6" width="9" height="8" rx="1" fill="' + bodyColor + '"/>' +
+            '<rect x="17" y="4" width="13" height="12" rx="2" fill="#fffcf2" stroke="#252422" stroke-width="1.5"/>' +
+            '<rect x="19" y="6" width="9" height="8" rx="1" fill="' + bodyColor + '"/>' +
+            '<path d="M32 4 H44 C47.5 4 49.5 6.5 49.5 10 C49.5 13.5 47.5 16 44 16 H32 V4 Z" fill="#fffcf2" stroke="#252422" stroke-width="1.5"/>' +
+            '<rect x="34" y="6" width="9" height="8" rx="1" fill="' + bodyColor + '"/>' +
+            '<path d="M44 6.5 C46 6.5 47.2 8 47.2 10 C47.2 12 46 13.5 44 13.5 Z" fill="#252422"/>' +
           '</svg>' +
         '</div>' +
       '</div>';
@@ -3934,30 +3970,30 @@
         if (trainMarkersMap.has(train.id)) {
           const entry = trainMarkersMap.get(train.id);
           entry.marker.setLatLng([train.lat, train.lng]);
-          entry.marker.setZIndexOffset(isSelected ? 1000 : 500);
+          entry.marker.setZIndexOffset(isSelected ? 3000 : 2000);
           if (entry.signature !== signature) {
             entry.signature = signature;
             entry.marker.setIcon(L.divIcon({
               html: buildTrainMarkerHtml(train, isSelected),
               className: 'custom-3coach-train-marker',
-              iconSize: [84, 52],
-              iconAnchor: [42, 32]
+              iconSize: [92, 56],
+              iconAnchor: [46, 34]
             }));
           }
         } else {
           const icon = L.divIcon({
             html: buildTrainMarkerHtml(train, isSelected),
             className: 'custom-3coach-train-marker',
-            iconSize: [84, 52],
-            iconAnchor: [42, 32]
+            iconSize: [92, 56],
+            iconAnchor: [46, 34]
           });
           const marker = L.marker([train.lat, train.lng], {
             icon,
-            zIndexOffset: isSelected ? 1000 : 500
+            zIndexOffset: isSelected ? 3000 : 2000
           }).addTo(map);
 
           marker.on('click', () => {
-            selectTrain(train.id, false);
+            selectTrain(train.id, true);
             openTrainPopupOnMap(train);
           });
 
@@ -4430,6 +4466,14 @@
       const t = state.activeTrains.find(x => x.id === trainId);
       if (t && panMap && map) {
         map.flyTo([t.lat, t.lng], Math.max(map.getZoom(), 14), { duration: 0.6 });
+        state.followSelectedTrain = true;
+        const lbl = document.getElementById('followLabel');
+        const btn = document.getElementById('btnToggleCameraFollow');
+        if (lbl) lbl.textContent = 'Follow: ' + trainId;
+        if (btn) {
+          btn.style.background = 'var(--km-accent, #eb5e28)';
+          btn.style.color = '#fffcf2';
+        }
       }
       updateHeavyPanels();
     }
