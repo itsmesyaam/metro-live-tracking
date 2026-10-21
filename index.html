@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en-IN">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script defer src="https://www.googletagmanager.com/gtag/js?id=G-M74DWG84GQ"></script>
+  <script>
+    window.addEventListener('load', function() {
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-M74DWG84GQ');
+    });
+  </script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kochi Metro Live Tracker: Train Positions & Timings (Unofficial)</title>
@@ -1809,6 +1819,132 @@
           </div>
         </div>
       </div>
+
+      <!-- Live Train Location & Motion Detection Cockpit -->
+      <div class="card-metro" style="margin-top:20px;padding:24px;" data-fig="02-telemetry">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:18px;border-bottom:1px solid rgba(204,197,185,0.12);padding-bottom:12px;">
+          <div>
+            <span class="mono" style="font-size:11px;color:var(--km-accent,#eb5e28);display:block;margin-bottom:4px;">
+              REAL-TIME TELEMETRY · 2-SECOND AUTHORITATIVE IST FEED
+            </span>
+            <h3 style="font-size:18px;font-weight:800;color:var(--km-text-primary,#fffcf2);margin:0;">
+              Live Train Location &amp; Motion Detector
+            </h3>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label for="selectTelemetryTrain" class="mono" style="font-size:11px;color:var(--km-text-secondary,#ccc5b9);">Select Rake:</label>
+            <select id="selectTelemetryTrain" class="btn-hud" style="font-size:12px;padding:6px 10px;background:var(--km-base,#252422);color:var(--km-text-primary,#fffcf2);border:1px solid rgba(204,197,185,0.2);border-radius:6px;">
+              <option value="KM-101">KM-101 "Pampa" (Southbound)</option>
+              <option value="KM-102">KM-102 "Periyar" (Southbound)</option>
+              <option value="KM-103">KM-103 "Kabani" (Southbound)</option>
+              <option value="KM-104">KM-104 "Nila" (Southbound)</option>
+              <option value="KM-105">KM-105 "Chalakudy" (Southbound)</option>
+              <option value="KM-201">KM-201 "Chaliyar" (Northbound)</option>
+              <option value="KM-202">KM-202 "Kallada" (Northbound)</option>
+              <option value="KM-203">KM-203 "Karamana" (Northbound)</option>
+              <option value="KM-204">KM-204 "Meenachil" (Northbound)</option>
+              <option value="KM-205">KM-205 "Neyyar" (Northbound)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Cockpit Telemetry Grid -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;margin-bottom:20px;">
+          <!-- 1. Live Geographic Coordinates (Location) -->
+          <div style="background:rgba(204,197,185,0.04);border:1px solid rgba(204,197,185,0.12);border-radius:8px;padding:14px;">
+            <div class="mono" style="font-size:10px;color:var(--km-text-secondary,#ccc5b9);margin-bottom:6px;letter-spacing:0.06em;">
+              LIVE LOCATION (GPS ESTIMATE)
+            </div>
+            <div id="telemetryCoords" class="mono tabular-nums" style="font-size:15px;font-weight:700;color:var(--km-text-primary,#fffcf2);margin-bottom:6px;">
+              10.02514° N · 76.30832° E
+            </div>
+            <div style="font-size:12px;color:var(--km-text-secondary,#ccc5b9);">
+              Chainage: <span id="telemetryChainage" class="mono" style="color:var(--km-text-primary,#fffcf2);">-- km</span> from Aluva
+            </div>
+          </div>
+
+          <!-- 2. Real-Time Motion Detection State -->
+          <div style="background:rgba(204,197,185,0.04);border:1px solid rgba(204,197,185,0.12);border-radius:8px;padding:14px;">
+            <div class="mono" style="font-size:10px;color:var(--km-text-secondary,#ccc5b9);margin-bottom:6px;letter-spacing:0.06em;">
+              MOTION DETECTION
+            </div>
+            <div id="telemetryMotionBadge" style="display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:6px;background:rgba(235,94,40,0.15);border:1px solid var(--km-accent,#eb5e28);margin-bottom:6px;">
+              <span class="status-dot"></span>
+              <span id="telemetryMotionText" class="mono" style="font-size:12px;font-weight:700;color:var(--km-text-primary,#fffcf2);">
+                IN MOTION · CRUISING
+              </span>
+            </div>
+            <div style="font-size:12px;color:var(--km-text-secondary,#ccc5b9);">
+              Speed: <strong id="telemetrySpeed" class="mono tabular-nums" style="color:var(--km-text-primary,#fffcf2);font-size:14px;">-- km/h</strong> · Heading: <span id="telemetryHeading" class="mono">--°</span>
+            </div>
+          </div>
+
+          <!-- 3. Current Track Segment & Next Stop -->
+          <div style="background:rgba(204,197,185,0.04);border:1px solid rgba(204,197,185,0.12);border-radius:8px;padding:14px;">
+            <div class="mono" style="font-size:10px;color:var(--km-text-secondary,#ccc5b9);margin-bottom:6px;letter-spacing:0.06em;">
+              TRACK SEGMENT &amp; NEXT STOP
+            </div>
+            <div id="telemetrySegment" style="font-size:14px;font-weight:700;color:var(--km-text-primary,#fffcf2);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              Edapally → Changampuzha Park
+            </div>
+            <div style="font-size:12px;color:var(--km-text-secondary,#ccc5b9);">
+              Next Call: <span id="telemetryNextStation" style="color:var(--km-accent,#eb5e28);font-weight:600;">--</span> (<span id="telemetryEtaNext" class="mono">--</span>)
+            </div>
+          </div>
+        </div>
+
+        <!-- Segment Travel Progress Bar -->
+        <div style="margin-bottom:16px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--km-text-secondary,#ccc5b9);margin-bottom:6px;" class="mono">
+            <span id="telemetrySegFrom">Station A</span>
+            <span id="telemetrySegPct">0% between stations</span>
+            <span id="telemetrySegTo">Station B</span>
+          </div>
+          <div style="width:100%;height:6px;background:rgba(204,197,185,0.12);border-radius:3px;overflow:hidden;">
+            <div id="telemetrySegBar" style="height:100%;width:0%;background:var(--km-accent,#eb5e28);transition:width 0.3s ease;"></div>
+          </div>
+        </div>
+
+        <!-- Cockpit Actions -->
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button id="btnTelemetryFollow" type="button" class="btn-hud" style="font-size:12px;padding:7px 12px;background:var(--km-accent,#eb5e28);color:#fffcf2;border-color:var(--km-accent,#eb5e28);">
+            Lock Camera Follow ↗
+          </button>
+          <button id="btnTelemetryFlyTo" type="button" class="btn-hud" style="font-size:12px;padding:7px 12px;">
+            Center on Map ↗
+          </button>
+          <button id="btnTelemetrySpot" type="button" class="btn-hud" style="font-size:12px;padding:7px 12px;">
+            Open Google Spot ↗
+          </button>
+        </div>
+
+        <!-- All 10 Rakes Live Location & Motion Roster Table -->
+        <div style="margin-top:24px;border-top:1px solid rgba(204,197,185,0.12);padding-top:16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <span class="mono" style="font-size:11px;color:var(--km-text-secondary,#ccc5b9);letter-spacing:0.06em;">
+              ACTIVE FLEET MOTION ROSTER (ALL 10 RAKES)
+            </span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;text-align:left;">
+              <thead>
+                <tr class="mono" style="color:var(--km-text-secondary,#ccc5b9);border-bottom:1px solid rgba(204,197,185,0.15);font-size:10px;">
+                  <th style="padding:6px 8px;">RAKE</th>
+                  <th style="padding:6px 8px;">DIR</th>
+                  <th style="padding:6px 8px;">LIVE LOCATION</th>
+                  <th style="padding:6px 8px;">DETECTED MOTION</th>
+                  <th style="padding:6px 8px;">SEGMENT</th>
+                  <th style="padding:6px 8px;text-align:right;">ACTION</th>
+                </tr>
+              </thead>
+              <tbody id="telemetryRosterBody">
+                <!-- Dynamically populated every frame -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
     </section>
 
     <!-- ===================================================================== -->
@@ -3523,24 +3659,36 @@
           const isSouth = clickedTrain.direction === 'south';
           const dirText = isSouth ? 'Southbound → Thrippunithura' : 'Northbound → Aluva';
           const speedKmh = Math.round(clickedTrain.velocityKmh || (clickedTrain.speedMs * 3.6) || 32);
-          const stateText = clickedTrain.state === 'DWELLING' ? 'Dwelling at Station' :
-                            clickedTrain.state === 'ACCELERATING' ? 'Accelerating' :
-                            clickedTrain.state === 'BRAKING' ? 'Decelerating' : 'Cruising';
+          const isDwelling = clickedTrain.state === 'DWELLING';
+          const motionBadge = isDwelling
+            ? '<span class="mono" style="color:#fbbf24;font-weight:700;">■ STOPPED (0 km/h)</span>'
+            : clickedTrain.state === 'ACCELERATING'
+            ? ('<span class="mono" style="color:#34d399;font-weight:700;">▲ ACCELERATING (' + speedKmh + ' km/h)</span>')
+            : clickedTrain.state === 'BRAKING'
+            ? ('<span class="mono" style="color:var(--km-accent,#eb5e28);font-weight:700;">▼ DECELERATING (' + speedKmh + ' km/h)</span>')
+            : ('<span class="mono" style="color:#34d399;font-weight:700;">● CRUISING (' + speedKmh + ' km/h)</span>');
+
+          const chainageKm = (clickedTrain.currentDistanceMeters / 1000).toFixed(2);
+          const coordsText = (clickedTrain.lat && clickedTrain.lng) ? (clickedTrain.lat.toFixed(5) + '° N, ' + clickedTrain.lng.toFixed(5) + '° E') : '--';
 
           const trainPopupHtml = `
-            <div style="font-family:var(--km-font,'Inter Tight',sans-serif);min-width:210px;padding:2px;">
+            <div style="font-family:var(--km-font,'Inter Tight',sans-serif);min-width:240px;padding:2px;">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
                 <span class="mono" style="font-size:12px;font-weight:800;color:var(--km-accent,#eb5e28);">${clickedTrain.id}</span>
-                <span class="mono" style="font-size:11px;color:var(--km-text-secondary,#ccc5b9);">${clickedTrain.name}</span>
+                <span class="mono" style="font-size:11px;color:var(--km-text-secondary,#ccc5b9);">"${clickedTrain.name}"</span>
               </div>
               <div style="font-size:11px;color:var(--km-text-secondary,#ccc5b9);margin-bottom:6px;">${dirText}</div>
-              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(204,197,185,0.06);padding:6px 8px;border-radius:6px;margin-bottom:6px;" class="mono">
-                <span style="font-size:10px;color:var(--km-text-secondary,#ccc5b9);">SPEED:</span>
-                <span style="font-size:12px;font-weight:700;color:var(--km-text-primary,#fffcf2);">${speedKmh} km/h</span>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(204,197,185,0.06);padding:4px 8px;border-radius:6px;margin-bottom:4px;" class="mono">
+                <span style="font-size:10px;color:var(--km-text-secondary,#ccc5b9);">LIVE GPS:</span>
+                <span style="font-size:11px;font-weight:700;color:var(--km-text-primary,#fffcf2);">${coordsText}</span>
               </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(204,197,185,0.06);padding:6px 8px;border-radius:6px;margin-bottom:8px;" class="mono">
-                <span style="font-size:10px;color:var(--km-text-secondary,#ccc5b9);">STATUS:</span>
-                <span style="font-size:11px;font-weight:700;color:var(--km-accent,#eb5e28);">${stateText}</span>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(204,197,185,0.06);padding:4px 8px;border-radius:6px;margin-bottom:4px;" class="mono">
+                <span style="font-size:10px;color:var(--km-text-secondary,#ccc5b9);">CHAINAGE:</span>
+                <span style="font-size:11px;font-weight:700;color:var(--km-text-primary,#fffcf2);">${chainageKm} km from Aluva</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(204,197,185,0.06);padding:4px 8px;border-radius:6px;margin-bottom:8px;" class="mono">
+                <span style="font-size:10px;color:var(--km-text-secondary,#ccc5b9);">MOTION:</span>
+                <span style="font-size:11px;">${motionBadge}</span>
               </div>
               <button type="button" class="btn-popup-train-follow btn-hud" data-train-id="${clickedTrain.id}" style="width:100%;font-size:11px;padding:6px;justify-content:center;background:var(--km-accent,#eb5e28);color:#fffcf2;border-color:var(--km-accent,#eb5e28);">
                 Follow Train ↗
@@ -3548,6 +3696,10 @@
             </div>
           `;
 
+          telemetrySelectedTrainId = clickedTrain.id;
+          const selTel = document.getElementById('selectTelemetryTrain');
+          if (selTel) selTel.value = clickedTrain.id;
+          updateTelemetryCockpit(snapshot);
           L.popup({ maxWidth: 250, offset: [0, -6] })
             .setLatLng([clickedTrain.lat, clickedTrain.lng])
             .setContent(trainPopupHtml)
@@ -3557,6 +3709,137 @@
 
       // Update highlighted route once map is initialized
       updateHighlightedRouteOnMap(false);
+    }
+
+    
+    // Compass Direction from Angle
+    function getCompassHeading(deg) {
+      const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+      const norm = ((deg % 360) + 360) % 360;
+      return dirs[Math.round(norm / 45) % 8];
+    }
+
+    // Selected Telemetry Train ID (default 'KM-101')
+    let telemetrySelectedTrainId = 'KM-101';
+
+    // Update Live Location & Motion Detection Cockpit
+    function updateTelemetryCockpit(snapshot) {
+      if (!snapshot || !snapshot.length) return;
+
+      const selTrain = snapshot.find(t => t.id === telemetrySelectedTrainId) || snapshot[0];
+      if (!selTrain) return;
+
+      // 1. Live Coordinates & Chainage
+      const coordsEl = document.getElementById('telemetryCoords');
+      const chainageEl = document.getElementById('telemetryChainage');
+      if (coordsEl && selTrain.lat && selTrain.lng) {
+        coordsEl.textContent = `${selTrain.lat.toFixed(5)}° N · ${selTrain.lng.toFixed(5)}° E`;
+      }
+      if (chainageEl) {
+        chainageEl.textContent = `${(selTrain.currentDistanceMeters / 1000).toFixed(2)} km`;
+      }
+
+      // 2. Real-Time Motion Detection State
+      const motionBadgeEl = document.getElementById('telemetryMotionBadge');
+      const motionTextEl = document.getElementById('telemetryMotionText');
+      const speedEl = document.getElementById('telemetrySpeed');
+      const headingEl = document.getElementById('telemetryHeading');
+
+      if (speedEl) speedEl.textContent = `${selTrain.velocityKmh} km/h`;
+      if (headingEl) {
+        const compass = getCompassHeading(selTrain.headingAngle);
+        headingEl.textContent = `${Math.round(selTrain.headingAngle)}° ${compass}`;
+      }
+
+      if (motionTextEl && motionBadgeEl) {
+        if (selTrain.state === 'DWELLING') {
+          motionTextEl.textContent = `■ STOPPED AT PLATFORM (${selTrain.fromStation ? selTrain.fromStation.name : 'Station'} · Doors Open)`;
+          motionBadgeEl.style.background = 'rgba(245, 158, 11, 0.15)';
+          motionBadgeEl.style.borderColor = '#f59e0b';
+          motionTextEl.style.color = '#fbbf24';
+        } else if (selTrain.state === 'ACCELERATING') {
+          motionTextEl.textContent = `▲ IN MOTION · ACCELERATING (${selTrain.velocityKmh} km/h)`;
+          motionBadgeEl.style.background = 'rgba(16, 185, 129, 0.15)';
+          motionBadgeEl.style.borderColor = '#10b981';
+          motionTextEl.style.color = '#34d399';
+        } else if (selTrain.state === 'BRAKING') {
+          motionTextEl.textContent = `▼ IN MOTION · DECELERATING (${selTrain.velocityKmh} km/h)`;
+          motionBadgeEl.style.background = 'rgba(235, 94, 40, 0.15)';
+          motionBadgeEl.style.borderColor = 'var(--km-accent, #eb5e28)';
+          motionTextEl.style.color = 'var(--km-accent, #eb5e28)';
+        } else {
+          motionTextEl.textContent = `● IN MOTION · CRUISING (${selTrain.velocityKmh} km/h)`;
+          motionBadgeEl.style.background = 'rgba(16, 185, 129, 0.15)';
+          motionBadgeEl.style.borderColor = '#10b981';
+          motionTextEl.style.color = '#34d399';
+        }
+      }
+
+      // 3. Current Track Segment & Next Stop
+      const segEl = document.getElementById('telemetrySegment');
+      const nextStEl = document.getElementById('telemetryNextStation');
+      const etaNextEl = document.getElementById('telemetryEtaNext');
+      const fromStName = selTrain.fromStation ? selTrain.fromStation.name : 'Aluva';
+      const toStName = selTrain.toStation ? selTrain.toStation.name : 'Thrippunithura';
+
+      if (segEl) segEl.textContent = `${fromStName} → ${toStName}`;
+      if (nextStEl) nextStEl.textContent = toStName;
+      if (etaNextEl) {
+        if (selTrain.state === 'DWELLING') {
+          etaNextEl.textContent = `Boarding (${selTrain.dwellRemaining}s left)`;
+        } else {
+          const remMeters = Math.abs((selTrain.toStation ? trackGeometry.stationDistanceMeters[selTrain.toStation.id - 1] : 0) - selTrain.currentDistanceMeters);
+          const remSec = Math.max(5, Math.round(remMeters / Math.max(8, selTrain.velocityKmh / 3.6)));
+          etaNextEl.textContent = `~${remSec}s ETA`;
+        }
+      }
+
+      // 4. Segment Progress Bar
+      const segFromEl = document.getElementById('telemetrySegFrom');
+      const segToEl = document.getElementById('telemetrySegTo');
+      const segPctEl = document.getElementById('telemetrySegPct');
+      const segBarEl = document.getElementById('telemetrySegBar');
+
+      if (segFromEl) segFromEl.textContent = fromStName;
+      if (segToEl) segToEl.textContent = toStName;
+
+      if (selTrain.fromStation && selTrain.toStation) {
+        const fromM = trackGeometry.stationDistanceMeters[selTrain.fromStation.id - 1] || 0;
+        const toM = trackGeometry.stationDistanceMeters[selTrain.toStation.id - 1] || 0;
+        const span = Math.abs(toM - fromM) || 1000;
+        const prog = Math.abs(selTrain.currentDistanceMeters - fromM);
+        const pct = Math.max(0, Math.min(100, Math.round((prog / span) * 100)));
+        if (segPctEl) segPctEl.textContent = `${pct}% between stations`;
+        if (segBarEl) segBarEl.style.width = `${pct}%`;
+      }
+
+      // 5. Active Fleet Motion Roster Table
+      const rosterBody = document.getElementById('telemetryRosterBody');
+      if (rosterBody) {
+        rosterBody.innerHTML = snapshot.map(t => {
+          const isDwelling = t.state === 'DWELLING';
+          const motionLabel = isDwelling
+            ? '<span class="mono" style="color:#fbbf24;font-weight:700;">■ STOPPED (0k)</span>'
+            : `<span class="mono" style="color:#34d399;font-weight:700;">● IN MOTION (${t.velocityKmh}k)</span>`;
+          const dirArrow = t.direction === 'south' ? '↓' : '↑';
+          const segText = `${t.fromStation ? t.fromStation.name : ''} → ${t.toStation ? t.toStation.name : ''}`;
+          const isRowSelected = t.id === telemetrySelectedTrainId;
+          const bg = isRowSelected ? 'rgba(235,94,40,0.1)' : 'transparent';
+
+          return `
+            <tr style="border-bottom:1px solid rgba(204,197,185,0.08);background:${bg};cursor:pointer;" class="roster-train-row" data-train-id="${t.id}">
+              <td style="padding:6px 8px;font-weight:700;color:var(--km-text-primary,#fffcf2);">${t.id} <small class="mono text-muted">"${t.name}"</small></td>
+              <td style="padding:6px 8px;" class="mono">${dirArrow}</td>
+              <td style="padding:6px 8px;" class="mono tabular-nums">${t.lat ? t.lat.toFixed(4) : '--'}, ${t.lng ? t.lng.toFixed(4) : '--'}</td>
+              <td style="padding:6px 8px;">${motionLabel}</td>
+              <td style="padding:6px 8px;font-size:11px;color:var(--km-text-secondary,#ccc5b9);white-space:nowrap;">${segText}</td>
+              <td style="padding:6px 8px;text-align:right;">
+                <button type="button" class="btn-hud btn-roster-locate" data-train-id="${t.id}" style="font-size:10px;padding:3px 8px;">Locate ↗</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      }
     }
 
     // Initialize Synchronized Dual-Track Linear Schematic in Extras
@@ -3890,6 +4173,7 @@
         }
 
         renderViaductFrame(dt);
+        updateTelemetryCockpit(snapshot);
       });
 
       // Update Commute Countdown smoothly every second
